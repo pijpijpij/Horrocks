@@ -32,3 +32,6 @@ Some were just improvements:
 ## Still to do
 This list explains remains to be done.
 - Hungarian notation removal is only partial
+
+## Will not do
+Anything beyond the presenter-layer will stay pretty much untouched, as it is not the focus of this sample.
