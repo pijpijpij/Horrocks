@@ -3,8 +3,8 @@ This application is used to demonstrate how to use (or not to use) Horrocks in a
 # Android Architecture Blueprints
 Rather than start from scratch, I started from a branch of the Android Architecture Blueprints, more specifically, the code available in 
 the branch [todo‑mvp‑dagger](https://github.com/googlesamples/android-architecture/tree/todo-mvp-dagger/). That branch uses 
-[Dagger 2](https://google.github.io/dagger/) to add support for [dependency injection](https://en.wikipedia
-.org/wiki/Dependency_injection). The focus is not on that however, I just wanted to show Horrocks in an **MVP** context.
+[Dagger 2](https://google.github.io/dagger/) to add support for [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection). 
+The focus is not on that however, I just wanted to show Horrocks in an **MVP** context.
 
 # Notable changes
 These changes were made independently of Horrocks, just because, well nobody's perfect and the sample wasn't quite up to scratch. 
