@@ -1,0 +1,39 @@
+buildscript {
+    ext.kotlin_version = '1.2.10'
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "net.ltgt.gradle:gradle-apt-plugin:0.12"
+    }
+}
+
+apply plugin: 'java-library'
+apply plugin: "net.ltgt.apt-idea"
+apply plugin: 'kotlin'
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+
+    // Basic utilities
+    compile "com.android.support:support-annotations:$supportLibraryVersion"
+    compile "io.reactivex.rxjava2:rxkotlin:$rxjava2Version"
+    compileOnly "com.google.auto.value:auto-value:$autoValueVersion"
+    apt "com.google.auto.value:auto-value:$autoValueVersion"
+
+    testCompile "junit:junit:$junitVersion"
+    testCompile "org.mockito:mockito-core:$mockitoVersion"
+    testCompile "com.nhaarman:mockito-kotlin:$mockitoKotlinVersion"
+}
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
