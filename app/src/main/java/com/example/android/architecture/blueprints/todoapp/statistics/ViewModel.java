@@ -1,3 +1,17 @@
+/*
+ * Copyright 2018, Chiswick Forest
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and limitations under the License.
+ */
+
 package com.example.android.architecture.blueprints.todoapp.statistics;
 
 import android.support.annotation.Nullable;
@@ -39,10 +53,10 @@ public abstract class ViewModel {
     @AutoValue
     public abstract static class Numbers {
 
-        public static Numbers create(int numberOfIncompleteTasks, int numberOfCompletedTasks) {
+        public static Numbers create(int incompleteTasks, int completedTasks) {
             return builder()
-                    .numberOfIncompleteTasks(numberOfIncompleteTasks)
-                    .numberOfCompletedTasks(numberOfCompletedTasks)
+                    .incompleteTasks(incompleteTasks)
+                    .completedTasks(completedTasks)
                     .build();
         }
 
@@ -50,17 +64,17 @@ public abstract class ViewModel {
             return new AutoValue_ViewModel_Numbers.Builder();
         }
 
-        public abstract int numberOfIncompleteTasks();
+        public abstract int incompleteTasks();
 
-        public abstract int numberOfCompletedTasks();
+        public abstract int completedTasks();
 
         public abstract Builder toBuilder();
 
         @AutoValue.Builder
         public abstract static class Builder {
-            public abstract Builder numberOfIncompleteTasks(int numberOfIncompleteTasks);
+            public abstract Builder incompleteTasks(int incompleteTasks);
 
-            public abstract Builder numberOfCompletedTasks(int numberOfCompletedTasks);
+            public abstract Builder completedTasks(int completedTasks);
 
             public abstract Numbers build();
         }

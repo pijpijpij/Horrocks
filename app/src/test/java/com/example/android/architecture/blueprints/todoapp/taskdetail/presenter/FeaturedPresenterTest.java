@@ -1,17 +1,15 @@
 /*
- * Copyright 2016, The Android Open Source Project
+ * Copyright 2018, Chiswick Forest
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * See the License for the specific language governing permissions and limitations under the License.
  */
 
 package com.example.android.architecture.blueprints.todoapp.taskdetail.presenter;
@@ -95,9 +93,9 @@ public class FeaturedPresenterTest {
         verify(mTaskDetailView, times(3)).display(model.capture());
         assertThat(model.getAllValues().stream().map(ViewModel::loadingIndicator).collect(toList()),
                 contains(false, true, false));
-        assertThat(model.getValue().showTitle(), equalTo(TITLE_TEST));
-        assertThat(model.getValue().showDescription(), equalTo(DESCRIPTION_TEST));
-        assertThat(model.getValue().showCompletionStatus(), equalTo(false));
+        assertThat(model.getValue().title(), equalTo(TITLE_TEST));
+        assertThat(model.getValue().description(), equalTo(DESCRIPTION_TEST));
+        assertThat(model.getValue().completed(), equalTo(false));
     }
 
     @Test
@@ -116,9 +114,9 @@ public class FeaturedPresenterTest {
         verify(mTaskDetailView, times(3)).display(model.capture());
         assertThat(model.getAllValues().stream().map(ViewModel::loadingIndicator).collect(toList()),
                 contains(false, true, false));
-        assertThat(model.getValue().showTitle(), equalTo(TITLE_TEST));
-        assertThat(model.getValue().showDescription(), equalTo(DESCRIPTION_TEST));
-        assertThat(model.getValue().showCompletionStatus(), equalTo(true));
+        assertThat(model.getValue().title(), equalTo(TITLE_TEST));
+        assertThat(model.getValue().description(), equalTo(DESCRIPTION_TEST));
+        assertThat(model.getValue().completed(), equalTo(true));
     }
 
     @Test

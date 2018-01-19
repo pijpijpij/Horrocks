@@ -12,16 +12,17 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.example.android.architecture.blueprints.todoapp.taskdetail.presenter;
+package com.example.android.architecture.blueprints.todoapp.addedittask.presenter;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.example.android.architecture.blueprints.todoapp.data.source.TasksRepository;
-import com.example.android.architecture.blueprints.todoapp.taskdetail.Presenter;
-import com.example.android.architecture.blueprints.todoapp.taskdetail.TaskDetailModule;
-import com.example.android.architecture.blueprints.todoapp.taskdetail.ViewModel;
-import com.example.android.architecture.blueprints.todoapp.taskdetail.ui.TaskDetailFragment;
+import com.example.android.architecture.blueprints.todoapp.addedittask.AddEditTaskFragment;
+import com.example.android.architecture.blueprints.todoapp.addedittask.AddEditTaskModule;
+import com.example.android.architecture.blueprints.todoapp.addedittask.Presenter;
+import com.example.android.architecture.blueprints.todoapp.addedittask.ViewModel;
+import com.example.android.architecture.blueprints.todoapp.data.Task;
+import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource;
 import com.google.common.base.Strings;
 import com.pij.horrocks.Configuration;
 import com.pij.horrocks.Engine;
@@ -29,25 +30,26 @@ import com.pij.horrocks.Feature;
 import com.pij.horrocks.Logger;
 import com.pij.horrocks.MemoryStore;
 import com.pij.horrocks.MultipleResultFeature;
-import com.pij.horrocks.SingleResultFeature;
 import com.pij.horrocks.View;
 
 import javax.inject.Inject;
 
+import dagger.Lazy;
 import io.reactivex.disposables.CompositeDisposable;
 
 import static java.util.Arrays.asList;
 
 /**
- * Listens to user actions from the UI ({@link TaskDetailFragment}), retrieves the data and updates
+ * Listens to user actions from the UI ({@link AddEditTaskFragment}), retrieves the data and
+ * updates
  * the UI as required.
- * <p>
+ * <p/>
  * By marking the constructor with {@code @Inject}, Dagger injects the dependencies required to
  * create an instance of the FeaturedPresenter (if it fails, it emits a compiler error). It uses
- * {@link TaskDetailModule} to do so.
- * <p>
+ * {@link AddEditTaskModule} to do so.
+ * <p/>
  * Dagger generated code doesn't require public access to the constructor or class, and
- * therefore, to ensure the developer doesn't instantiate the class manually and bypasses Dagger,
+ * therefore, to ensure the developer doesn't instantiate the class manually bypassing Dagger,
  * it's good practice minimise the visibility of the class/constructor as much as possible.
  */
 public final class FeaturedPresenter implements Presenter {
@@ -56,100 +58,106 @@ public final class FeaturedPresenter implements Presenter {
     private final CompositeDisposable subscription = new CompositeDisposable();
     private final Engine<ViewModel, ViewModel> engine;
     private final Configuration<ViewModel, ViewModel> engineConfiguration;
+    private final Feature<Task, ViewModel> saveTask;
     private final Feature<String, ViewModel> loadTask;
-    private final Feature<String, ViewModel> editTask;
-    private final Feature<String, ViewModel> deleteTask;
-    private final Feature<String, ViewModel> completeTask;
-    private final Feature<String, ViewModel> activateTask;
-    @NonNull
-    private String mTaskId;
+
+    private String taskId;
+
+    // This is provided lazily because its value is determined in the Activity's onCreate. By
+    // calling it in takeView(), the value is guaranteed to be set.
+    private Lazy<Boolean> isDataMissingLazy;
+
+    // Whether the data has been loaded with this presenter (or comes from a system restore)
+    private boolean mIsDataMissing;
 
     /**
      * Dagger strictly enforces that arguments not marked with {@code @Nullable} are not injected
      * with {@code @Nullable} values.
+     *
+     * @param taskId                 the task ID or null if it's a new task
+     * @param tasksRepository        the data source
+     * @param shouldLoadDataFromRepo a flag that controls whether we should load data from the
+     *                               repository or not. It's lazy because it's determined in the
+     *                               Activity's onCreate.
      */
     @Inject
     public FeaturedPresenter(@Nullable String taskId,
-                             TasksRepository tasksRepository,
+                             TasksDataSource tasksRepository,
                              Logger logger,
-                             Engine<ViewModel, ViewModel> engine) {
+                             Engine<ViewModel, ViewModel> engine,
+                             Lazy<Boolean> shouldLoadDataFromRepo) {
         this.logger = logger;
-        mTaskId = Strings.nullToEmpty(taskId);
+        this.taskId = Strings.nullToEmpty(taskId);
+        isDataMissingLazy = shouldLoadDataFromRepo;
+        saveTask = new MultipleResultFeature<>(new SaveTaskFeature(logger, tasksRepository));
         loadTask = new MultipleResultFeature<>(new LoadTaskFeature(logger, tasksRepository));
-        editTask = new SingleResultFeature<>(new EditTaskFeature());
-        deleteTask = new MultipleResultFeature<>(new DeleteTaskFeature(logger, tasksRepository));
-        completeTask = new MultipleResultFeature<>(new CompleteTaskFeature(logger, tasksRepository));
-        activateTask = new MultipleResultFeature<>(new ActivateTaskFeature(logger, tasksRepository));
         this.engine = engine;
         engineConfiguration = Configuration.<ViewModel, ViewModel>builder()
                 .store(new MemoryStore<>(initialState()))
                 .transientResetter(this::resetTransientState)
                 .stateToModel(state -> state)
-                .features(asList(loadTask, editTask, deleteTask, completeTask, activateTask))
+                .features(asList(saveTask, loadTask))
                 .build();
     }
 
     @NonNull
     private ViewModel resetTransientState(@NonNull ViewModel state) {
         return state.toBuilder()
-                .showTaskMarkedComplete(false)
-                .showTaskMarkedActive(false)
-                .showEditTask(null)
-                .close(false)
+                .showEmptyTaskError(false)
+                .showTasksList(false)
                 .build();
     }
 
     @NonNull
     private ViewModel initialState() {
         return ViewModel.builder()
-                .close(false)
-                .showEditTask(null)
-                .showTaskMarkedActive(false)
-                .showTaskMarkedComplete(false)
-                .showMissingTask(true)
-                .description(null)
-                .title(null)
-                .completed(false)
-                .loadingIndicator(false)
+                .showEmptyTaskError(false)
+                .showTasksList(false)
+                .description("")
+                .title("")
                 .build();
     }
 
 
     @Override
-    public void editTask() {
-        editTask.trigger(mTaskId);
+    public void saveTask(String title, String description) {
+        Task task = taskId.isEmpty() ? new Task(title, description) : new Task(title, description, taskId);
+        saveTask.trigger(task);
     }
 
     @Override
-    public void deleteTask() {
-        deleteTask.trigger(mTaskId);
+    public void populateTask() {
+        loadTask.trigger(taskId);
     }
 
     @Override
-    public void completeTask() {
-        completeTask.trigger(mTaskId);
-    }
-
-    @Override
-    public void activateTask() {
-        activateTask.trigger(mTaskId);
-    }
-
-    @Override
-    public void takeView(View<ViewModel> taskDetailView) {
+    public void takeView(View<ViewModel> view) {
         subscription.add(
                 engine.runWith(engineConfiguration).subscribe(
-                        taskDetailView::display,
+                        view::display,
                         e -> logger.print(getClass(), "Terminal Damage!!!", e),
                         () -> logger.print(getClass(), "takeView completed!!!"))
         );
 
-        loadTask.trigger(mTaskId);
+//        // TODO migrate
+//        mIsDataMissing = isDataMissingLazy.get();
+//        if (!isNewTask() && mIsDataMissing) {
+//            populateTask();
+//        }
     }
 
     @Override
     public void dropView() {
         subscription.clear();
+    }
+
+    @Override
+    public boolean isDataMissing() {
+        return mIsDataMissing;
+    }
+
+    private boolean isNewTask() {
+        return taskId.isEmpty();
     }
 
 }

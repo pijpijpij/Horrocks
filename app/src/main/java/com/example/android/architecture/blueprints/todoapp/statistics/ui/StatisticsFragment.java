@@ -1,17 +1,15 @@
 /*
- * Copyright 2016, The Android Open Source Project
+ * Copyright 2018, Chiswick Forest
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * See the License for the specific language governing permissions and limitations under the License.
  */
 
 package com.example.android.architecture.blueprints.todoapp.statistics.ui;
@@ -60,15 +58,15 @@ public class StatisticsFragment extends DaggerFragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         mPresenter.takeView(this::display);
     }
 
     @Override
-    public void onDestroy() {
+    public void onStop() {
         mPresenter.dropView();
-        super.onDestroy();
+        super.onStop();
     }
 
     private void setProgressIndicator(boolean active) {
@@ -98,6 +96,6 @@ public class StatisticsFragment extends DaggerFragment {
         setProgressIndicator(model.progressIndicator());
         if (model.showLoadingStatisticsError()) showLoadingStatisticsError();
         ViewModel.Numbers numbers = model.showStatistics();
-        if (numbers != null) showStatistics(numbers.numberOfIncompleteTasks(), numbers.numberOfCompletedTasks());
+        if (numbers != null) showStatistics(numbers.incompleteTasks(), numbers.completedTasks());
     }
 }

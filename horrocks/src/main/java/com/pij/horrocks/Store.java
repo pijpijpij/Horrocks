@@ -12,21 +12,20 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.example.android.architecture.blueprints.todoapp.addedittask;
+package com.pij.horrocks;
 
-import com.example.android.architecture.blueprints.todoapp.BasePresenter;
-import com.pij.horrocks.View;
+import android.support.annotation.NonNull;
 
 /**
- * <p>Created on 14/01/2018.</p>
+ * <p>Created on 18/01/2018.</p>
  *
  * @author PierreJean
  */
-public interface Presenter extends BasePresenter<View<ViewModel>> {
 
-    void saveTask(String title, String description);
+public interface Store<S> {
 
-    void populateTask();
+    @NonNull
+    S load();
 
-    boolean isDataMissing();
+    void save(@NonNull S state);
 }

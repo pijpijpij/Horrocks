@@ -1,17 +1,15 @@
 /*
- * Copyright 2016, The Android Open Source Project
+ * Copyright 2018, Chiswick Forest
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * See the License for the specific language governing permissions and limitations under the License.
  */
 
 package com.example.android.architecture.blueprints.todoapp.addedittask;
@@ -41,7 +39,7 @@ import dagger.android.support.DaggerFragment;
  * Main UI for the add task screen. Users can enter a task title and description.
  */
 @ActivityScoped
-public class AddEditTaskFragment extends DaggerFragment implements AddEditTaskContract.View {
+public class AddEditTaskFragment extends DaggerFragment {
 
     public static final String ARGUMENT_EDIT_TASK_ID = "EDIT_TASK_ID";
 
@@ -61,16 +59,9 @@ public class AddEditTaskFragment extends DaggerFragment implements AddEditTaskCo
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        //Bind view to the presenter which will signal for the presenter to load the task.
-        presenter.takeView(this);
-    }
-
-    @Override
-    public void onPause() {
+    public void onDestroyView() {
         presenter.dropView();
-        super.onPause();
+        super.onDestroyView();
     }
 
     @Nullable
@@ -82,8 +73,14 @@ public class AddEditTaskFragment extends DaggerFragment implements AddEditTaskCo
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
-
         setHasOptionsMenu(true);
+
+        //Bind view to the presenter which will signal for the presenter to load the task.
+        presenter.takeView(this::display);
+
+        if (savedInstanceState == null) {
+            presenter.populateTask();
+        }
     }
 
     @OnClick(R.id.fab_edit_task_done)
@@ -91,34 +88,25 @@ public class AddEditTaskFragment extends DaggerFragment implements AddEditTaskCo
         presenter.saveTask(title.getText().toString(), description.getText().toString());
     }
 
-    @Override
-    public void showEmptyTaskError() {
+    private void showEmptyTaskError() {
         if (isActive()) {
             Snackbar.make(title, getString(R.string.empty_task_message), Snackbar.LENGTH_LONG).show();
         }
     }
 
-    @Override
-    public void showTasksList() {
+    private void showTasksList() {
         getActivity().setResult(Activity.RESULT_OK);
         getActivity().finish();
     }
 
-    @Override
-    public void setTitle(String title) {
-        if (isActive()) {
-            this.title.setText(title);
-        }
-    }
-
-    @Override
-    public void setDescription(String description) {
-        if (isActive()) {
-            this.description.setText(description);
-        }
-    }
-
     private boolean isActive() {
         return isAdded();
+    }
+
+    private void display(@NonNull ViewModel model) {
+        title.setText(model.title());
+        description.setText(model.description());
+        if (model.showEmptyTaskError()) showEmptyTaskError();
+        if (model.showTasksList()) showTasksList();
     }
 }

@@ -12,14 +12,14 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.example.android.architecture.blueprints.todoapp.taskdetail.presenter;
+package com.example.android.architecture.blueprints.todoapp.addedittask.presenter;
 
 import android.support.annotation.NonNull;
 
+import com.example.android.architecture.blueprints.todoapp.addedittask.ViewModel;
 import com.example.android.architecture.blueprints.todoapp.data.Task;
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource;
 import com.example.android.architecture.blueprints.todoapp.data.source.Util;
-import com.example.android.architecture.blueprints.todoapp.taskdetail.ViewModel;
 import com.google.common.base.Strings;
 import com.pij.horrocks.Logger;
 import com.pij.horrocks.Result;
@@ -45,15 +45,15 @@ class LoadTaskFeature implements Function<String, Observable<Result<ViewModel>>>
     @NonNull
     private static ViewModel updateInvalidState(ViewModel current) {
         return current.toBuilder()
-                .showMissingTask(true)
-                .loadingIndicator(false)
+                .showEmptyTaskError(true)
+//                .loadingIndicator(false)
                 .build();
     }
 
     @NonNull
     private static ViewModel updateStartState(ViewModel current) {
         return current.toBuilder()
-                .loadingIndicator(true)
+//                .loadingIndicator(true)
                 .build();
     }
 
@@ -62,16 +62,15 @@ class LoadTaskFeature implements Function<String, Observable<Result<ViewModel>>>
         return current.toBuilder()
                 .title(response.getTitle())
                 .description(response.getDescription())
-                .completed(response.isCompleted())
-                .loadingIndicator(false)
+//                .loadingIndicator(false)
                 .build();
     }
 
     @NonNull
     private static ViewModel updateFailureState(ViewModel current) {
         return current.toBuilder()
-                .showMissingTask(true)
-                .loadingIndicator(false)
+                .showEmptyTaskError(true)
+//                .loadingIndicator(false)
                 .build();
     }
 

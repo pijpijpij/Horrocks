@@ -12,15 +12,14 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.example.android.architecture.blueprints.todoapp.taskdetail.presenter;
+package com.example.android.architecture.blueprints.todoapp.addedittask.presenter;
 
 import android.support.annotation.NonNull;
 
+import com.example.android.architecture.blueprints.todoapp.addedittask.ViewModel;
 import com.example.android.architecture.blueprints.todoapp.data.Task;
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource;
 import com.example.android.architecture.blueprints.todoapp.data.source.Util;
-import com.example.android.architecture.blueprints.todoapp.taskdetail.ViewModel;
-import com.google.common.base.Strings;
 import com.pij.horrocks.Logger;
 import com.pij.horrocks.Result;
 
@@ -32,12 +31,12 @@ import io.reactivex.functions.Function;
  *
  * @author PierreJean
  */
-class LoadTaskFeature implements Function<String, Observable<Result<ViewModel>>> {
+class SaveTaskFeature implements Function<Task, Observable<Result<ViewModel>>> {
 
     private final Logger logger;
     private final TasksDataSource dataSource;
 
-    LoadTaskFeature(Logger logger, TasksDataSource dataSource) {
+    SaveTaskFeature(Logger logger, TasksDataSource dataSource) {
         this.logger = logger;
         this.dataSource = dataSource;
     }
@@ -45,50 +44,44 @@ class LoadTaskFeature implements Function<String, Observable<Result<ViewModel>>>
     @NonNull
     private static ViewModel updateInvalidState(ViewModel current) {
         return current.toBuilder()
-                .showMissingTask(true)
-                .loadingIndicator(false)
+                .showEmptyTaskError(true)
+//                .loadingIndicator(false)
                 .build();
     }
 
     @NonNull
     private static ViewModel updateStartState(ViewModel current) {
         return current.toBuilder()
-                .loadingIndicator(true)
+//                .loadingIndicator(true)
                 .build();
     }
 
     @NonNull
-    private static ViewModel updateSuccessState(ViewModel current, Task response) {
+    private static ViewModel updateSuccessState(ViewModel current) {
         return current.toBuilder()
-                .title(response.getTitle())
-                .description(response.getDescription())
-                .completed(response.isCompleted())
-                .loadingIndicator(false)
+                // After an edit, go back to the list.
+                .showTasksList(true)
+//                .loadingIndicator(false)
                 .build();
     }
 
     @NonNull
     private static ViewModel updateFailureState(ViewModel current) {
         return current.toBuilder()
-                .showMissingTask(true)
-                .loadingIndicator(false)
+//                .loadingIndicator(false)
                 .build();
     }
 
     @Override
-    public Observable<Result<ViewModel>> apply(String taskId) {
-        return Observable.just(taskId)
-                .filter(Strings::isNullOrEmpty)
-                .map(id -> (Result<ViewModel>) LoadTaskFeature::updateInvalidState)
-                .switchIfEmpty(
-                        Util.loadTaskAsSingle(taskId, dataSource)
-                                .doOnError(e -> logger.print(getClass(), "Could no load data", e))
-                                .map(task -> (Result<ViewModel>) current -> updateSuccessState(current, task))
-                                .onErrorReturnItem(LoadTaskFeature::updateFailureState)
-                                .toObservable()
-                                .startWith(LoadTaskFeature::updateStartState)
-                )
-                ;
+    public Observable<Result<ViewModel>> apply(Task toSave) {
+        return Observable.just(toSave)
+                .filter(Task::isEmpty)
+                .map(id -> (Result<ViewModel>) SaveTaskFeature::updateInvalidState)
+                .switchIfEmpty(Util.saveTaskAsCompletable(toSave, dataSource)
+                        .doOnError(e -> logger.print(getClass(), "Could no save data", e))
+                        .andThen(Observable.just((Result<ViewModel>) SaveTaskFeature::updateSuccessState))
+                        .onErrorReturnItem(SaveTaskFeature::updateFailureState)
+                        .startWith(SaveTaskFeature::updateStartState));
     }
 
 }

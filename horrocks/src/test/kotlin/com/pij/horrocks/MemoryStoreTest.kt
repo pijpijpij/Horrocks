@@ -12,21 +12,33 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.example.android.architecture.blueprints.todoapp.addedittask;
+package com.pij.horrocks
 
-import com.example.android.architecture.blueprints.todoapp.BasePresenter;
-import com.pij.horrocks.View;
+import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.MatcherAssert.assertThat
+import org.junit.Test
 
 /**
- * <p>Created on 14/01/2018.</p>
+ *
+ * Created on 18/01/2018.
  *
  * @author PierreJean
  */
-public interface Presenter extends BasePresenter<View<ViewModel>> {
+class MemoryStoreTest {
 
-    void saveTask(String title, String description);
+    @Test
+    fun `Load provides constructor data right after construction`() {
+        val sut = MemoryStore("hello!")
 
-    void populateTask();
+        assertThat(sut.load(), equalTo("hello!"))
+    }
 
-    boolean isDataMissing();
+    @Test
+    fun `Load provides saved data `() {
+        val sut = MemoryStore("hello!")
+
+        sut.save("sip")
+
+        assertThat(sut.load(), equalTo("sip"))
+    }
 }

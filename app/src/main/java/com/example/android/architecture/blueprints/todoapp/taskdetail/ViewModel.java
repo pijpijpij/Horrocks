@@ -1,3 +1,17 @@
+/*
+ * Copyright 2018, Chiswick Forest
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and limitations under the License.
+ */
+
 package com.example.android.architecture.blueprints.todoapp.taskdetail;
 
 import android.support.annotation.Nullable;
@@ -21,13 +35,13 @@ public abstract class ViewModel {
     public abstract boolean showMissingTask();
 
     @Nullable
-    public abstract String showTitle();
+    public abstract String title();
 
     @Nullable
-    public abstract String showDescription();
+    public abstract String description();
 
     // Not sure it really is completed()
-    public abstract boolean showCompletionStatus();
+    public abstract boolean completed();
 
     // transient
     @Nullable
@@ -47,13 +61,11 @@ public abstract class ViewModel {
     public abstract static class Builder {
         public abstract Builder loadingIndicator(boolean loadingIndicator);
 
-        public abstract Builder showMissingTask(boolean showMissingTask);
+        public abstract Builder title(String showTitle);
 
-        public abstract Builder showTitle(String showTitle);
+        public abstract Builder description(String showDescription);
 
-        public abstract Builder showDescription(String showDescription);
-
-        public abstract Builder showCompletionStatus(boolean showCompletionStatus);
+        public abstract Builder completed(boolean showCompletionStatus);
 
         public abstract Builder showEditTask(String showEditTask);
 
@@ -62,6 +74,8 @@ public abstract class ViewModel {
         public abstract Builder showTaskMarkedComplete(boolean showTaskMarkedComplete);
 
         public abstract Builder showTaskMarkedActive(boolean showTaskMarkedActive);
+
+        public abstract Builder showMissingTask(boolean showMissingTask);
 
         public abstract ViewModel build();
     }

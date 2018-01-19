@@ -12,21 +12,22 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.example.android.architecture.blueprints.todoapp.addedittask;
-
-import com.example.android.architecture.blueprints.todoapp.BasePresenter;
-import com.pij.horrocks.View;
+package com.pij.horrocks
 
 /**
- * <p>Created on 14/01/2018.</p>
+ *
+ * Created on 18/01/2018.
  *
  * @author PierreJean
  */
-public interface Presenter extends BasePresenter<View<ViewModel>> {
 
-    void saveTask(String title, String description);
+class MemoryStore<S>(private var state: S) : Store<S> {
 
-    void populateTask();
+    override fun load(): S {
+        return state
+    }
 
-    boolean isDataMissing();
+    override fun save(newValue: S) {
+        state = newValue
+    }
 }
