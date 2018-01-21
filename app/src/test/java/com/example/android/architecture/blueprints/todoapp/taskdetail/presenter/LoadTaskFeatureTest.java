@@ -17,7 +17,7 @@ package com.example.android.architecture.blueprints.todoapp.taskdetail.presenter
 import com.example.android.architecture.blueprints.todoapp.data.Task;
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource;
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSourceHelper;
-import com.example.android.architecture.blueprints.todoapp.taskdetail.ViewModel;
+import com.example.android.architecture.blueprints.todoapp.taskdetail.TaskDetailModel;
 import com.pij.horrocks.SysoutLogger;
 
 import org.junit.Before;
@@ -61,7 +61,7 @@ public class LoadTaskFeatureTest {
     public void emitsStartResult_beforeRepositorySucceeds() throws Exception {
         tasksRepositoryHelper.setupGetTask();
 
-        TestObserver<ViewModel> observer = sut.apply("1").map(result -> result.applyTo(defaultState())).test();
+        TestObserver<TaskDetailModel> observer = sut.apply("1").map(result -> result.applyTo(defaultState())).test();
 
         //noinspection Convert2MethodRef
         observer.assertValue(state -> state.loadingIndicator());
@@ -71,7 +71,7 @@ public class LoadTaskFeatureTest {
     public void emitsStartAndSuccessResults_whenRepositorySucceeds() throws Exception {
         tasksRepositoryHelper.setupGetTask();
 
-        TestObserver<ViewModel> observer = sut.apply("1").map(result -> result.applyTo(defaultState())).test();
+        TestObserver<TaskDetailModel> observer = sut.apply("1").map(result -> result.applyTo(defaultState())).test();
         tasksRepositoryHelper.completeGetTask(zipzapTask);
 
         observer.assertValueAt(1, state -> !state.loadingIndicator()
@@ -83,7 +83,7 @@ public class LoadTaskFeatureTest {
     public void completes_whenRepositorySucceeds() throws Exception {
         tasksRepositoryHelper.setupGetTask();
 
-        TestObserver<ViewModel> observer = sut.apply("1").map(result -> result.applyTo(defaultState())).test();
+        TestObserver<TaskDetailModel> observer = sut.apply("1").map(result -> result.applyTo(defaultState())).test();
         tasksRepositoryHelper.completeGetTask(zipzapTask);
 
         observer.assertComplete();
@@ -93,7 +93,7 @@ public class LoadTaskFeatureTest {
     public void emitsStartAndFailureResults_whenRepositoryFails() throws Exception {
         tasksRepositoryHelper.setupGetTask();
 
-        TestObserver<ViewModel> observer = sut.apply("1").map(result -> result.applyTo(defaultState())).test();
+        TestObserver<TaskDetailModel> observer = sut.apply("1").map(result -> result.applyTo(defaultState())).test();
         tasksRepositoryHelper.failGetTask();
 
         observer.assertValueAt(1, state -> !state.loadingIndicator() && state.showMissingTask());
@@ -103,7 +103,7 @@ public class LoadTaskFeatureTest {
     public void completes_whenRepositoryFails() throws Exception {
         tasksRepositoryHelper.setupGetTask();
 
-        TestObserver<ViewModel> observer = sut.apply("1").map(result -> result.applyTo(defaultState())).test();
+        TestObserver<TaskDetailModel> observer = sut.apply("1").map(result -> result.applyTo(defaultState())).test();
         tasksRepositoryHelper.failGetTask();
 
         observer.assertComplete();

@@ -1,17 +1,15 @@
 /*
- * Copyright 2016, The Android Open Source Project
+ * Copyright 2018, Chiswick Forest
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * See the License for the specific language governing permissions and limitations under the License.
  */
 
 package com.example.android.architecture.blueprints.todoapp.tasks.ui;
@@ -44,7 +42,7 @@ import com.example.android.architecture.blueprints.todoapp.di.ActivityScoped;
 import com.example.android.architecture.blueprints.todoapp.taskdetail.ui.TaskDetailActivity;
 import com.example.android.architecture.blueprints.todoapp.tasks.FilterType;
 import com.example.android.architecture.blueprints.todoapp.tasks.Presenter;
-import com.example.android.architecture.blueprints.todoapp.tasks.ViewModel;
+import com.example.android.architecture.blueprints.todoapp.tasks.TasksModel;
 
 import java.util.List;
 
@@ -106,7 +104,7 @@ public class TasksFragment extends DaggerFragment {
     @BindView(R.id.filteringLabel)
     TextView filteringLabelView;
     @Arg(optional = true)
-    FilterType filtering = FilterType.ALL_TASKS;
+    FilterType filter = FilterType.ALL_TASKS;
     private TasksAdapter adapter;
     private Unbinder unbinder;
 
@@ -115,24 +113,12 @@ public class TasksFragment extends DaggerFragment {
         // Requires empty public constructor
     }
 
-
-    @Override
-    public void onStop() {
-        presenter.dropView();  //prevent leaking activity in case presenter is orchestrating a long running task
-        super.onStop();
-    }
-
-    @Override
-    public void onStart() {
-        presenter.takeView(this::display);
-        super.onStart();
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//         call Presenter back.
+        // call Presenter back.
         if (AddEditTaskActivity.REQUEST_ADD_TASK == requestCode && Activity.RESULT_OK == resultCode) {
             presenter.indicateTaskSaved();
+            presenter.loadTasks(filter);
         }
     }
 
@@ -160,15 +146,23 @@ public class TasksFragment extends DaggerFragment {
         );
         // Set the scrolling view in the custom SwipeRefreshLayout.
         swipeRefreshLayout.setScrollUpChild(listView);
-        swipeRefreshLayout.setOnRefreshListener(() -> presenter.loadTasks(filtering));
+        swipeRefreshLayout.setOnRefreshListener(() -> presenter.loadTasks(filter));
 
         setHasOptionsMenu(true);
+        presenter.takeView(this::display);
     }
 
     @Override
     public void onDestroyView() {
+        presenter.dropView();  //prevent leaking activity in case presenter is orchestrating a long running task
         unbinder.unbind();
         super.onDestroyView();
+    }
+
+    @Override
+    public void onStart() {
+        presenter.loadTasks(filter);
+        super.onStart();
     }
 
     @OnClick({R.id.noTasksAdd, R.id.fab_add_task})
@@ -180,7 +174,7 @@ public class TasksFragment extends DaggerFragment {
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         ActivityStarter.fill(this, savedInstanceState);
-        applyFilteringToUi(filtering);
+        applyFilteringToUi(filter);
     }
 
     @Override
@@ -196,19 +190,19 @@ public class TasksFragment extends DaggerFragment {
                 presenter.clearCompletedTasks();
                 break;
             case R.id.menu_refresh:
-                presenter.refreshTasks(filtering);
+                presenter.refreshTasks(filter);
                 break;
             case R.id.menu_active:
-                setFiltering(FilterType.ACTIVE_TASKS);
-                presenter.loadTasks(filtering);
+                setFilter(FilterType.ACTIVE_TASKS);
+                presenter.loadTasks(filter);
                 break;
             case R.id.menu_completed:
-                setFiltering(FilterType.COMPLETED_TASKS);
-                presenter.loadTasks(filtering);
+                setFilter(FilterType.COMPLETED_TASKS);
+                presenter.loadTasks(filter);
                 break;
             case R.id.menu_all:
-                setFiltering(FilterType.ALL_TASKS);
-                presenter.loadTasks(filtering);
+                setFilter(FilterType.ALL_TASKS);
+                presenter.loadTasks(filter);
                 break;
             default:
                 return false;
@@ -221,9 +215,9 @@ public class TasksFragment extends DaggerFragment {
         inflater.inflate(R.menu.tasks_fragment_menu, menu);
     }
 
-    private void setFiltering(FilterType filtering) {
-        this.filtering = filtering;
-        applyFilteringToUi(filtering);
+    private void setFilter(FilterType filter) {
+        this.filter = filter;
+        applyFilteringToUi(filter);
     }
 
     private void applyFilteringToUi(FilterType filter) {
@@ -251,19 +245,17 @@ public class TasksFragment extends DaggerFragment {
     }
 
     private void showTasks(List<Task> tasks) {
-        if (isActive()) {
-            adapter.replaceData(tasks);
+        adapter.replaceData(tasks);
 
-            if (tasks.isEmpty()) {
-                tasksView.setVisibility(View.GONE);
-                noTasksView.setVisibility(View.VISIBLE);
-                noTaskAddView.setVisibility(View.VISIBLE);
+        if (tasks.isEmpty()) {
+            tasksView.setVisibility(View.GONE);
+            noTasksView.setVisibility(View.VISIBLE);
+            noTaskAddView.setVisibility(View.VISIBLE);
 
-            } else {
-                tasksView.setVisibility(View.VISIBLE);
-                noTasksView.setVisibility(View.GONE);
-                noTaskAddView.setVisibility(View.GONE);
-            }
+        } else {
+            tasksView.setVisibility(View.VISIBLE);
+            noTasksView.setVisibility(View.GONE);
+            noTaskAddView.setVisibility(View.GONE);
         }
     }
 
@@ -340,7 +332,7 @@ public class TasksFragment extends DaggerFragment {
         return isAdded();
     }
 
-    private void display(@NonNull ViewModel model) {
+    private void display(@NonNull TasksModel model) {
         if (model.showSuccessfullySavedMessage()) showSuccessfullySavedMessage();
         if (model.showAddTask()) showAddTask();
         if (model.showTaskDetails() != null) showTaskDetailsUi(model.showTaskDetails());

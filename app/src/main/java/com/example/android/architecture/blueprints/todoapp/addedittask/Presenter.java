@@ -22,7 +22,7 @@ import com.pij.horrocks.View;
  *
  * @author PierreJean
  */
-public interface Presenter extends BasePresenter<View<ViewModel>> {
+public interface Presenter extends BasePresenter<View<AddEditTaskModel>> {
 
     void saveTask(String title, String description);
 

@@ -40,3 +40,31 @@ A Feature can be triggered by and event and emit a series of Results.
 ###Engine
 It's probably the closest to a `Store` in Redux.
 
+#Adding to Gradle
+Add the JitPack repository to your build file:
+```groovy
+allprojects {
+		repositories {
+			//...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+```
+Add the dependency
+```groovy
+dependencies {
+  compile 'com.github.pijpijpij.horrocks:horrocks:master-SNAPSHOT'
+}
+```
+
+#Usage in Android
+Any action on a presenter must done while the presenter's engine is active, i.e. when its `runWith(Configuration)` is being subscribed 
+to, otherwise all events are simply ignored.
+
+The lifecycle callback `onActivityResult()` occurs sometime between `onCreate()` and `onStart()`. When `onActivityResult()` is called in 
+the activity or fragment, that usually triggers some action on the presenter. So a requirement for Horrocks to function in Android is for 
+the subscription to be in place before then, i.e. in `onCreate()` (or one of its sub-calls, `onCreateView()` or `onViewCreated()`).
+
+##MVP
+In an MVP architecture, assuming that attaching the view to its presenter is done in `onCreate()`, then this is when the presenter should 
+create that subscription. In the sample application, `BasePresenter.takeView()` is where `runWith(Configuration)` is subscribed to.

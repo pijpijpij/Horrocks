@@ -47,7 +47,7 @@ public class FeaturedPresenterTest {
     @Mock
     private TasksRepository dataSourceMock;
     @Mock
-    private View<ViewModel> viewMock;
+    private View<AddEditTaskModel> viewMock;
     /**
      * {@link ArgumentCaptor} is a powerful Mockito API to capture argument values and use them to
      * perform further actions or assertions on them.
@@ -55,7 +55,7 @@ public class FeaturedPresenterTest {
     @Captor
     private ArgumentCaptor<TasksDataSource.GetTaskCallback> getTaskCallback;
     @Captor
-    private ArgumentCaptor<ViewModel> model;
+    private ArgumentCaptor<AddEditTaskModel> model;
     private FeaturedPresenter sut;
 
     @Before
@@ -133,7 +133,7 @@ public class FeaturedPresenterTest {
         getTaskCallback.getValue().onTaskLoaded(testTask);
 
         verify(viewMock, times(3)).display(model.capture());
-        assertThat(model.getValue().title(), is("TITLE"));
-        assertThat(model.getValue().description(), is("DESCRIPTION"));
+        assertThat(model.getValue().showTitle(), is("TITLE"));
+        assertThat(model.getValue().showDescription(), is("DESCRIPTION"));
     }
 }

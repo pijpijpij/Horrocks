@@ -1,17 +1,15 @@
 /*
- * Copyright 2016, The Android Open Source Project
+ * Copyright 2018, Chiswick Forest
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * See the License for the specific language governing permissions and limitations under the License.
  */
 
 package com.example.android.architecture.blueprints.todoapp.tasks.presenter;
@@ -20,7 +18,7 @@ import com.example.android.architecture.blueprints.todoapp.data.Task;
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource.LoadTasksCallback;
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksRepository;
 import com.example.android.architecture.blueprints.todoapp.tasks.FilterType;
-import com.example.android.architecture.blueprints.todoapp.tasks.ViewModel;
+import com.example.android.architecture.blueprints.todoapp.tasks.TasksModel;
 import com.pij.horrocks.DefaultEngine;
 import com.pij.horrocks.SysoutLogger;
 import com.pij.horrocks.View;
@@ -57,7 +55,7 @@ public class FeaturedPresenterTest {
     private TasksRepository mTasksRepository;
 
     @Mock
-    private View<ViewModel> mTasksView;
+    private View<TasksModel> viewMock;
 
     /**
      * {@link ArgumentCaptor} is a powerful Mockito API to capture argument values and use them to
@@ -66,7 +64,7 @@ public class FeaturedPresenterTest {
     @Captor
     private ArgumentCaptor<LoadTasksCallback> mLoadTasksCallbackCaptor;
     @Captor
-    private ArgumentCaptor<ViewModel> model;
+    private ArgumentCaptor<TasksModel> model;
 
     private FeaturedPresenter mTasksPresenter;
 
@@ -78,7 +76,7 @@ public class FeaturedPresenterTest {
 
         // Get a reference to the class under test
         mTasksPresenter = new FeaturedPresenter(mTasksRepository, new SysoutLogger(), new DefaultEngine<>(new SysoutLogger()));
-        mTasksPresenter.takeView(mTasksView);
+        mTasksPresenter.takeView(viewMock);
 
         // We start the tasks to 3, with one active and two completed
         TASKS = asList(
@@ -90,7 +88,7 @@ public class FeaturedPresenterTest {
 
     @Test
     public void loadAllTasksFromRepositoryAndLoadIntoView() {
-        reset(mTasksView);
+        reset(viewMock);
         // Given an initialized FeaturedPresenter with initialized tasks
         // When loading of Tasks is requested
         mTasksPresenter.refreshTasks(FilterType.ALL_TASKS);
@@ -100,16 +98,16 @@ public class FeaturedPresenterTest {
         verify(mTasksRepository, times(2)).getTasks(mLoadTasksCallbackCaptor.capture());
         mLoadTasksCallbackCaptor.getValue().onTasksLoaded(TASKS);
 
-        verify(mTasksView, times(2)).display(model.capture());
+        verify(viewMock, times(2)).display(model.capture());
         // Then progress indicator is shown
         // Then progress indicator is hidden and all tasks are shown in UI
-        assertThat(model.getAllValues().stream().map(ViewModel::inProgress).collect(toList()), contains(true, false));
+        assertThat(model.getAllValues().stream().map(TasksModel::inProgress).collect(toList()), contains(true, false));
         assertThat(model.getValue().tasks(), hasSize(3));
     }
 
     @Test
     public void loadActiveTasksFromRepositoryAndLoadIntoView() {
-        reset(mTasksView);
+        reset(viewMock);
         // Given an initialized FeaturedPresenter with initialized tasks
         // When loading of Tasks is requested
         mTasksPresenter.refreshTasks(FilterType.ACTIVE_TASKS);
@@ -119,14 +117,14 @@ public class FeaturedPresenterTest {
         mLoadTasksCallbackCaptor.getValue().onTasksLoaded(TASKS);
 
         // Then progress indicator is hidden and active tasks are shown in UI
-        verify(mTasksView, times(2)).display(model.capture());
-        assertThat(model.getAllValues().stream().map(ViewModel::inProgress).collect(toList()), contains(true, false));
+        verify(viewMock, times(2)).display(model.capture());
+        assertThat(model.getAllValues().stream().map(TasksModel::inProgress).collect(toList()), contains(true, false));
         assertThat(model.getValue().tasks(), hasSize(1));
     }
 
     @Test
     public void loadCompletedTasksFromRepositoryAndLoadIntoView() {
-        reset(mTasksView);
+        reset(viewMock);
         // Given an initialized FeaturedPresenter with initialized tasks
         // When loading of Tasks is requested
         mTasksPresenter.refreshTasks(FilterType.COMPLETED_TASKS);
@@ -136,25 +134,25 @@ public class FeaturedPresenterTest {
         mLoadTasksCallbackCaptor.getValue().onTasksLoaded(TASKS);
 
         // Then progress indicator is hidden and completed tasks are shown in UI
-        verify(mTasksView, times(2)).display(model.capture());
-        assertThat(model.getAllValues().stream().map(ViewModel::inProgress).collect(toList()), contains(true, false));
+        verify(viewMock, times(2)).display(model.capture());
+        assertThat(model.getAllValues().stream().map(TasksModel::inProgress).collect(toList()), contains(true, false));
         assertThat(model.getValue().tasks(), hasSize(2));
     }
 
     @Test
     public void clickOnFab_ShowsAddTaskUi() {
-        reset(mTasksView);
+        reset(viewMock);
         // When adding a new task
         mTasksPresenter.addNewTask();
 
         // Then add task UI is shown
-        verify(mTasksView).display(model.capture());
+        verify(viewMock).display(model.capture());
         assertThat(model.getValue().showAddTask(), is(true));
     }
 
     @Test
     public void clickOnTask_ShowsDetailUi() {
-        reset(mTasksView);
+        reset(viewMock);
         // Given a stubbed active task
         Task requestedTask = new Task("Details Requested", "For this task");
 
@@ -162,13 +160,13 @@ public class FeaturedPresenterTest {
         mTasksPresenter.openTaskDetails(requestedTask);
 
         // Then task detail UI is shown
-        verify(mTasksView).display(model.capture());
+        verify(viewMock).display(model.capture());
         assertNotNull(model.getValue().showTaskDetails());
     }
 
     @Test
     public void completeTask_ShowsTaskMarkedComplete() {
-        reset(mTasksView);
+        reset(viewMock);
         // Given a stubbed task
         Task task = new Task("Details Requested", "For this task");
 
@@ -181,7 +179,7 @@ public class FeaturedPresenterTest {
 
     @Test
     public void activateTask_ShowsTaskMarkedActive() {
-        reset(mTasksView);
+        reset(viewMock);
 
         // Given a stubbed completed task
         Task task = new Task("Details Requested", "For this task", true);
@@ -193,13 +191,13 @@ public class FeaturedPresenterTest {
 
         // Then repository is called and task marked active UI is shown
         verify(mTasksRepository).activateTask(task);
-        verify(mTasksView, times(2)).display(model.capture());
+        verify(viewMock, times(2)).display(model.capture());
         assertTrue(model.getValue().showTaskMarkedActive());
     }
 
     @Test
     public void unavailableTasks_ShowsError() {
-        reset(mTasksView);
+        reset(viewMock);
         // When tasks are loaded
         mTasksPresenter.refreshTasks(FilterType.ALL_TASKS);
 
@@ -208,7 +206,7 @@ public class FeaturedPresenterTest {
         mLoadTasksCallbackCaptor.getValue().onDataNotAvailable();
 
         // Then an error message is shown
-        verify(mTasksView, times(2)).display(model.capture());
+        verify(viewMock, times(2)).display(model.capture());
         assertTrue(model.getValue().showLoadingTasksError());
     }
 }

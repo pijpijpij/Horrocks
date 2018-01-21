@@ -24,10 +24,10 @@ import com.google.auto.value.AutoValue;
  * @author PierreJean
  */
 @AutoValue
-public abstract class ViewModel {
+public abstract class TaskDetailModel {
 
     public static Builder builder() {
-        return new AutoValue_ViewModel.Builder();
+        return new AutoValue_TaskDetailModel.Builder();
     }
 
     public abstract boolean loadingIndicator();
@@ -77,6 +77,6 @@ public abstract class ViewModel {
 
         public abstract Builder showMissingTask(boolean showMissingTask);
 
-        public abstract ViewModel build();
+        public abstract TaskDetailModel build();
     }
 }

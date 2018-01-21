@@ -16,7 +16,7 @@ package com.example.android.architecture.blueprints.todoapp.addedittask.presente
 
 import android.support.annotation.NonNull;
 
-import com.example.android.architecture.blueprints.todoapp.addedittask.ViewModel;
+import com.example.android.architecture.blueprints.todoapp.addedittask.AddEditTaskModel;
 import com.example.android.architecture.blueprints.todoapp.data.Task;
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource;
 import com.example.android.architecture.blueprints.todoapp.data.source.Util;
@@ -27,11 +27,9 @@ import io.reactivex.Observable;
 import io.reactivex.functions.Function;
 
 /**
- * <p>Created on 01/01/2018.</p>
- *
  * @author PierreJean
  */
-class SaveTaskFeature implements Function<Task, Observable<Result<ViewModel>>> {
+class SaveTaskFeature implements Function<Task, Observable<Result<AddEditTaskModel>>> {
 
     private final Logger logger;
     private final TasksDataSource dataSource;
@@ -42,7 +40,7 @@ class SaveTaskFeature implements Function<Task, Observable<Result<ViewModel>>> {
     }
 
     @NonNull
-    private static ViewModel updateInvalidState(ViewModel current) {
+    private static AddEditTaskModel updateInvalidState(AddEditTaskModel current) {
         return current.toBuilder()
                 .showEmptyTaskError(true)
 //                .loadingIndicator(false)
@@ -50,14 +48,14 @@ class SaveTaskFeature implements Function<Task, Observable<Result<ViewModel>>> {
     }
 
     @NonNull
-    private static ViewModel updateStartState(ViewModel current) {
+    private static AddEditTaskModel updateStartState(AddEditTaskModel current) {
         return current.toBuilder()
 //                .loadingIndicator(true)
                 .build();
     }
 
     @NonNull
-    private static ViewModel updateSuccessState(ViewModel current) {
+    private static AddEditTaskModel updateSuccessState(AddEditTaskModel current) {
         return current.toBuilder()
                 // After an edit, go back to the list.
                 .showTasksList(true)
@@ -66,20 +64,20 @@ class SaveTaskFeature implements Function<Task, Observable<Result<ViewModel>>> {
     }
 
     @NonNull
-    private static ViewModel updateFailureState(ViewModel current) {
+    private static AddEditTaskModel updateFailureState(AddEditTaskModel current) {
         return current.toBuilder()
 //                .loadingIndicator(false)
                 .build();
     }
 
     @Override
-    public Observable<Result<ViewModel>> apply(Task toSave) {
+    public Observable<Result<AddEditTaskModel>> apply(Task toSave) {
         return Observable.just(toSave)
                 .filter(Task::isEmpty)
-                .map(id -> (Result<ViewModel>) SaveTaskFeature::updateInvalidState)
+                .map(task -> (Result<AddEditTaskModel>) SaveTaskFeature::updateInvalidState)
                 .switchIfEmpty(Util.saveTaskAsCompletable(toSave, dataSource)
-                        .doOnError(e -> logger.print(getClass(), "Could no save data", e))
-                        .andThen(Observable.just((Result<ViewModel>) SaveTaskFeature::updateSuccessState))
+                        .doOnError(e -> logger.print(getClass(), "Could not save data", e))
+                        .andThen(Observable.just((Result<AddEditTaskModel>) SaveTaskFeature::updateSuccessState))
                         .onErrorReturnItem(SaveTaskFeature::updateFailureState)
                         .startWith(SaveTaskFeature::updateStartState));
     }

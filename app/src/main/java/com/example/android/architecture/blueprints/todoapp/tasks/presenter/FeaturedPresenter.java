@@ -21,8 +21,8 @@ import com.example.android.architecture.blueprints.todoapp.data.source.TasksData
 import com.example.android.architecture.blueprints.todoapp.di.ActivityScoped;
 import com.example.android.architecture.blueprints.todoapp.tasks.FilterType;
 import com.example.android.architecture.blueprints.todoapp.tasks.Presenter;
+import com.example.android.architecture.blueprints.todoapp.tasks.TasksModel;
 import com.example.android.architecture.blueprints.todoapp.tasks.TasksModule;
-import com.example.android.architecture.blueprints.todoapp.tasks.ViewModel;
 import com.example.android.architecture.blueprints.todoapp.tasks.ui.TasksFragment;
 import com.pij.horrocks.Configuration;
 import com.pij.horrocks.Engine;
@@ -35,7 +35,6 @@ import com.pij.horrocks.View;
 
 import io.reactivex.disposables.CompositeDisposable;
 
-import static com.example.android.architecture.blueprints.todoapp.tasks.FilterType.ALL_TASKS;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 
@@ -57,7 +56,7 @@ public final class FeaturedPresenter implements Presenter {
 
     private final Logger logger;
     private final CompositeDisposable subscription = new CompositeDisposable();
-    private final Engine<ViewState, ViewModel> engine;
+    private final Engine<ViewState, TasksModel> engine;
     private final Feature<Object, ViewState> indicateTaskSaved;
     private final Feature<Object, ViewState> showAddTask;
     private final Feature<Task, ViewState> openTaskDetails;
@@ -65,24 +64,24 @@ public final class FeaturedPresenter implements Presenter {
     private final Feature<Task, ViewState> activateTask;
     private final Feature<Task, ViewState> completeTask;
     private final Feature<FilterType, ViewState> loadTasks;
-    private final Configuration<ViewState, ViewModel> engineConfiguration;
+    private final Configuration<ViewState, TasksModel> engineConfiguration;
 
     /**
      * Dagger strictly enforces that arguments not marked with {@code @Nullable} are not injected
      * with {@code @Nullable} values.
      */
-    public FeaturedPresenter(TasksDataSource tasksRepository, Logger logger, Engine<ViewState, ViewModel> engine) {
+    public FeaturedPresenter(TasksDataSource tasksRepository, Logger logger, Engine<ViewState, TasksModel> engine) {
         this.logger = logger;
 
-        indicateTaskSaved = new SingleResultFeature<>(new IndicateTaskSavedFeature());
-        showAddTask = new SingleResultFeature<>(new ShowAddTaskFeature());
-        openTaskDetails = new SingleResultFeature<>(new OpenTaskDetailsFeature());
-        clearCompletedTasks = new MultipleResultFeature<>(new ClearCompletedTasksFeature(logger, tasksRepository));
-        activateTask = new MultipleResultFeature<>(new ActivateTaskFeature(logger, tasksRepository));
-        completeTask = new MultipleResultFeature<>(new CompleteTaskFeature(logger, tasksRepository));
-        loadTasks = new MultipleResultFeature<>(new LoadTasksFeature(logger, tasksRepository));
+        indicateTaskSaved = new SingleResultFeature<>(new IndicateTaskSavedFeature(), logger);
+        showAddTask = new SingleResultFeature<>(new ShowAddTaskFeature(), logger);
+        openTaskDetails = new SingleResultFeature<>(new OpenTaskDetailsFeature(), logger);
+        clearCompletedTasks = new MultipleResultFeature<>(new ClearCompletedTasksFeature(logger, tasksRepository), logger);
+        activateTask = new MultipleResultFeature<>(new ActivateTaskFeature(logger, tasksRepository), logger);
+        completeTask = new MultipleResultFeature<>(new CompleteTaskFeature(logger, tasksRepository), logger);
+        loadTasks = new MultipleResultFeature<>(new LoadTasksFeature(logger, tasksRepository), logger);
         this.engine = engine;
-        engineConfiguration = Configuration.<ViewState, ViewModel>builder()
+        engineConfiguration = Configuration.<ViewState, TasksModel>builder()
                 .store(new MemoryStore<>(initialState()))
                 .transientResetter(this::resetTransientState)
                 .stateToModel(this::convert)
@@ -99,8 +98,8 @@ public final class FeaturedPresenter implements Presenter {
     }
 
     @NonNull
-    private ViewModel convert(@NonNull ViewState state) {
-        return ViewModel.builder()
+    private TasksModel convert(@NonNull ViewState state) {
+        return TasksModel.builder()
                 .tasks(state.tasks())
                 .showTaskMarkedComplete(state.showTaskMarkedComplete())
                 .showTaskMarkedActive(state.showTaskMarkedActive())
@@ -188,15 +187,13 @@ public final class FeaturedPresenter implements Presenter {
     }
 
     @Override
-    public void takeView(View<ViewModel> view) {
+    public void takeView(View<TasksModel> view) {
         subscription.add(
                 engine.runWith(engineConfiguration).subscribe(
                         view::display,
                         e -> logger.print(getClass(), "Terminal Damage!!!", e),
                         () -> logger.print(getClass(), "takeView completed!!!"))
         );
-
-        loadTasks.trigger(ALL_TASKS);
     }
 
     @Override

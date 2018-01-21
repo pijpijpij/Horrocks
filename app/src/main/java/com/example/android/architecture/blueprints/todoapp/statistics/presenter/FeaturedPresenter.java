@@ -18,8 +18,8 @@ import android.support.annotation.NonNull;
 
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksRepository;
 import com.example.android.architecture.blueprints.todoapp.statistics.Presenter;
+import com.example.android.architecture.blueprints.todoapp.statistics.StatisticsModel;
 import com.example.android.architecture.blueprints.todoapp.statistics.StatisticsModule;
-import com.example.android.architecture.blueprints.todoapp.statistics.ViewModel;
 import com.example.android.architecture.blueprints.todoapp.statistics.ui.StatisticsFragment;
 import com.pij.horrocks.Configuration;
 import com.pij.horrocks.Engine;
@@ -53,21 +53,21 @@ public final class FeaturedPresenter implements Presenter {
 
     private final Logger logger;
     private final CompositeDisposable subscription = new CompositeDisposable();
-    private final Engine<ViewModel, ViewModel> engine;
-    private final Feature<Object, ViewModel> loadStatistics;
-    private final Configuration<ViewModel, ViewModel> engineConfiguration;
+    private final Engine<StatisticsModel, StatisticsModel> engine;
+    private final Feature<Object, StatisticsModel> loadStatistics;
+    private final Configuration<StatisticsModel, StatisticsModel> engineConfiguration;
 
     /**
      * Dagger strictly enforces that arguments not marked with {@code @Nullable} are not injected
      * with {@code @Nullable} values.
      */
     @Inject
-    public FeaturedPresenter(TasksRepository tasksRepository, Logger logger, Engine<ViewModel, ViewModel> engine) {
+    public FeaturedPresenter(TasksRepository tasksRepository, Logger logger, Engine<StatisticsModel, StatisticsModel> engine) {
         this.logger = logger;
 
         loadStatistics = new MultipleResultFeature<>(new LoadStatisticsFeature(logger, tasksRepository));
         this.engine = engine;
-        engineConfiguration = Configuration.<ViewModel, ViewModel>builder()
+        engineConfiguration = Configuration.<StatisticsModel, StatisticsModel>builder()
                 .store(new MemoryStore<>(initialState()))
                 .transientResetter(this::resetTransientState)
                 .stateToModel(state -> state)
@@ -76,15 +76,15 @@ public final class FeaturedPresenter implements Presenter {
     }
 
     @NonNull
-    private ViewModel resetTransientState(@NonNull ViewModel state) {
+    private StatisticsModel resetTransientState(@NonNull StatisticsModel state) {
         return state.toBuilder()
                 .showLoadingStatisticsError(false)
                 .build();
     }
 
     @NonNull
-    private ViewModel initialState() {
-        return ViewModel.builder()
+    private StatisticsModel initialState() {
+        return StatisticsModel.builder()
                 .showLoadingStatisticsError(false)
                 .progressIndicator(false)
                 .showStatistics(null)
@@ -93,7 +93,7 @@ public final class FeaturedPresenter implements Presenter {
 
 
     @Override
-    public void takeView(View<ViewModel> view) {
+    public void takeView(View<StatisticsModel> view) {
         subscription.add(
                 engine.runWith(engineConfiguration).subscribe(
                         view::display,

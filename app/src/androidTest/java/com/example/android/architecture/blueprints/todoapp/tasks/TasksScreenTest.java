@@ -363,7 +363,7 @@ public class TasksScreenTest {
     }
 
     @Test
-    public void markTaskAsAcompleteAndActiveOnDetailScreen_taskIsActiveInList() {
+    public void markTaskAsCompleteAndActiveOnDetailScreen_taskIsActiveInList() {
         viewAllTasks();
 
         // Add 1 active task

@@ -14,25 +14,29 @@
 
 package com.example.android.architecture.blueprints.todoapp.addedittask;
 
+import android.support.annotation.Nullable;
+
 import com.google.auto.value.AutoValue;
 
 /**
  * This specifies the contract between the presenter and the view.
  */
 @AutoValue
-public abstract class ViewModel {
+public abstract class AddEditTaskModel {
 
     public static Builder builder() {
-        return new AutoValue_ViewModel.Builder();
+        return new AutoValue_AddEditTaskModel.Builder();
     }
 
     public abstract boolean showEmptyTaskError();
 
     public abstract boolean showTasksList();
 
-    public abstract String title();
+    @Nullable
+    public abstract String showTitle();
 
-    public abstract String description();
+    @Nullable
+    public abstract String showDescription();
 
     public abstract Builder toBuilder();
 
@@ -42,11 +46,11 @@ public abstract class ViewModel {
 
         public abstract Builder showTasksList(boolean showTasksList);
 
-        public abstract Builder title(String title);
+        public abstract Builder showTitle(String title);
 
-        public abstract Builder description(String description);
+        public abstract Builder showDescription(String description);
 
-        public abstract ViewModel build();
+        public abstract AddEditTaskModel build();
     }
 
 }

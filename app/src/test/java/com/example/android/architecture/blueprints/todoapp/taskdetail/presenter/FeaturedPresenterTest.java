@@ -17,7 +17,7 @@ package com.example.android.architecture.blueprints.todoapp.taskdetail.presenter
 import com.example.android.architecture.blueprints.todoapp.data.Task;
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource;
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksRepository;
-import com.example.android.architecture.blueprints.todoapp.taskdetail.ViewModel;
+import com.example.android.architecture.blueprints.todoapp.taskdetail.TaskDetailModel;
 import com.pij.horrocks.DefaultEngine;
 import com.pij.horrocks.SysoutLogger;
 import com.pij.horrocks.View;
@@ -56,7 +56,7 @@ public class FeaturedPresenterTest {
     private TasksRepository mTasksRepository;
 
     @Mock
-    private View<ViewModel> mTaskDetailView;
+    private View<TaskDetailModel> mTaskDetailView;
 
     /**
      * {@link ArgumentCaptor} is a powerful Mockito API to capture argument values and use them to
@@ -65,7 +65,7 @@ public class FeaturedPresenterTest {
     @Captor
     private ArgumentCaptor<TasksDataSource.GetTaskCallback> mGetTaskCallbackCaptor;
     @Captor
-    private ArgumentCaptor<ViewModel> model;
+    private ArgumentCaptor<TaskDetailModel> model;
 
     private FeaturedPresenter presenter;
 
@@ -91,7 +91,7 @@ public class FeaturedPresenterTest {
         // Then progress indicator is hidden and title, description and completion status are shown
         // in UI
         verify(mTaskDetailView, times(3)).display(model.capture());
-        assertThat(model.getAllValues().stream().map(ViewModel::loadingIndicator).collect(toList()),
+        assertThat(model.getAllValues().stream().map(TaskDetailModel::loadingIndicator).collect(toList()),
                 contains(false, true, false));
         assertThat(model.getValue().title(), equalTo(TITLE_TEST));
         assertThat(model.getValue().description(), equalTo(DESCRIPTION_TEST));
@@ -112,7 +112,7 @@ public class FeaturedPresenterTest {
         // Then progress indicator is hidden and title, description and completion status are shown
         // in UI
         verify(mTaskDetailView, times(3)).display(model.capture());
-        assertThat(model.getAllValues().stream().map(ViewModel::loadingIndicator).collect(toList()),
+        assertThat(model.getAllValues().stream().map(TaskDetailModel::loadingIndicator).collect(toList()),
                 contains(false, true, false));
         assertThat(model.getValue().title(), equalTo(TITLE_TEST));
         assertThat(model.getValue().description(), equalTo(DESCRIPTION_TEST));
@@ -268,8 +268,8 @@ public class FeaturedPresenterTest {
         // Then the edit mode is never started
         // instead, the error is shown. once when we try to open the task then again when we edit
         verify(mTaskDetailView, times(3)).display(model.capture());
-        assertThat(model.getAllValues().stream().map(ViewModel::showEditTask).collect(toList()), contains((String) null, null, null));
-        assertThat(model.getAllValues().stream().map(ViewModel::showMissingTask).collect(toList()), contains(true, true, true));
+        assertThat(model.getAllValues().stream().map(TaskDetailModel::showEditTask).collect(toList()), contains((String) null, null, null));
+        assertThat(model.getAllValues().stream().map(TaskDetailModel::showMissingTask).collect(toList()), contains(true, true, true));
     }
 
 }

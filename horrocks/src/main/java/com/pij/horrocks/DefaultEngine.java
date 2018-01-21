@@ -15,8 +15,10 @@
 package com.pij.horrocks;
 
 import java.util.Collection;
+import java.util.concurrent.Callable;
 
 import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 
 /**
@@ -39,16 +41,37 @@ public final class DefaultEngine<S, M> implements Engine<S, M> {
         Collection<Feature<?, S>> features = configuration.features();
         Function<S, S> transientCleaner = configuration.transientResetter();
         Function<S, M> stateConverter = configuration.stateToModel();
+        Callable<S> initialValue = () -> transientCleaner.apply(store.load());
         return Observable.fromIterable(features)
-                .flatMap(Feature::result)
-                .doOnNext(this::logResult)
-                .scan(store.load(), (current, result) -> updateState(current, result, transientCleaner))
+                .flatMap(feature -> feature.result()
+                        .doOnTerminate(() -> logger.print(getClass(), "Feature " + feature.hashCode() + " Unexpected completion!!!"))
+                )
+                .scanWith(initialValue, (current, result) -> updateState(current, result, transientCleaner))
                 .doOnNext(this::logState)
                 .doOnNext(store::save)
                 .map(stateConverter)
                 .doOnNext(this::logModel)
-                .doOnError(e -> logger.print(getClass(), "Terminal failure!!!", e))
+                .doOnError(this::logTerminalFailure)
+                .doOnComplete(this::logUnexpectedCompletion)
+                .doOnDispose(this::logDispose)
+                .doOnSubscribe(this::logSubscribe)
                 ;
+    }
+
+    private void logSubscribe(@SuppressWarnings("unused") Disposable ignored) {
+        logger.print(getClass(), "Engine " + hashCode() + " Start of this run");
+    }
+
+    private void logDispose() {
+        logger.print(getClass(), "Engine " + hashCode() + " End of this run");
+    }
+
+    private void logUnexpectedCompletion() {
+        logger.print(getClass(), "Engine " + hashCode() + " Unexpected completion!!!");
+    }
+
+    private void logTerminalFailure(Throwable e) {
+        logger.print(getClass(), "Engine " + hashCode() + " Terminal failure!!! ", e);
     }
 
     private void logModel(M it) {
@@ -57,10 +80,6 @@ public final class DefaultEngine<S, M> implements Engine<S, M> {
 
     private void logState(S it) {
         logger.print(getClass(), "Calculating " + it);
-    }
-
-    private void logResult(Result it) {
-        logger.print(getClass(), "Received " + it);
     }
 
     private S updateState(S current, Result<S> result, Function<S, S> transientCleaner) throws Exception {

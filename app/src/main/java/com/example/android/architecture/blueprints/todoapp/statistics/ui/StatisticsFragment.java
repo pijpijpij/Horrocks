@@ -25,7 +25,7 @@ import android.widget.TextView;
 import com.example.android.architecture.blueprints.todoapp.R;
 import com.example.android.architecture.blueprints.todoapp.di.ActivityScoped;
 import com.example.android.architecture.blueprints.todoapp.statistics.Presenter;
-import com.example.android.architecture.blueprints.todoapp.statistics.ViewModel;
+import com.example.android.architecture.blueprints.todoapp.statistics.StatisticsModel;
 
 import javax.inject.Inject;
 
@@ -47,26 +47,20 @@ public class StatisticsFragment extends DaggerFragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.statistics_frag, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         mStatisticsTV = view.findViewById(R.id.statistics);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
         mPresenter.takeView(this::display);
     }
 
     @Override
-    public void onStop() {
+    public void onDestroyView() {
         mPresenter.dropView();
-        super.onStop();
+        super.onDestroyView();
     }
 
     private void setProgressIndicator(boolean active) {
@@ -92,10 +86,10 @@ public class StatisticsFragment extends DaggerFragment {
         mStatisticsTV.setText(getResources().getString(R.string.statistics_error));
     }
 
-    private void display(@NonNull ViewModel model) {
+    private void display(@NonNull StatisticsModel model) {
         setProgressIndicator(model.progressIndicator());
         if (model.showLoadingStatisticsError()) showLoadingStatisticsError();
-        ViewModel.Numbers numbers = model.showStatistics();
+        StatisticsModel.Numbers numbers = model.showStatistics();
         if (numbers != null) showStatistics(numbers.incompleteTasks(), numbers.completedTasks());
     }
 }

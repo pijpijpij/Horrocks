@@ -1,3 +1,17 @@
+/*
+ * Copyright 2018, Chiswick Forest
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and limitations under the License.
+ */
+
 package com.example.android.architecture.blueprints.todoapp.di;
 
 import android.app.Application;
@@ -26,13 +40,13 @@ abstract class ApplicationModule {
     static Logger provideLogger() {
         return new Logger() {
             @Override
-            public <T> void print(@NonNull Class<T> javaClass, @NonNull String message) {
+            public void print(@NonNull Class<?> javaClass, @NonNull String message) {
                 Log.d(javaClass.getSimpleName(), message);
             }
 
             @Override
-            public <T> void print(@NonNull Class<T> aClass, @NonNull String message, @NonNull Throwable e) {
-                Log.d(aClass.getSimpleName(), message, e);
+            public void print(@NonNull Class<?> javaClass, @NonNull String message, @NonNull Throwable e) {
+                Log.d(javaClass.getSimpleName(), message, e);
 
             }
         };

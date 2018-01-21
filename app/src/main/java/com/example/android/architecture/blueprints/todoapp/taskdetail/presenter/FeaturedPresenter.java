@@ -19,8 +19,8 @@ import android.support.annotation.Nullable;
 
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksRepository;
 import com.example.android.architecture.blueprints.todoapp.taskdetail.Presenter;
+import com.example.android.architecture.blueprints.todoapp.taskdetail.TaskDetailModel;
 import com.example.android.architecture.blueprints.todoapp.taskdetail.TaskDetailModule;
-import com.example.android.architecture.blueprints.todoapp.taskdetail.ViewModel;
 import com.example.android.architecture.blueprints.todoapp.taskdetail.ui.TaskDetailFragment;
 import com.google.common.base.Strings;
 import com.pij.horrocks.Configuration;
@@ -54,13 +54,13 @@ public final class FeaturedPresenter implements Presenter {
 
     private final Logger logger;
     private final CompositeDisposable subscription = new CompositeDisposable();
-    private final Engine<ViewModel, ViewModel> engine;
-    private final Configuration<ViewModel, ViewModel> engineConfiguration;
-    private final Feature<String, ViewModel> loadTask;
-    private final Feature<String, ViewModel> editTask;
-    private final Feature<String, ViewModel> deleteTask;
-    private final Feature<String, ViewModel> completeTask;
-    private final Feature<String, ViewModel> activateTask;
+    private final Engine<TaskDetailModel, TaskDetailModel> engine;
+    private final Configuration<TaskDetailModel, TaskDetailModel> engineConfiguration;
+    private final Feature<String, TaskDetailModel> loadTask;
+    private final Feature<String, TaskDetailModel> editTask;
+    private final Feature<String, TaskDetailModel> deleteTask;
+    private final Feature<String, TaskDetailModel> completeTask;
+    private final Feature<String, TaskDetailModel> activateTask;
     @NonNull
     private String mTaskId;
 
@@ -72,7 +72,7 @@ public final class FeaturedPresenter implements Presenter {
     public FeaturedPresenter(@Nullable String taskId,
                              TasksRepository tasksRepository,
                              Logger logger,
-                             Engine<ViewModel, ViewModel> engine) {
+                             Engine<TaskDetailModel, TaskDetailModel> engine) {
         this.logger = logger;
         mTaskId = Strings.nullToEmpty(taskId);
         loadTask = new MultipleResultFeature<>(new LoadTaskFeature(logger, tasksRepository));
@@ -81,7 +81,7 @@ public final class FeaturedPresenter implements Presenter {
         completeTask = new MultipleResultFeature<>(new CompleteTaskFeature(logger, tasksRepository));
         activateTask = new MultipleResultFeature<>(new ActivateTaskFeature(logger, tasksRepository));
         this.engine = engine;
-        engineConfiguration = Configuration.<ViewModel, ViewModel>builder()
+        engineConfiguration = Configuration.<TaskDetailModel, TaskDetailModel>builder()
                 .store(new MemoryStore<>(initialState()))
                 .transientResetter(this::resetTransientState)
                 .stateToModel(state -> state)
@@ -90,7 +90,7 @@ public final class FeaturedPresenter implements Presenter {
     }
 
     @NonNull
-    private ViewModel resetTransientState(@NonNull ViewModel state) {
+    private TaskDetailModel resetTransientState(@NonNull TaskDetailModel state) {
         return state.toBuilder()
                 .showTaskMarkedComplete(false)
                 .showTaskMarkedActive(false)
@@ -100,8 +100,8 @@ public final class FeaturedPresenter implements Presenter {
     }
 
     @NonNull
-    private ViewModel initialState() {
-        return ViewModel.builder()
+    private TaskDetailModel initialState() {
+        return TaskDetailModel.builder()
                 .close(false)
                 .showEditTask(null)
                 .showTaskMarkedActive(false)
@@ -136,7 +136,7 @@ public final class FeaturedPresenter implements Presenter {
     }
 
     @Override
-    public void takeView(View<ViewModel> taskDetailView) {
+    public void takeView(View<TaskDetailModel> taskDetailView) {
         subscription.add(
                 engine.runWith(engineConfiguration).subscribe(
                         taskDetailView::display,

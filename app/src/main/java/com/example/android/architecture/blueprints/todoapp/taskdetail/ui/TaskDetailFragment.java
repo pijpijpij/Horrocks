@@ -34,7 +34,7 @@ import com.example.android.architecture.blueprints.todoapp.addedittask.AddEditTa
 import com.example.android.architecture.blueprints.todoapp.addedittask.AddEditTaskFragment;
 import com.example.android.architecture.blueprints.todoapp.di.ActivityScoped;
 import com.example.android.architecture.blueprints.todoapp.taskdetail.Presenter;
-import com.example.android.architecture.blueprints.todoapp.taskdetail.ViewModel;
+import com.example.android.architecture.blueprints.todoapp.taskdetail.TaskDetailModel;
 import com.google.common.base.Strings;
 
 import javax.inject.Inject;
@@ -190,7 +190,7 @@ public class TaskDetailFragment extends DaggerFragment {
         description.setText(getString(R.string.no_data));
     }
 
-    private void display(@NonNull ViewModel model) {
+    private void display(@NonNull TaskDetailModel model) {
         if (model.showMissingTask()) showMissingTask();
         if (model.close()) close();
         setLoadingIndicator(model.loadingIndicator());

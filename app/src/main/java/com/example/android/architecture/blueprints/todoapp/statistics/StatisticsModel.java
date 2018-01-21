@@ -23,10 +23,10 @@ import com.google.auto.value.AutoValue;
  */
 
 @AutoValue
-public abstract class ViewModel {
+public abstract class StatisticsModel {
 
     public static Builder builder() {
-        return new AutoValue_ViewModel.Builder();
+        return new AutoValue_StatisticsModel.Builder();
     }
 
     public abstract boolean progressIndicator();
@@ -47,7 +47,7 @@ public abstract class ViewModel {
 
         public abstract Builder showStatistics(Numbers showStatistics);
 
-        public abstract ViewModel build();
+        public abstract StatisticsModel build();
     }
 
     @AutoValue
@@ -61,7 +61,7 @@ public abstract class ViewModel {
         }
 
         public static Builder builder() {
-            return new AutoValue_ViewModel_Numbers.Builder();
+            return new AutoValue_StatisticsModel_Numbers.Builder();
         }
 
         public abstract int incompleteTasks();

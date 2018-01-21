@@ -14,7 +14,7 @@
 
 package com.example.android.architecture.blueprints.todoapp.taskdetail.presenter;
 
-import com.example.android.architecture.blueprints.todoapp.taskdetail.ViewModel;
+import com.example.android.architecture.blueprints.todoapp.taskdetail.TaskDetailModel;
 
 /**
  * <p>Created on 02/01/2018.</p>
@@ -23,8 +23,8 @@ import com.example.android.architecture.blueprints.todoapp.taskdetail.ViewModel;
  */
 public abstract class TaskDetailModelTextUtil {
 
-    public static ViewModel defaultState() {
-        return ViewModel.builder()
+    public static TaskDetailModel defaultState() {
+        return TaskDetailModel.builder()
                 .loadingIndicator(false)
                 .close(false)
                 .completed(false)

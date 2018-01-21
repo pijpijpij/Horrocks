@@ -1,3 +1,17 @@
+/*
+ * Copyright 2018, Chiswick Forest
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and limitations under the License.
+ */
+
 package com.example.android.architecture.blueprints.todoapp.statistics.presenter;
 
 import android.support.annotation.NonNull;
@@ -5,7 +19,7 @@ import android.support.annotation.NonNull;
 import com.example.android.architecture.blueprints.todoapp.data.Task;
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource;
 import com.example.android.architecture.blueprints.todoapp.data.source.Util;
-import com.example.android.architecture.blueprints.todoapp.statistics.ViewModel;
+import com.example.android.architecture.blueprints.todoapp.statistics.StatisticsModel;
 import com.pij.horrocks.Logger;
 import com.pij.horrocks.Result;
 
@@ -18,7 +32,7 @@ import io.reactivex.functions.Function;
  *
  * @author PierreJean
  */
-class LoadStatisticsFeature implements Function<Object, Observable<Result<ViewModel>>> {
+class LoadStatisticsFeature implements Function<Object, Observable<Result<StatisticsModel>>> {
 
     private final Logger logger;
     private final TasksDataSource dataSource;
@@ -29,14 +43,14 @@ class LoadStatisticsFeature implements Function<Object, Observable<Result<ViewMo
     }
 
     @NonNull
-    private static ViewModel updateStartState(ViewModel current) {
+    private static StatisticsModel updateStartState(StatisticsModel current) {
         return current.toBuilder()
                 .progressIndicator(true)
                 .build();
     }
 
     @NonNull
-    private static ViewModel updateSuccessState(ViewModel current, ViewModel.Numbers statistics) {
+    private static StatisticsModel updateSuccessState(StatisticsModel current, StatisticsModel.Numbers statistics) {
         return current.toBuilder()
                 .progressIndicator(false)
                 .showStatistics(statistics)
@@ -44,7 +58,7 @@ class LoadStatisticsFeature implements Function<Object, Observable<Result<ViewMo
     }
 
     @NonNull
-    private static ViewModel updateFailureState(ViewModel current, Throwable error) {
+    private static StatisticsModel updateFailureState(StatisticsModel current, Throwable error) {
         return current.toBuilder()
                 .showLoadingStatisticsError(true)
                 .progressIndicator(false)
@@ -52,17 +66,17 @@ class LoadStatisticsFeature implements Function<Object, Observable<Result<ViewMo
     }
 
     @Override
-    public Observable<Result<ViewModel>> apply(Object event) {
+    public Observable<Result<StatisticsModel>> apply(Object event) {
         return Util.loadTasksAsSingle(dataSource)
-                .doOnError(e -> logger.print(getClass(), "Could no load data", e))
+                .doOnError(e -> logger.print(getClass(), "Could not load data", e))
                 .flatMapObservable(Observable::fromIterable)
                 .publish(task -> Single.zip(
                         task.filter(Task::isActive).count().map(Long::intValue),
                         task.filter(Task::isCompleted).count().map(Long::intValue),
-                        ViewModel.Numbers::create
+                        StatisticsModel.Numbers::create
                 ).toObservable())
-                .first(ViewModel.Numbers.create(0, 0))
-                .map(numbers -> (Result<ViewModel>) current -> updateSuccessState(current, numbers))
+                .first(StatisticsModel.Numbers.create(0, 0))
+                .map(numbers -> (Result<StatisticsModel>) current -> updateSuccessState(current, numbers))
                 .onErrorReturn(e -> current -> updateFailureState(current, e))
                 .toObservable()
                 .startWith(LoadStatisticsFeature::updateStartState);

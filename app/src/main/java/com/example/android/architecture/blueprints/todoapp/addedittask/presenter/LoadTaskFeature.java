@@ -16,7 +16,7 @@ package com.example.android.architecture.blueprints.todoapp.addedittask.presente
 
 import android.support.annotation.NonNull;
 
-import com.example.android.architecture.blueprints.todoapp.addedittask.ViewModel;
+import com.example.android.architecture.blueprints.todoapp.addedittask.AddEditTaskModel;
 import com.example.android.architecture.blueprints.todoapp.data.Task;
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource;
 import com.example.android.architecture.blueprints.todoapp.data.source.Util;
@@ -32,7 +32,7 @@ import io.reactivex.functions.Function;
  *
  * @author PierreJean
  */
-class LoadTaskFeature implements Function<String, Observable<Result<ViewModel>>> {
+class LoadTaskFeature implements Function<String, Observable<Result<AddEditTaskModel>>> {
 
     private final Logger logger;
     private final TasksDataSource dataSource;
@@ -43,31 +43,32 @@ class LoadTaskFeature implements Function<String, Observable<Result<ViewModel>>>
     }
 
     @NonNull
-    private static ViewModel updateInvalidState(ViewModel current) {
+    private static AddEditTaskModel updateNewTaskState(AddEditTaskModel current) {
         return current.toBuilder()
-                .showEmptyTaskError(true)
+                .showTitle("")
+                .showDescription("")
 //                .loadingIndicator(false)
                 .build();
     }
 
     @NonNull
-    private static ViewModel updateStartState(ViewModel current) {
+    private static AddEditTaskModel updateStartState(AddEditTaskModel current) {
         return current.toBuilder()
 //                .loadingIndicator(true)
                 .build();
     }
 
     @NonNull
-    private static ViewModel updateSuccessState(ViewModel current, Task response) {
+    private static AddEditTaskModel updateSuccessState(AddEditTaskModel current, Task response) {
         return current.toBuilder()
-                .title(response.getTitle())
-                .description(response.getDescription())
+                .showTitle(response.getTitle())
+                .showDescription(response.getDescription())
 //                .loadingIndicator(false)
                 .build();
     }
 
     @NonNull
-    private static ViewModel updateFailureState(ViewModel current) {
+    private static AddEditTaskModel updateFailureState(AddEditTaskModel current) {
         return current.toBuilder()
                 .showEmptyTaskError(true)
 //                .loadingIndicator(false)
@@ -75,14 +76,14 @@ class LoadTaskFeature implements Function<String, Observable<Result<ViewModel>>>
     }
 
     @Override
-    public Observable<Result<ViewModel>> apply(String taskId) {
+    public Observable<Result<AddEditTaskModel>> apply(String taskId) {
         return Observable.just(taskId)
                 .filter(Strings::isNullOrEmpty)
-                .map(id -> (Result<ViewModel>) LoadTaskFeature::updateInvalidState)
+                .map(id -> (Result<AddEditTaskModel>) LoadTaskFeature::updateNewTaskState)
                 .switchIfEmpty(
                         Util.loadTaskAsSingle(taskId, dataSource)
-                                .doOnError(e -> logger.print(getClass(), "Could no load data", e))
-                                .map(task -> (Result<ViewModel>) current -> updateSuccessState(current, task))
+                                .doOnError(e -> logger.print(getClass(), "Could not load data", e))
+                                .map(task -> (Result<AddEditTaskModel>) current -> updateSuccessState(current, task))
                                 .onErrorReturnItem(LoadTaskFeature::updateFailureState)
                                 .toObservable()
                                 .startWith(LoadTaskFeature::updateStartState)

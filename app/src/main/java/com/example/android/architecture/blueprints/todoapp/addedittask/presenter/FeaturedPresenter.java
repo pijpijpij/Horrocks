@@ -18,9 +18,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.example.android.architecture.blueprints.todoapp.addedittask.AddEditTaskFragment;
+import com.example.android.architecture.blueprints.todoapp.addedittask.AddEditTaskModel;
 import com.example.android.architecture.blueprints.todoapp.addedittask.AddEditTaskModule;
 import com.example.android.architecture.blueprints.todoapp.addedittask.Presenter;
-import com.example.android.architecture.blueprints.todoapp.addedittask.ViewModel;
 import com.example.android.architecture.blueprints.todoapp.data.Task;
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource;
 import com.google.common.base.Strings;
@@ -56,10 +56,10 @@ public final class FeaturedPresenter implements Presenter {
 
     private final Logger logger;
     private final CompositeDisposable subscription = new CompositeDisposable();
-    private final Engine<ViewModel, ViewModel> engine;
-    private final Configuration<ViewModel, ViewModel> engineConfiguration;
-    private final Feature<Task, ViewModel> saveTask;
-    private final Feature<String, ViewModel> loadTask;
+    private final Engine<AddEditTaskModel, AddEditTaskModel> engine;
+    private final Configuration<AddEditTaskModel, AddEditTaskModel> engineConfiguration;
+    private final Feature<Task, AddEditTaskModel> saveTask;
+    private final Feature<String, AddEditTaskModel> loadTask;
 
     private String taskId;
 
@@ -84,7 +84,7 @@ public final class FeaturedPresenter implements Presenter {
     public FeaturedPresenter(@Nullable String taskId,
                              TasksDataSource tasksRepository,
                              Logger logger,
-                             Engine<ViewModel, ViewModel> engine,
+                             Engine<AddEditTaskModel, AddEditTaskModel> engine,
                              Lazy<Boolean> shouldLoadDataFromRepo) {
         this.logger = logger;
         this.taskId = Strings.nullToEmpty(taskId);
@@ -92,7 +92,7 @@ public final class FeaturedPresenter implements Presenter {
         saveTask = new MultipleResultFeature<>(new SaveTaskFeature(logger, tasksRepository));
         loadTask = new MultipleResultFeature<>(new LoadTaskFeature(logger, tasksRepository));
         this.engine = engine;
-        engineConfiguration = Configuration.<ViewModel, ViewModel>builder()
+        engineConfiguration = Configuration.<AddEditTaskModel, AddEditTaskModel>builder()
                 .store(new MemoryStore<>(initialState()))
                 .transientResetter(this::resetTransientState)
                 .stateToModel(state -> state)
@@ -101,20 +101,22 @@ public final class FeaturedPresenter implements Presenter {
     }
 
     @NonNull
-    private ViewModel resetTransientState(@NonNull ViewModel state) {
+    private AddEditTaskModel resetTransientState(@NonNull AddEditTaskModel state) {
         return state.toBuilder()
                 .showEmptyTaskError(false)
                 .showTasksList(false)
+                .showTitle(null)
+                .showDescription(null)
                 .build();
     }
 
     @NonNull
-    private ViewModel initialState() {
-        return ViewModel.builder()
+    private AddEditTaskModel initialState() {
+        return AddEditTaskModel.builder()
                 .showEmptyTaskError(false)
                 .showTasksList(false)
-                .description("")
-                .title("")
+                .showDescription("")
+                .showTitle("")
                 .build();
     }
 
@@ -131,7 +133,7 @@ public final class FeaturedPresenter implements Presenter {
     }
 
     @Override
-    public void takeView(View<ViewModel> view) {
+    public void takeView(View<AddEditTaskModel> view) {
         subscription.add(
                 engine.runWith(engineConfiguration).subscribe(
                         view::display,

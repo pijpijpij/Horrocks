@@ -103,9 +103,9 @@ public class AddEditTaskFragment extends DaggerFragment {
         return isAdded();
     }
 
-    private void display(@NonNull ViewModel model) {
-        title.setText(model.title());
-        description.setText(model.description());
+    private void display(@NonNull AddEditTaskModel model) {
+        if (model.showTitle() != null) title.setText(model.showTitle());
+        if (model.showDescription() != null) description.setText(model.showDescription());
         if (model.showEmptyTaskError()) showEmptyTaskError();
         if (model.showTasksList()) showTasksList();
     }
