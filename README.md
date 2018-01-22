@@ -44,16 +44,16 @@ It's probably the closest to a `Store` in Redux.
 Add the JitPack repository to your build file:
 ```groovy
 allprojects {
-		repositories {
-			//...
-			maven { url 'https://jitpack.io' }
-		}
-	}
+  repositories {
+    //...
+    maven { url 'https://jitpack.io' }
+  }
+}
 ```
 Add the dependency
 ```groovy
 dependencies {
-  compile 'com.github.pijpijpij.horrocks:horrocks:master-SNAPSHOT'
+  compile 'com.github.pijpijpij.horrocks:horrocks:0.1.0-SNAPSHOT'
 }
 ```
 
