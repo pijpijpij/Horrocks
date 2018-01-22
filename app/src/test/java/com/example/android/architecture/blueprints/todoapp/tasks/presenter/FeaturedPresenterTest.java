@@ -95,7 +95,7 @@ public class FeaturedPresenterTest {
 
         // Callback is captured and invoked with stubbed tasks twice
         //First time is when the fragment is bound to the view and a second time when we force another load
-        verify(mTasksRepository, times(2)).getTasks(mLoadTasksCallbackCaptor.capture());
+        verify(mTasksRepository).getTasks(mLoadTasksCallbackCaptor.capture());
         mLoadTasksCallbackCaptor.getValue().onTasksLoaded(TASKS);
 
         verify(viewMock, times(2)).display(model.capture());
@@ -113,7 +113,7 @@ public class FeaturedPresenterTest {
         mTasksPresenter.refreshTasks(FilterType.ACTIVE_TASKS);
 
         // Callback is captured and invoked with stubbed tasks
-        verify(mTasksRepository, times(2)).getTasks(mLoadTasksCallbackCaptor.capture());
+        verify(mTasksRepository).getTasks(mLoadTasksCallbackCaptor.capture());
         mLoadTasksCallbackCaptor.getValue().onTasksLoaded(TASKS);
 
         // Then progress indicator is hidden and active tasks are shown in UI
@@ -130,7 +130,7 @@ public class FeaturedPresenterTest {
         mTasksPresenter.refreshTasks(FilterType.COMPLETED_TASKS);
 
         // Callback is captured and invoked with stubbed tasks
-        verify(mTasksRepository, times(2)).getTasks(mLoadTasksCallbackCaptor.capture());
+        verify(mTasksRepository).getTasks(mLoadTasksCallbackCaptor.capture());
         mLoadTasksCallbackCaptor.getValue().onTasksLoaded(TASKS);
 
         // Then progress indicator is hidden and completed tasks are shown in UI
@@ -186,7 +186,7 @@ public class FeaturedPresenterTest {
 
         // When task is marked as activated
         mTasksPresenter.activateTask(task);
-        verify(mTasksRepository, times(2)).getTasks(mLoadTasksCallbackCaptor.capture());
+        verify(mTasksRepository).getTasks(mLoadTasksCallbackCaptor.capture());
         mLoadTasksCallbackCaptor.getValue().onTasksLoaded(TASKS);
 
         // Then repository is called and task marked active UI is shown
@@ -202,7 +202,7 @@ public class FeaturedPresenterTest {
         mTasksPresenter.refreshTasks(FilterType.ALL_TASKS);
 
         // And the tasks aren't available in the repository
-        verify(mTasksRepository, times(2)).getTasks(mLoadTasksCallbackCaptor.capture());
+        verify(mTasksRepository).getTasks(mLoadTasksCallbackCaptor.capture());
         mLoadTasksCallbackCaptor.getValue().onDataNotAvailable();
 
         // Then an error message is shown

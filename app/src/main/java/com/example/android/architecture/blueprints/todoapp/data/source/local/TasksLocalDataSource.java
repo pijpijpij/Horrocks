@@ -41,7 +41,8 @@ public class TasksLocalDataSource implements TasksDataSource {
     private final AppExecutors mAppExecutors;
 
     @Inject
-    TasksLocalDataSource(@NonNull AppExecutors executors, @NonNull TasksDao tasksDao) {
+    @SuppressWarnings("WeakerAccess")
+    public TasksLocalDataSource(@NonNull AppExecutors executors, @NonNull TasksDao tasksDao) {
         mTasksDao = tasksDao;
         mAppExecutors = executors;
     }
