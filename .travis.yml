@@ -5,6 +5,7 @@ android:
     # The following 2 are needed to update the version of the SDK Travis provides.
     - tools
     - platform-tools
+    - tools
     #- build-tools-26.0.2
     - android-22
     #- extra-google-m2repository
