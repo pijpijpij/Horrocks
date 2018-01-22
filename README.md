@@ -53,7 +53,7 @@ allprojects {
 Add the dependency
 ```groovy
 dependencies {
-  compile 'com.github.pijpijpij.horrocks:horrocks:0.1.0-SNAPSHOT'
+  compile 'com.github.pijpijpij.horrocks:horrocks:0.1.1-SNAPSHOT'
 }
 ```
 
