@@ -107,7 +107,3 @@ ext {
     dexmakerVersion = '1.2'
 }
 
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
-}
