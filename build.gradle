@@ -10,7 +10,7 @@ buildscript {
         }
     }
 
-    ext.kotlin_version = '1.2.20'
+    ext.kotlin_version = '1.2.21'
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
@@ -85,7 +85,7 @@ ext {
     // Support library and architecture components support minSdk 14 and above.
     minSdkVersion = 14
     targetSdkVersion = 26
-    compileSdkVersion = 26
+    compileSdkVersion = 27
 
     // App dependencies
     supportLibraryVersion = '27.0.2'
