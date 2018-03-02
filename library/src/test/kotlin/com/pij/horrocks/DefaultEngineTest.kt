@@ -117,6 +117,47 @@ class DefaultEngineTest {
     }
 
     @Test
+    fun `Fails when a feature fails to construct a Result`() {
+        val featureCannotConstructResult: Feature<Any, DummyState> = object : Feature<Any, DummyState> {
+            private val events: Subject<Any> = PublishSubject.create()
+            override fun trigger(input: Any) = events.onNext(input)
+            override fun result(): Observable<out Result<DummyState>> = events.map { throw IllegalStateException("zap") }
+        }
+        val configuration = Configuration.builder<DummyState, DummyState>()
+                .store(MemoryStore(DummyState(false, 23)))
+                .stateToModel { it }
+                .features(setOf(featureCannotConstructResult))
+                .build()
+        val observer = sut.runWith(configuration).test()
+
+        featureCannotConstructResult.trigger(1)
+
+        observer.assertErrorMessage("zap")
+    }
+
+    @Test
+    fun `Fails when a feature's result throws`() {
+        val failingResultFeature: Feature<Any, DummyState> = object : Feature<Any, DummyState> {
+            private val events: Subject<Any> = PublishSubject.create()
+            override fun trigger(input: Any) = events.onNext(input)
+            override fun result(): Observable<out Result<DummyState>> = events.map { _ ->
+                Result<DummyState> { throw IllegalStateException("zip") }
+            }
+
+        }
+        val configuration = Configuration.builder<DummyState, DummyState>()
+                .store(MemoryStore(DummyState(false, 23)))
+                .stateToModel { it }
+                .features(setOf(failingResultFeature))
+                .build()
+        val observer = sut.runWith(configuration).test()
+
+        failingResultFeature.trigger(1)
+
+        observer.assertErrorMessage("zip")
+    }
+
+    @Test
     fun `Transient property in initial State is not emitted`() {
 
         val configuration = Configuration.builder<DummyState, DummyState>()
@@ -132,9 +173,9 @@ class DefaultEngineTest {
 
     @Test
     fun `Engine resets transient property set in 1st result when emitting 2nd result`() {
-        val aFeature: Feature<Int, DummyState> = object : Feature<Int, DummyState> {
-            private val events: Subject<Int> = PublishSubject.create()
-            override fun trigger(input: Int) = events.onNext(input)
+        val aFeature: Feature<Any, DummyState> = object : Feature<Any, DummyState> {
+            private val events: Subject<Any> = PublishSubject.create()
+            override fun trigger(input: Any) = events.onNext(input)
             override fun result(): Observable<out Result<DummyState>> = events.flatMap { _ ->
                 Observable.just(
                         Result<DummyState> { it.copy(transient = true) },
