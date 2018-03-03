@@ -12,29 +12,20 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.example.android.architecture.blueprints.todoapp.taskdetail.presenter;
+package com.example.android.architecture.blueprints.todoapp.tasks.presenter;
 
+import com.example.android.architecture.blueprints.todoapp.data.Task;
 import com.pij.horrocks.Reducer;
-import com.pij.horrocks.ResultReducer;
-
-import io.reactivex.functions.Function;
 
 /**
- * <p>Created on 01/01/2018.</p>
+ * <p>Created on 04/01/2018.</p>
  *
  * @author PierreJean
  */
-class SingleFeature<E, S> implements Function<E, ResultReducer<S>> {
-
-    private final Reducer<E, S> reducer;
-
-    public SingleFeature(Reducer<E, S> reducer) {
-        this.reducer = reducer;
-    }
+class OpenTaskDetailsReducer implements Reducer<Task, ViewState> {
 
     @Override
-    public final ResultReducer<S> apply(E event) {
-        return current -> reducer.reduce(event, current);
+    public ViewState reduce(Task event, ViewState state) {
+        return state.toBuilder().showTaskDetails(event.getId()).build();
     }
-
 }

@@ -14,19 +14,17 @@
 
 package com.example.android.architecture.blueprints.todoapp.tasks.presenter;
 
-import com.pij.horrocks.ResultReducer;
-
-import io.reactivex.functions.Function;
+import com.pij.horrocks.Reducer;
 
 /**
  * <p>Created on 05/01/2018.</p>
  *
  * @author PierreJean
  */
-class IndicateTaskSavedFeature implements Function<Object, ResultReducer<ViewState>> {
+class IndicateTaskSavedReducer implements Reducer<Object, ViewState> {
 
     @Override
-    public ResultReducer<ViewState> apply(Object event) throws Exception {
-        return current -> current.toBuilder().showSuccessfullySavedMessage(true).build();
+    public ViewState reduce(Object event, ViewState state) {
+        return state.toBuilder().showSuccessfullySavedMessage(true).build();
     }
 }

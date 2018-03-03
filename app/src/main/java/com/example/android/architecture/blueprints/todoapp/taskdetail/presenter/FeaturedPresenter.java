@@ -29,7 +29,7 @@ import com.pij.horrocks.Feature;
 import com.pij.horrocks.Logger;
 import com.pij.horrocks.MemoryStore;
 import com.pij.horrocks.MultipleResultFeature;
-import com.pij.horrocks.SingleResultFeature;
+import com.pij.horrocks.SimpleReducerFeature;
 import com.pij.horrocks.View;
 
 import javax.inject.Inject;
@@ -76,7 +76,7 @@ public final class FeaturedPresenter implements Presenter {
         this.logger = logger;
         mTaskId = Strings.nullToEmpty(taskId);
         loadTask = new MultipleResultFeature<>(new LoadTaskFeature(logger, tasksRepository));
-        editTask = new SingleResultFeature<>(EditTaskFeature.create());
+        editTask = new SimpleReducerFeature<>(new EditTaskReducer());
         deleteTask = new MultipleResultFeature<>(new DeleteTaskFeature(logger, tasksRepository));
         completeTask = new MultipleResultFeature<>(new CompleteTaskFeature(logger, tasksRepository));
         activateTask = new MultipleResultFeature<>(new ActivateTaskFeature(logger, tasksRepository));

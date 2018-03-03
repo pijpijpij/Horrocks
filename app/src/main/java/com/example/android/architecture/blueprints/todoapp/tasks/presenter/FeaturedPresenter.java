@@ -30,7 +30,7 @@ import com.pij.horrocks.Feature;
 import com.pij.horrocks.Logger;
 import com.pij.horrocks.MemoryStore;
 import com.pij.horrocks.MultipleResultFeature;
-import com.pij.horrocks.SingleResultFeature;
+import com.pij.horrocks.SimpleReducerFeature;
 import com.pij.horrocks.View;
 
 import io.reactivex.disposables.CompositeDisposable;
@@ -73,9 +73,9 @@ public final class FeaturedPresenter implements Presenter {
     public FeaturedPresenter(TasksDataSource tasksRepository, Logger logger, Engine<ViewState, TasksModel> engine) {
         this.logger = logger;
 
-        indicateTaskSaved = new SingleResultFeature<>(new IndicateTaskSavedFeature(), logger);
-        showAddTask = new SingleResultFeature<>(new ShowAddTaskFeature(), logger);
-        openTaskDetails = new SingleResultFeature<>(new OpenTaskDetailsFeature(), logger);
+        indicateTaskSaved = new SimpleReducerFeature<>(new IndicateTaskSavedReducer(), logger);
+        showAddTask = new SimpleReducerFeature<>(new ShowAddTaskReducer(), logger);
+        openTaskDetails = new SimpleReducerFeature<>(new OpenTaskDetailsReducer(), logger);
         clearCompletedTasks = new MultipleResultFeature<>(new ClearCompletedTasksFeature(logger, tasksRepository), logger);
         activateTask = new MultipleResultFeature<>(new ActivateTaskFeature(logger, tasksRepository), logger);
         completeTask = new MultipleResultFeature<>(new CompleteTaskFeature(logger, tasksRepository), logger);

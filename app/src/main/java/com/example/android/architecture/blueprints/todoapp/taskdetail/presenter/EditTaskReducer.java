@@ -24,6 +24,7 @@ import com.pij.horrocks.Reducer;
  * @author Pierrejean
  */
 class EditTaskReducer implements Reducer<String, TaskDetailModel> {
+
     @Override
     public TaskDetailModel reduce(String taskId, TaskDetailModel state) {
         String actualId = Strings.isNullOrEmpty(taskId) ? null : taskId;

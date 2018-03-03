@@ -15,19 +15,28 @@
 package com.example.android.architecture.blueprints.todoapp.tasks.presenter;
 
 import com.example.android.architecture.blueprints.todoapp.data.Task;
-import com.pij.horrocks.ResultReducer;
 
-import io.reactivex.functions.Function;
+import org.junit.Test;
+
+import static com.example.android.architecture.blueprints.todoapp.tasks.presenter.TasksStateTextUtil.defaultState;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
 
 /**
- * <p>Created on 04/01/2018.</p>
+ * <p>Created on 02/01/2018.</p>
  *
  * @author PierreJean
  */
-class OpenTaskDetailsFeature implements Function<Task, ResultReducer<ViewState>> {
+public class OpenTaskDetailsReducerTest {
 
-    @Override
-    public ResultReducer<ViewState> apply(Task event) throws Exception {
-        return current -> current.toBuilder().showTaskDetails(event.getId()).build();
+    @Test
+    public void emitsShowTaskDetailsWithId_whenTriggered() throws Exception {
+        OpenTaskDetailsReducer sut = new OpenTaskDetailsReducer();
+        Task aTask = new Task("zip", "zap", "the id");
+
+        ViewState newState = sut.reduce(aTask, defaultState());
+
+        assertThat(newState.showTaskDetails(), equalTo("the id"));
     }
+
 }

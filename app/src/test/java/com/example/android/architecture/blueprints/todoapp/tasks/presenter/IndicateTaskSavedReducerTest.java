@@ -14,19 +14,26 @@
 
 package com.example.android.architecture.blueprints.todoapp.tasks.presenter;
 
-import com.pij.horrocks.ResultReducer;
+import org.junit.Test;
 
-import io.reactivex.functions.Function;
+import static com.example.android.architecture.blueprints.todoapp.tasks.presenter.TasksStateTextUtil.defaultState;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
 
 /**
- * <p>Created on 05/01/2018.</p>
+ * <p>Created on 02/01/2018.</p>
  *
  * @author PierreJean
  */
-class ShowAddTaskFeature implements Function<Object, ResultReducer<ViewState>> {
+public class IndicateTaskSavedReducerTest {
 
-    @Override
-    public ResultReducer<ViewState> apply(Object event) throws Exception {
-        return current -> current.toBuilder().showAddTask(true).build();
+    @Test
+    public void emitsShowSuccessfullySavedMessage_whenTriggered() throws Exception {
+        IndicateTaskSavedReducer sut = new IndicateTaskSavedReducer();
+
+        ViewState newState = sut.reduce(new Object(), defaultState());
+
+        assertThat(newState.showSuccessfullySavedMessage(), equalTo(true));
     }
+
 }

@@ -12,26 +12,19 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.example.android.architecture.blueprints.todoapp.taskdetail.presenter;
+package com.example.android.architecture.blueprints.todoapp.tasks.presenter;
 
-import com.example.android.architecture.blueprints.todoapp.taskdetail.TaskDetailModel;
 import com.pij.horrocks.Reducer;
 
 /**
- * <p>Created on 01/01/2018.</p>
+ * <p>Created on 05/01/2018.</p>
  *
  * @author PierreJean
  */
-class EditTaskFeature extends SingleFeature<String, TaskDetailModel> {
+class ShowAddTaskReducer implements Reducer<Object, ViewState> {
 
-    EditTaskFeature(Reducer<String, TaskDetailModel> reducer) {
-        super(reducer);
+    @Override
+    public ViewState reduce(Object event, ViewState state) {
+        return state.toBuilder().showAddTask(true).build();
     }
-
-    static EditTaskFeature create() {
-        return new EditTaskFeature(
-                new EditTaskReducer()
-        );
-    }
-
 }

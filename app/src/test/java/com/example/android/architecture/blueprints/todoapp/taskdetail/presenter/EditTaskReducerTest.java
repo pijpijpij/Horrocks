@@ -27,31 +27,31 @@ import static org.hamcrest.core.IsEqual.equalTo;
  *
  * @author PierreJean
  */
-public class EditTaskFeatureTest {
+public class EditTaskReducerTest {
 
     @Test
     public void emitsEditTask_whenTriggeredWithValidId() throws Exception {
-        EditTaskFeature sut = EditTaskFeature.create();
+        EditTaskReducer sut = new EditTaskReducer();
 
-        TaskDetailModel newState = sut.apply("1").applyTo(defaultState());
+        TaskDetailModel newState = sut.reduce("1", defaultState());
 
         assertThat(newState.showEditTask(), equalTo("1"));
     }
 
     @Test
     public void doesNotEmitsEditTask_whenTriggeredWithNullId() throws Exception {
-        EditTaskFeature sut = EditTaskFeature.create();
+        EditTaskReducer sut = new EditTaskReducer();
 
-        TaskDetailModel newState = sut.apply(null).applyTo(defaultState());
+        TaskDetailModel newState = sut.reduce(null, defaultState());
 
         assertThat(newState.showEditTask(), equalTo(null));
     }
 
     @Test
     public void doesNotEmitsEditTask_whenTriggeredWithEmptyId() throws Exception {
-        EditTaskFeature sut = EditTaskFeature.create();
+        EditTaskReducer sut = new EditTaskReducer();
 
-        TaskDetailModel newState = sut.apply("").applyTo(defaultState());
+        TaskDetailModel newState = sut.reduce("", defaultState());
 
         assertThat(newState.showEditTask(), equalTo(null));
     }

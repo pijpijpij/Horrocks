@@ -7,14 +7,13 @@
  *
  *       http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, 
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
 package com.pij.horrocks
 
-import io.reactivex.functions.Function
 import io.reactivex.observers.TestObserver
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
@@ -29,11 +28,11 @@ import org.mockito.Mockito
  *
  * @author PierreJean
  */
-class SingleResultFeatureTest {
+class SimpleReducerFeatureTest {
 
     @Test
     fun `result() emits no Result if there's no event`() {
-        val sut = SingleResultFeature<String, Int>(Function { ResultReducer { 0 } }, SysoutLogger())
+        val sut = SimpleReducerFeature<String, Int>({ _, _ -> 0 }, SysoutLogger())
         val observer = sut.results().test()
 
         observer.assertNoValues()
@@ -42,7 +41,7 @@ class SingleResultFeatureTest {
 
     @Test
     fun `result() emits 1 Result if 1 event is triggered`() {
-        val sut = SingleResultFeature<String, Int>(Function { ResultReducer { 0 } }, SysoutLogger())
+        val sut = SimpleReducerFeature<String, Int>({ _, _ -> 0 }, SysoutLogger())
         val observer = sut.results().test()
 
         sut.trigger("some event")
@@ -53,7 +52,7 @@ class SingleResultFeatureTest {
 
     @Test
     fun `result() emits 2 Results if 2 events are triggered`() {
-        val sut = SingleResultFeature<String, Int>(Function { ResultReducer { 0 } }, SysoutLogger())
+        val sut = SimpleReducerFeature<String, Int>({ _, _ -> 0 }, SysoutLogger())
         val observer = sut.results().test()
 
         sut.trigger("some event")
@@ -65,7 +64,7 @@ class SingleResultFeatureTest {
 
     @Test
     fun `result() provides the function passed at construction`() {
-        val sut = SingleResultFeature<String, Int>(Function { ResultReducer { state -> state + it.length } }, SysoutLogger())
+        val sut = SimpleReducerFeature<String, Int>({ int, state -> state + int.length }, SysoutLogger())
         val observer: TestObserver<out ResultReducer<Int>> = sut.results().test()
 
         sut.trigger("12345678")
@@ -77,7 +76,7 @@ class SingleResultFeatureTest {
     @Test
     fun `Logs event`() {
         val loggerMock = Mockito.mock(Logger::class.java)
-        val sut = SingleResultFeature<String, Int>(Function { ResultReducer { 0 } }, loggerMock)
+        val sut = SimpleReducerFeature<String, Int>({ _, _ -> 0 }, loggerMock)
         sut.results().test()
 
         sut.trigger("something")
@@ -88,7 +87,7 @@ class SingleResultFeatureTest {
     @Test
     fun `Logs results`() {
         val loggerMock = Mockito.mock(Logger::class.java)
-        val sut = SingleResultFeature<String, Int>(Function { ResultReducer { 0 } }, loggerMock)
+        val sut = SimpleReducerFeature<String, Int>({ _, _ -> 0 }, loggerMock)
         sut.results().test()
 
         sut.trigger("something")

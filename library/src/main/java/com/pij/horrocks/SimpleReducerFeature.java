@@ -17,7 +17,6 @@ package com.pij.horrocks;
 import android.support.annotation.NonNull;
 
 import io.reactivex.Observable;
-import io.reactivex.functions.Function;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
@@ -27,17 +26,17 @@ import io.reactivex.subjects.Subject;
  * @author PierreJean
  */
 
-public final class SingleResultFeature<E, S> implements Feature<E, S> {
+public final class SimpleReducerFeature<E, S> implements Feature<E, S> {
     private final Subject<E> event = PublishSubject.create();
-    private final Function<E, ResultReducer<S>> stateModifier;
+    private final Reducer<E, S> reducer;
     private final Logger logger;
 
-    public SingleResultFeature(@NonNull Function<E, ResultReducer<S>> stateModifier) {
-        this(stateModifier, Logger.NOOP);
+    public SimpleReducerFeature(@NonNull Reducer<E, S> reducer) {
+        this(reducer, Logger.NOOP);
     }
 
-    public SingleResultFeature(@NonNull Function<E, ResultReducer<S>> stateModifier, @NonNull Logger logger) {
-        this.stateModifier = stateModifier;
+    public SimpleReducerFeature(@NonNull Reducer<E, S> reducer, @NonNull Logger logger) {
+        this.reducer = reducer;
         this.logger = logger;
     }
 
@@ -52,21 +51,21 @@ public final class SingleResultFeature<E, S> implements Feature<E, S> {
     public Observable<? extends ResultReducer<S>> results() {
         return event
                 .doOnNext(event -> logProcessingEvent(event, logger))
-                .map(stateModifier)
+                .map(event -> (ResultReducer<S>) current -> reducer.reduce(event, current))
                 .doOnNext(result -> logResult(result, logger))
                 ;
     }
 
     private void logReceivedEvent(@NonNull E event) {
-        logger.print(stateModifier.getClass(), "Received event " + event);
+        logger.print(reducer.getClass(), "Received event " + event);
     }
 
     private void logProcessingEvent(E event, Logger logger) {
-        logger.print(stateModifier.getClass(), "Processing event " + event);
+        logger.print(reducer.getClass(), "Processing event " + event);
     }
 
     private void logResult(ResultReducer<S> result, Logger logger) {
-        logger.print(stateModifier.getClass(), "Emitting result " + result);
+        logger.print(reducer.getClass(), "Emitting result " + result);
     }
 
 }
