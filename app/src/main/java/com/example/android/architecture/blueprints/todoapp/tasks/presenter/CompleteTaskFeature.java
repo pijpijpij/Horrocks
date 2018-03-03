@@ -20,7 +20,7 @@ import com.example.android.architecture.blueprints.todoapp.data.Task;
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource;
 import com.example.android.architecture.blueprints.todoapp.data.source.Util;
 import com.pij.horrocks.Logger;
-import com.pij.horrocks.Result;
+import com.pij.horrocks.ResultReducer;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ import io.reactivex.functions.Function;
  *
  * @author PierreJean
  */
-class CompleteTaskFeature implements Function<Task, Observable<Result<ViewState>>> {
+class CompleteTaskFeature implements Function<Task, Observable<ResultReducer<ViewState>>> {
 
     private final Logger logger;
     private final TasksDataSource dataSource;
@@ -72,10 +72,10 @@ class CompleteTaskFeature implements Function<Task, Observable<Result<ViewState>
      */
     @NonNull
     @Override
-    public Observable<Result<ViewState>> apply(Task event) {
+    public Observable<ResultReducer<ViewState>> apply(Task event) {
         return Completable.fromAction(() -> dataSource.completeTask(event))
                 .andThen(Util.loadTasksAsSingle(dataSource))
-                .map(list -> (Result<ViewState>) current -> updateSuccessState(current, list))
+                .map(list -> (ResultReducer<ViewState>) current -> updateSuccessState(current, list))
                 .doOnError(e -> logger.print(getClass(), "Could not complete task " + event, e))
                 .onErrorReturn(e -> current -> updateFailureState(current, e))
                 .toObservable()

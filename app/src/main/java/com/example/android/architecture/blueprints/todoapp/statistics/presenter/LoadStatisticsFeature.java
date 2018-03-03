@@ -21,7 +21,7 @@ import com.example.android.architecture.blueprints.todoapp.data.source.TasksData
 import com.example.android.architecture.blueprints.todoapp.data.source.Util;
 import com.example.android.architecture.blueprints.todoapp.statistics.StatisticsModel;
 import com.pij.horrocks.Logger;
-import com.pij.horrocks.Result;
+import com.pij.horrocks.ResultReducer;
 
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -32,7 +32,7 @@ import io.reactivex.functions.Function;
  *
  * @author PierreJean
  */
-class LoadStatisticsFeature implements Function<Object, Observable<Result<StatisticsModel>>> {
+class LoadStatisticsFeature implements Function<Object, Observable<ResultReducer<StatisticsModel>>> {
 
     private final Logger logger;
     private final TasksDataSource dataSource;
@@ -66,7 +66,7 @@ class LoadStatisticsFeature implements Function<Object, Observable<Result<Statis
     }
 
     @Override
-    public Observable<Result<StatisticsModel>> apply(Object event) {
+    public Observable<ResultReducer<StatisticsModel>> apply(Object event) {
         return Util.loadTasksAsSingle(dataSource)
                 .doOnError(e -> logger.print(getClass(), "Could not load data", e))
                 .flatMapObservable(Observable::fromIterable)
@@ -76,7 +76,7 @@ class LoadStatisticsFeature implements Function<Object, Observable<Result<Statis
                         StatisticsModel.Numbers::create
                 ).toObservable())
                 .first(StatisticsModel.Numbers.create(0, 0))
-                .map(numbers -> (Result<StatisticsModel>) current -> updateSuccessState(current, numbers))
+                .map(numbers -> (ResultReducer<StatisticsModel>) current -> updateSuccessState(current, numbers))
                 .onErrorReturn(e -> current -> updateFailureState(current, e))
                 .toObservable()
                 .startWith(LoadStatisticsFeature::updateStartState);

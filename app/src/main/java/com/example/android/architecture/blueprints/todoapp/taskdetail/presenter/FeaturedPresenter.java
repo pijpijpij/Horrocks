@@ -76,7 +76,7 @@ public final class FeaturedPresenter implements Presenter {
         this.logger = logger;
         mTaskId = Strings.nullToEmpty(taskId);
         loadTask = new MultipleResultFeature<>(new LoadTaskFeature(logger, tasksRepository));
-        editTask = new SingleResultFeature<>(new EditTaskFeature());
+        editTask = new SingleResultFeature<>(EditTaskFeature.create());
         deleteTask = new MultipleResultFeature<>(new DeleteTaskFeature(logger, tasksRepository));
         completeTask = new MultipleResultFeature<>(new CompleteTaskFeature(logger, tasksRepository));
         activateTask = new MultipleResultFeature<>(new ActivateTaskFeature(logger, tasksRepository));

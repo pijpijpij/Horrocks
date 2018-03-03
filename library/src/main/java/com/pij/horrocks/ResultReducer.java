@@ -16,18 +16,23 @@ package com.pij.horrocks;
 
 import android.support.annotation.NonNull;
 
-import io.reactivex.Observable;
-
 /**
- * <p>Created on 16/11/2017.</p>
+ * An instance of {@link ResultReducer} has the ability to apply results of an interaction to a state. It is very similar to a
+ * <code>Reducer</code> in Redux. The difference is that it can - and should - include the result of an interaction with
+ * <p>Created on 01/01/2018.</p>
  *
+ * @param <S> state this results can alter.
  * @author PierreJean
  */
-public interface Feature<E, S> {
 
-    void trigger(@NonNull E event);
+public interface ResultReducer<S> {
 
+    /**
+     * <h3>Note</h3>This method used to be <code>applyTo(S)</code> in earlier versions.
+     *
+     * @param current current state
+     * @return new state after the results this object contains have been applied to the <code>current</code> state.
+     */
     @NonNull
-    Observable<? extends ResultReducer<S>> results();
-
+    S applyTo(@NonNull S current);
 }

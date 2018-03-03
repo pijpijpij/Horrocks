@@ -29,14 +29,14 @@ import io.reactivex.subjects.Subject;
 
 public final class SingleResultFeature<E, S> implements Feature<E, S> {
     private final Subject<E> event = PublishSubject.create();
-    private final Function<E, Result<S>> stateModifier;
+    private final Function<E, ResultReducer<S>> stateModifier;
     private final Logger logger;
 
-    public SingleResultFeature(@NonNull Function<E, Result<S>> stateModifier) {
+    public SingleResultFeature(@NonNull Function<E, ResultReducer<S>> stateModifier) {
         this(stateModifier, Logger.NOOP);
     }
 
-    public SingleResultFeature(@NonNull Function<E, Result<S>> stateModifier, @NonNull Logger logger) {
+    public SingleResultFeature(@NonNull Function<E, ResultReducer<S>> stateModifier, @NonNull Logger logger) {
         this.stateModifier = stateModifier;
         this.logger = logger;
     }
@@ -49,7 +49,7 @@ public final class SingleResultFeature<E, S> implements Feature<E, S> {
 
     @NonNull
     @Override
-    public Observable<? extends Result<S>> result() {
+    public Observable<? extends ResultReducer<S>> results() {
         return event
                 .doOnNext(event -> logProcessingEvent(event, logger))
                 .map(stateModifier)
@@ -65,7 +65,7 @@ public final class SingleResultFeature<E, S> implements Feature<E, S> {
         logger.print(stateModifier.getClass(), "Processing event " + event);
     }
 
-    private void logResult(Result<S> result, Logger logger) {
+    private void logResult(ResultReducer<S> result, Logger logger) {
         logger.print(stateModifier.getClass(), "Emitting result " + result);
     }
 

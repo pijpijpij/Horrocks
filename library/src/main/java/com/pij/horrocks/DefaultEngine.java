@@ -43,7 +43,7 @@ public final class DefaultEngine<S, M> implements Engine<S, M> {
         Function<S, M> stateConverter = configuration.stateToModel();
         Callable<S> initialValue = () -> transientCleaner.apply(store.load());
         return Observable.fromIterable(features)
-                .flatMap(feature -> feature.result()
+                .flatMap(feature -> feature.results()
                         .doOnTerminate(() -> logger.print(getClass(), "Feature " + feature.hashCode() + " Unexpected completion!!!"))
                 )
                 .scanWith(initialValue, (current, result) -> updateState(current, result, transientCleaner))
@@ -82,7 +82,7 @@ public final class DefaultEngine<S, M> implements Engine<S, M> {
         logger.print(getClass(), "Calculating " + it);
     }
 
-    private S updateState(S current, Result<S> result, Function<S, S> transientCleaner) throws Exception {
+    private S updateState(S current, ResultReducer<S> result, Function<S, S> transientCleaner) throws Exception {
         S transientCleaned = transientCleaner.apply(current);
         return result.applyTo(transientCleaned);
     }

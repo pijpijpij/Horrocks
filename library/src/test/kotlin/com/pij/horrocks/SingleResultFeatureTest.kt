@@ -33,8 +33,8 @@ class SingleResultFeatureTest {
 
     @Test
     fun `result() emits no Result if there's no event`() {
-        val sut = SingleResultFeature<String, Int>(Function { Result { 0 } }, SysoutLogger())
-        val observer = sut.result().test()
+        val sut = SingleResultFeature<String, Int>(Function { ResultReducer { 0 } }, SysoutLogger())
+        val observer = sut.results().test()
 
         observer.assertNoValues()
         observer.assertNotComplete()
@@ -42,8 +42,8 @@ class SingleResultFeatureTest {
 
     @Test
     fun `result() emits 1 Result if 1 event is triggered`() {
-        val sut = SingleResultFeature<String, Int>(Function { Result { 0 } }, SysoutLogger())
-        val observer = sut.result().test()
+        val sut = SingleResultFeature<String, Int>(Function { ResultReducer { 0 } }, SysoutLogger())
+        val observer = sut.results().test()
 
         sut.trigger("some event")
 
@@ -53,8 +53,8 @@ class SingleResultFeatureTest {
 
     @Test
     fun `result() emits 2 Results if 2 events are triggered`() {
-        val sut = SingleResultFeature<String, Int>(Function { Result { 0 } }, SysoutLogger())
-        val observer = sut.result().test()
+        val sut = SingleResultFeature<String, Int>(Function { ResultReducer { 0 } }, SysoutLogger())
+        val observer = sut.results().test()
 
         sut.trigger("some event")
         sut.trigger("some other event")
@@ -65,8 +65,8 @@ class SingleResultFeatureTest {
 
     @Test
     fun `result() provides the function passed at construction`() {
-        val sut = SingleResultFeature<String, Int>(Function { Result { state -> state + it.length } }, SysoutLogger())
-        val observer: TestObserver<out Result<Int>> = sut.result().test()
+        val sut = SingleResultFeature<String, Int>(Function { ResultReducer { state -> state + it.length } }, SysoutLogger())
+        val observer: TestObserver<out ResultReducer<Int>> = sut.results().test()
 
         sut.trigger("12345678")
 
@@ -77,8 +77,8 @@ class SingleResultFeatureTest {
     @Test
     fun `Logs event`() {
         val loggerMock = Mockito.mock(Logger::class.java)
-        val sut = SingleResultFeature<String, Int>(Function { Result { 0 } }, loggerMock)
-        sut.result().test()
+        val sut = SingleResultFeature<String, Int>(Function { ResultReducer { 0 } }, loggerMock)
+        sut.results().test()
 
         sut.trigger("something")
 
@@ -88,8 +88,8 @@ class SingleResultFeatureTest {
     @Test
     fun `Logs results`() {
         val loggerMock = Mockito.mock(Logger::class.java)
-        val sut = SingleResultFeature<String, Int>(Function { Result { 0 } }, loggerMock)
-        sut.result().test()
+        val sut = SingleResultFeature<String, Int>(Function { ResultReducer { 0 } }, loggerMock)
+        sut.results().test()
 
         sut.trigger("something")
 

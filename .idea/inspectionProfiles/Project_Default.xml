@@ -13,5 +13,8 @@
       </option>
       <option name="IGNORE_FIELDS_USED_IN_MULTIPLE_METHODS" value="true" />
     </inspection_tool>
+    <inspection_tool class="RemoveRedundantBackticks" enabled="true" level="WARNING" enabled_by_default="true">
+      <scope name="Local Unit Tests" level="WARNING" enabled="false" />
+    </inspection_tool>
   </profile>
 </component>

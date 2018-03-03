@@ -20,7 +20,7 @@ import com.example.android.architecture.blueprints.todoapp.data.Task;
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource;
 import com.example.android.architecture.blueprints.todoapp.data.source.Util;
 import com.pij.horrocks.Logger;
-import com.pij.horrocks.Result;
+import com.pij.horrocks.ResultReducer;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ import io.reactivex.functions.Function;
  *
  * @author PierreJean
  */
-class ClearCompletedTasksFeature implements Function<Object, Observable<Result<ViewState>>> {
+class ClearCompletedTasksFeature implements Function<Object, Observable<ResultReducer<ViewState>>> {
 
     private final Logger logger;
     private final TasksDataSource dataSource;
@@ -72,10 +72,10 @@ class ClearCompletedTasksFeature implements Function<Object, Observable<Result<V
      */
     @NonNull
     @Override
-    public Observable<Result<ViewState>> apply(Object event) {
+    public Observable<ResultReducer<ViewState>> apply(Object event) {
         return Completable.fromAction(dataSource::clearCompletedTasks)
                 .andThen(Util.loadTasksAsSingle(dataSource))
-                .map(list -> (Result<ViewState>) current -> updateSuccessState(current, list))
+                .map(list -> (ResultReducer<ViewState>) current -> updateSuccessState(current, list))
                 .doOnError(e -> logger.print(getClass(), "Could not clear completed tasks", e))
                 .onErrorReturn(e -> current -> updateFailureState(current, e))
                 .toObservable()

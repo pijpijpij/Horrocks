@@ -20,7 +20,7 @@ import com.example.android.architecture.blueprints.todoapp.data.source.TasksData
 import com.example.android.architecture.blueprints.todoapp.taskdetail.TaskDetailModel;
 import com.google.common.base.Strings;
 import com.pij.horrocks.Logger;
-import com.pij.horrocks.Result;
+import com.pij.horrocks.ResultReducer;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -31,7 +31,7 @@ import io.reactivex.functions.Function;
  *
  * @author PierreJean
  */
-class DeleteTaskFeature implements Function<String, Observable<Result<TaskDetailModel>>> {
+class DeleteTaskFeature implements Function<String, Observable<ResultReducer<TaskDetailModel>>> {
 
     private final Logger logger;
     private final TasksDataSource dataSource;
@@ -72,14 +72,14 @@ class DeleteTaskFeature implements Function<String, Observable<Result<TaskDetail
     }
 
     @Override
-    public Observable<Result<TaskDetailModel>> apply(String taskId) {
+    public Observable<ResultReducer<TaskDetailModel>> apply(String taskId) {
         return Observable.just(taskId)
                 .filter(Strings::isNullOrEmpty)
-                .map(id -> (Result<TaskDetailModel>) DeleteTaskFeature::updateInvalidState)
+                .map(id -> (ResultReducer<TaskDetailModel>) DeleteTaskFeature::updateInvalidState)
                 .switchIfEmpty(
                         Completable.fromAction(() -> dataSource.deleteTask(taskId))
                                 .doOnError(e -> logger.print(getClass(), "Could not delete data", e))
-                                .andThen(Observable.just((Result<TaskDetailModel>) DeleteTaskFeature::updateSuccessState))
+                                .andThen(Observable.just((ResultReducer<TaskDetailModel>) DeleteTaskFeature::updateSuccessState))
                                 .onErrorReturnItem(DeleteTaskFeature::updateFailureState)
                                 .startWith(DeleteTaskFeature::updateStartState)
                 );

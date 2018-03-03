@@ -20,7 +20,7 @@ import com.example.android.architecture.blueprints.todoapp.data.Task;
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource;
 import com.example.android.architecture.blueprints.todoapp.data.source.Util;
 import com.pij.horrocks.Logger;
-import com.pij.horrocks.Result;
+import com.pij.horrocks.ResultReducer;
 
 import java.util.List;
 
@@ -35,7 +35,7 @@ import static com.example.android.architecture.blueprints.todoapp.data.source.Ut
  *
  * @author PierreJean
  */
-class ActivateTaskFeature implements Function<Task, Observable<Result<ViewState>>> {
+class ActivateTaskFeature implements Function<Task, Observable<ResultReducer<ViewState>>> {
 
     private final Logger logger;
     private final TasksDataSource dataSource;
@@ -70,12 +70,12 @@ class ActivateTaskFeature implements Function<Task, Observable<Result<ViewState>
     }
 
     @Override
-    public Observable<Result<ViewState>> apply(Task event) throws Exception {
+    public Observable<ResultReducer<ViewState>> apply(Task event) throws Exception {
         return Completable.fromAction(() -> dataSource.activateTask(event))
                 .doOnError(e -> logger.print(getClass(), "Could not activate task " + event, e))
                 .andThen(Util.loadTasksAsSingle(dataSource)
                         .doOnError(e -> logger.print(getClass(), "Could not load tasks " + event, e))
-                        .map(list -> (Result<ViewState>) current -> updateSuccessState(current, list))
+                        .map(list -> (ResultReducer<ViewState>) current -> updateSuccessState(current, list))
                 )
                 .onErrorReturn(e -> current -> updateFailureState(current, e))
                 .toObservable()

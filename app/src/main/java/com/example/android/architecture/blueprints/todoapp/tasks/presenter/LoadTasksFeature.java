@@ -21,7 +21,7 @@ import com.example.android.architecture.blueprints.todoapp.data.source.TasksData
 import com.example.android.architecture.blueprints.todoapp.data.source.Util;
 import com.example.android.architecture.blueprints.todoapp.tasks.FilterType;
 import com.pij.horrocks.Logger;
-import com.pij.horrocks.Result;
+import com.pij.horrocks.ResultReducer;
 
 import java.util.List;
 
@@ -34,7 +34,7 @@ import io.reactivex.functions.Predicate;
  *
  * @author PierreJean
  */
-class LoadTasksFeature implements Function<FilterType, Observable<Result<ViewState>>> {
+class LoadTasksFeature implements Function<FilterType, Observable<ResultReducer<ViewState>>> {
 
     private final Logger logger;
     private final TasksDataSource dataSource;
@@ -68,12 +68,12 @@ class LoadTasksFeature implements Function<FilterType, Observable<Result<ViewSta
     }
 
     @Override
-    public Observable<Result<ViewState>> apply(FilterType filter) {
+    public Observable<ResultReducer<ViewState>> apply(FilterType filter) {
         return Util.loadTasksAsSingle(dataSource)
                 .doOnError(e -> logger.print(getClass(), "Could not load data", e))
                 .flatMap(list -> Observable.fromIterable(list).filter(filterFor(filter)).toList())
                 .doOnError(e -> logger.print(getClass(), "Could not filter data", e))
-                .map(list -> (Result<ViewState>) current -> updateSuccessState(current, list))
+                .map(list -> (ResultReducer<ViewState>) current -> updateSuccessState(current, list))
                 .onErrorReturn(e -> current -> updateFailureState(current, e))
                 .toObservable()
                 .startWith(LoadTasksFeature::updateStartState);

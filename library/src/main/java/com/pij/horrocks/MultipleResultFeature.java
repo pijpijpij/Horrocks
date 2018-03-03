@@ -29,14 +29,14 @@ import io.reactivex.subjects.Subject;
 
 public final class MultipleResultFeature<E, S> implements Feature<E, S> {
     private final Subject<E> event = PublishSubject.create();
-    private final Function<E, Observable<Result<S>>> stateModifier;
+    private final Function<E, Observable<ResultReducer<S>>> stateModifier;
     private final Logger logger;
 
-    public MultipleResultFeature(@NonNull Function<E, Observable<Result<S>>> stateModifier) {
+    public MultipleResultFeature(@NonNull Function<E, Observable<ResultReducer<S>>> stateModifier) {
         this(stateModifier, Logger.NOOP);
     }
 
-    public MultipleResultFeature(@NonNull Function<E, Observable<Result<S>>> stateModifier, @NonNull Logger logger) {
+    public MultipleResultFeature(@NonNull Function<E, Observable<ResultReducer<S>>> stateModifier, @NonNull Logger logger) {
         this.stateModifier = stateModifier;
         this.logger = logger;
     }
@@ -49,7 +49,7 @@ public final class MultipleResultFeature<E, S> implements Feature<E, S> {
 
     @NonNull
     @Override
-    public Observable<? extends Result<S>> result() {
+    public Observable<? extends ResultReducer<S>> results() {
         return event
                 .doOnNext(event -> logProcessingEvent(event, logger))
                 .flatMap(stateModifier::apply)
@@ -65,7 +65,7 @@ public final class MultipleResultFeature<E, S> implements Feature<E, S> {
         logger.print(stateModifier.getClass(), "Processing event " + event);
     }
 
-    private void logResult(Result<S> result, Logger logger) {
+    private void logResult(ResultReducer<S> result, Logger logger) {
         logger.print(stateModifier.getClass(), "Emitting result " + result);
     }
 

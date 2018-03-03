@@ -15,22 +15,23 @@
 package com.example.android.architecture.blueprints.todoapp.taskdetail.presenter;
 
 import com.example.android.architecture.blueprints.todoapp.taskdetail.TaskDetailModel;
-import com.google.common.base.Strings;
-import com.pij.horrocks.Result;
-
-import io.reactivex.functions.Function;
+import com.pij.horrocks.Reducer;
 
 /**
  * <p>Created on 01/01/2018.</p>
  *
  * @author PierreJean
  */
-class EditTaskFeature implements Function<String, Result<TaskDetailModel>> {
+class EditTaskFeature extends SingleFeature<String, TaskDetailModel> {
 
-    @Override
-    public Result<TaskDetailModel> apply(String taskId) {
-        String actualId = Strings.isNullOrEmpty(taskId) ? null : taskId;
-        return current -> current.toBuilder().showEditTask(actualId).build();
+    EditTaskFeature(Reducer<String, TaskDetailModel> reducer) {
+        super(reducer);
+    }
+
+    static EditTaskFeature create() {
+        return new EditTaskFeature(
+                new EditTaskReducer()
+        );
     }
 
 }

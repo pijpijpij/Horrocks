@@ -12,21 +12,21 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.example.android.architecture.blueprints.todoapp.tasks.presenter;
+package com.example.android.architecture.blueprints.todoapp.taskdetail.presenter;
 
-import com.pij.horrocks.ResultReducer;
-
-import io.reactivex.functions.Function;
+import com.example.android.architecture.blueprints.todoapp.taskdetail.TaskDetailModel;
+import com.google.common.base.Strings;
+import com.pij.horrocks.Reducer;
 
 /**
- * <p>Created on 05/01/2018.</p>
+ * <p>Created on 03/03/2018.</p>
  *
- * @author PierreJean
+ * @author Pierrejean
  */
-class IndicateTaskSavedFeature implements Function<Object, ResultReducer<ViewState>> {
-
+class EditTaskReducer implements Reducer<String, TaskDetailModel> {
     @Override
-    public ResultReducer<ViewState> apply(Object event) throws Exception {
-        return current -> current.toBuilder().showSuccessfullySavedMessage(true).build();
+    public TaskDetailModel reduce(String taskId, TaskDetailModel state) {
+        String actualId = Strings.isNullOrEmpty(taskId) ? null : taskId;
+        return state.toBuilder().showEditTask(actualId).build();
     }
 }

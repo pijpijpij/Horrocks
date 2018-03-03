@@ -22,7 +22,7 @@ import com.example.android.architecture.blueprints.todoapp.data.source.TasksData
 import com.example.android.architecture.blueprints.todoapp.data.source.Util;
 import com.google.common.base.Strings;
 import com.pij.horrocks.Logger;
-import com.pij.horrocks.Result;
+import com.pij.horrocks.ResultReducer;
 
 import io.reactivex.Observable;
 import io.reactivex.functions.Function;
@@ -32,7 +32,7 @@ import io.reactivex.functions.Function;
  *
  * @author PierreJean
  */
-class LoadTaskFeature implements Function<String, Observable<Result<AddEditTaskModel>>> {
+class LoadTaskFeature implements Function<String, Observable<ResultReducer<AddEditTaskModel>>> {
 
     private final Logger logger;
     private final TasksDataSource dataSource;
@@ -76,14 +76,14 @@ class LoadTaskFeature implements Function<String, Observable<Result<AddEditTaskM
     }
 
     @Override
-    public Observable<Result<AddEditTaskModel>> apply(String taskId) {
+    public Observable<ResultReducer<AddEditTaskModel>> apply(String taskId) {
         return Observable.just(taskId)
                 .filter(Strings::isNullOrEmpty)
-                .map(id -> (Result<AddEditTaskModel>) LoadTaskFeature::updateNewTaskState)
+                .map(id -> (ResultReducer<AddEditTaskModel>) LoadTaskFeature::updateNewTaskState)
                 .switchIfEmpty(
                         Util.loadTaskAsSingle(taskId, dataSource)
                                 .doOnError(e -> logger.print(getClass(), "Could not load data", e))
-                                .map(task -> (Result<AddEditTaskModel>) current -> updateSuccessState(current, task))
+                                .map(task -> (ResultReducer<AddEditTaskModel>) current -> updateSuccessState(current, task))
                                 .onErrorReturnItem(LoadTaskFeature::updateFailureState)
                                 .toObservable()
                                 .startWith(LoadTaskFeature::updateStartState)
