@@ -33,7 +33,7 @@ public class EditTaskFeatureTest {
     public void emitsEditTask_whenTriggeredWithValidId() throws Exception {
         EditTaskFeature sut = new EditTaskFeature();
 
-        TaskDetailModel newState = sut.apply("1").applyTo(defaultState());
+        TaskDetailModel newState = sut.apply("1").reduce(defaultState());
 
         assertThat(newState.showEditTask(), equalTo("1"));
     }
@@ -42,7 +42,7 @@ public class EditTaskFeatureTest {
     public void doesNotEmitsEditTask_whenTriggeredWithNullId() throws Exception {
         EditTaskFeature sut = new EditTaskFeature();
 
-        TaskDetailModel newState = sut.apply(null).applyTo(defaultState());
+        TaskDetailModel newState = sut.apply(null).reduce(defaultState());
 
         assertThat(newState.showEditTask(), equalTo(null));
     }
@@ -51,7 +51,7 @@ public class EditTaskFeatureTest {
     public void doesNotEmitsEditTask_whenTriggeredWithEmptyId() throws Exception {
         EditTaskFeature sut = new EditTaskFeature();
 
-        TaskDetailModel newState = sut.apply("").applyTo(defaultState());
+        TaskDetailModel newState = sut.apply("").reduce(defaultState());
 
         assertThat(newState.showEditTask(), equalTo(null));
     }

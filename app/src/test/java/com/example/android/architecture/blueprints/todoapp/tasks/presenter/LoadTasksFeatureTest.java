@@ -1,3 +1,17 @@
+/*
+ * Copyright 2018, Chiswick Forest
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and limitations under the License.
+ */
+
 package com.example.android.architecture.blueprints.todoapp.tasks.presenter;
 
 import com.example.android.architecture.blueprints.todoapp.data.Task;
@@ -48,7 +62,7 @@ public class LoadTasksFeatureTest {
     public void emitsStartResult_beforeRepositorySucceeds() throws Exception {
         tasksRepositoryHelper.setupGetTasks();
 
-        TestObserver<ViewState> observer = sut.apply(FilterType.ALL_TASKS).map(result -> result.applyTo(defaultState())).test();
+        TestObserver<ViewState> observer = sut.apply(FilterType.ALL_TASKS).map(result -> result.reduce(defaultState())).test();
 
         //noinspection Convert2MethodRef
         observer.assertValue(state -> state.loadingIndicator());
@@ -58,7 +72,7 @@ public class LoadTasksFeatureTest {
     public void emitsStartAndSuccessResults_whenRepositorySucceeds() throws Exception {
         tasksRepositoryHelper.setupGetTasks();
 
-        TestObserver<ViewState> observer = sut.apply(FilterType.ALL_TASKS).map(result -> result.applyTo(defaultState())).test();
+        TestObserver<ViewState> observer = sut.apply(FilterType.ALL_TASKS).map(result -> result.reduce(defaultState())).test();
         tasksRepositoryHelper.completeGetTasks(singletonList(zipzapTask));
 
         observer.assertValueAt(1, state -> !state.loadingIndicator());
@@ -69,7 +83,7 @@ public class LoadTasksFeatureTest {
     public void completes_whenRepositorySucceeds() throws Exception {
         tasksRepositoryHelper.setupGetTasks();
 
-        TestObserver<ViewState> observer = sut.apply(FilterType.ALL_TASKS).map(result -> result.applyTo(defaultState())).test();
+        TestObserver<ViewState> observer = sut.apply(FilterType.ALL_TASKS).map(result -> result.reduce(defaultState())).test();
         tasksRepositoryHelper.completeGetTasks(singletonList(zipzapTask));
 
         observer.assertComplete();
@@ -79,7 +93,7 @@ public class LoadTasksFeatureTest {
     public void emitsStartAndFailureResults_whenRepositoryFails() throws Exception {
         tasksRepositoryHelper.setupGetTasks();
 
-        TestObserver<ViewState> observer = sut.apply(FilterType.ALL_TASKS).map(result -> result.applyTo(defaultState())).test();
+        TestObserver<ViewState> observer = sut.apply(FilterType.ALL_TASKS).map(result -> result.reduce(defaultState())).test();
         tasksRepositoryHelper.failGetTasks();
 
         observer.assertValueAt(1, state -> !state.loadingIndicator() && state.showLoadingTasksError());
@@ -89,7 +103,7 @@ public class LoadTasksFeatureTest {
     public void completes_whenRepositoryFails() throws Exception {
         tasksRepositoryHelper.setupGetTasks();
 
-        TestObserver<ViewState> observer = sut.apply(FilterType.ALL_TASKS).map(result -> result.applyTo(defaultState())).test();
+        TestObserver<ViewState> observer = sut.apply(FilterType.ALL_TASKS).map(result -> result.reduce(defaultState())).test();
         tasksRepositoryHelper.failGetTasks();
 
         observer.assertComplete();

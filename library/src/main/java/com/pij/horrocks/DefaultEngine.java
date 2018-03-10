@@ -19,7 +19,6 @@ import java.util.concurrent.Callable;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Function;
 
 /**
  * <p>Created on 14/12/2017.</p>
@@ -39,17 +38,17 @@ public final class DefaultEngine<S, M> implements Engine<S, M> {
     public Observable<M> runWith(Configuration<S, M> configuration) {
         Store<S> store = configuration.store();
         Collection<Feature<?, S>> features = configuration.features();
-        Function<S, S> transientCleaner = configuration.transientResetter();
-        Function<S, M> stateConverter = configuration.stateToModel();
-        Callable<S> initialValue = () -> transientCleaner.apply(store.load());
+        TransientCleaner<S> transientCleaner = configuration.transientResetter();
+        StateConverter<S, M> stateConverter = configuration.stateToModel();
+        Callable<S> initialValue = () -> transientCleaner.clean(store.load());
         return Observable.fromIterable(features)
-                .flatMap(feature -> feature.result()
+                .flatMap(feature -> feature.reductors()
                         .doOnTerminate(() -> logger.print(getClass(), "Feature %s Unexpected completion!!!", feature.hashCode()))
                 )
-                .scanWith(initialValue, (current, result) -> updateState(current, result, transientCleaner))
+                .scanWith(initialValue, (current, reducer) -> updateState(current, reducer, transientCleaner))
                 .doOnNext(this::logState)
                 .doOnNext(store::save)
-                .map(stateConverter)
+                .map(stateConverter::convert)
                 .doOnNext(this::logModel)
                 .doOnError(this::logTerminalFailure)
                 .doOnComplete(this::logUnexpectedCompletion)
@@ -82,9 +81,9 @@ public final class DefaultEngine<S, M> implements Engine<S, M> {
         logger.print(getClass(), "Calculating %s", it);
     }
 
-    private S updateState(S current, Result<S> result, Function<S, S> transientCleaner) throws Exception {
-        S transientCleaned = transientCleaner.apply(current);
-        return result.applyTo(transientCleaned);
+    private S updateState(S current, Result<S> reducer, TransientCleaner<S> transientCleaner) throws Exception {
+        S transientCleaned = transientCleaner.clean(current);
+        return reducer.reduce(transientCleaned);
     }
 
 }

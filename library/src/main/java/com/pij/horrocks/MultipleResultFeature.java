@@ -49,7 +49,7 @@ public final class MultipleResultFeature<E, S> implements Feature<E, S> {
 
     @NonNull
     @Override
-    public Observable<? extends Result<S>> result() {
+    public Observable<? extends Result<S>> reductors() {
         return event
                 .doOnNext(event -> logProcessingEvent(event, logger))
                 .flatMap(stateModifier::apply)
@@ -66,7 +66,7 @@ public final class MultipleResultFeature<E, S> implements Feature<E, S> {
     }
 
     private void logResult(Result<S> result, Logger logger) {
-        logger.print(stateModifier.getClass(), "Emitting result " + result);
+        logger.print(stateModifier.getClass(), "Emitting reductors " + result);
     }
 
 }

@@ -17,12 +17,13 @@ package com.pij.horrocks;
 import android.support.annotation.NonNull;
 
 /**
- * <p>Created on 01/01/2018.</p>
+ * <p>Created on 10/03/2018.</p>
  *
- * @author PierreJean
+ * @author Pierrejean
  */
+@FunctionalInterface
+public interface StateConverter<S, M> {
 
-public interface Result<S> {
     @NonNull
-    S reduce(@NonNull S current);
+    M convert(@NonNull S state);
 }

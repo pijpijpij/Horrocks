@@ -17,12 +17,13 @@ package com.pij.horrocks;
 import android.support.annotation.NonNull;
 
 /**
- * <p>Created on 01/01/2018.</p>
+ * <p>Created on 10/03/2018.</p>
  *
- * @author PierreJean
+ * @author Pierrejean
  */
+@FunctionalInterface
+public interface TransientCleaner<S> {
 
-public interface Result<S> {
     @NonNull
-    S reduce(@NonNull S current);
+    S clean(@NonNull S state);
 }

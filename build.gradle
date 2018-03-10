@@ -103,7 +103,7 @@ ext {
     autoValueVersion = '1.5.1'
     rxjava2Version = '2.1.0'
     roomVersion = "1.0.0"
-    daggerVersion = '2.12'
+    daggerVersion = '2.14.1'
     activityStarterVersion = '1.11-beta'
     butterknifeVersion = '8.8.1'
     dexmakerVersion = '1.2'

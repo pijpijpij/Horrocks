@@ -54,7 +54,7 @@ class DefaultEngineTest {
         val dummyFeature: Feature<String, DummyState> = object : Feature<String, DummyState> {
             private val events: Subject<String> = PublishSubject.create()
             override fun trigger(input: String) = events.onNext(input)
-            override fun result(): Observable<out Result<DummyState>> = events.map { input ->
+            override fun reductors(): Observable<out Result<DummyState>> = events.map { input ->
                 Result<DummyState> { it.copy(nonTransient = input.length) }
             }
         }
@@ -73,7 +73,7 @@ class DefaultEngineTest {
         val addN: Feature<Int, DummyState> = object : Feature<Int, DummyState> {
             private val events: Subject<Int> = PublishSubject.create()
             override fun trigger(input: Int) = events.onNext(input)
-            override fun result(): Observable<out Result<DummyState>> = events.map { input ->
+            override fun reductors(): Observable<out Result<DummyState>> = events.map { input ->
                 Result<DummyState> { it.copy(nonTransient = input + it.nonTransient) }
             }
 
@@ -95,7 +95,7 @@ class DefaultEngineTest {
         val addAtStartAndStop: Feature<Int, DummyState> = object : Feature<Int, DummyState> {
             private val events: Subject<Int> = PublishSubject.create()
             override fun trigger(input: Int) = events.onNext(input)
-            override fun result(): Observable<out Result<DummyState>> = events.flatMap { input ->
+            override fun reductors(): Observable<out Result<DummyState>> = events.flatMap { input ->
                 Observable.just(
                         Result<DummyState> { it.copy(nonTransient = input + it.nonTransient) },
                         Result { it.copy(nonTransient = 2 * input + it.nonTransient) }
@@ -120,7 +120,7 @@ class DefaultEngineTest {
         val featureCannotConstructResult: Feature<Any, DummyState> = object : Feature<Any, DummyState> {
             private val events: Subject<Any> = PublishSubject.create()
             override fun trigger(input: Any) = events.onNext(input)
-            override fun result(): Observable<out Result<DummyState>> = events.map { throw IllegalStateException("zap") }
+            override fun reductors(): Observable<out Result<DummyState>> = events.map { throw IllegalStateException("zap") }
         }
         val configuration = Configuration.builder<DummyState, DummyState>()
                 .store(MemoryStore(DummyState(false, 23)))
@@ -139,7 +139,7 @@ class DefaultEngineTest {
         val failingResultFeature: Feature<Any, DummyState> = object : Feature<Any, DummyState> {
             private val events: Subject<Any> = PublishSubject.create()
             override fun trigger(input: Any) = events.onNext(input)
-            override fun result(): Observable<out Result<DummyState>> = events.map { _ ->
+            override fun reductors(): Observable<out Result<DummyState>> = events.map { _ ->
                 Result<DummyState> { throw IllegalStateException("zip") }
             }
 
@@ -175,14 +175,13 @@ class DefaultEngineTest {
         val aFeature: Feature<Any, DummyState> = object : Feature<Any, DummyState> {
             private val events: Subject<Any> = PublishSubject.create()
             override fun trigger(input: Any) = events.onNext(input)
-            override fun result(): Observable<out Result<DummyState>> = events.flatMap { _ ->
+            override fun reductors(): Observable<out Result<DummyState>> = events.flatMap { _ ->
                 Observable.just(
                         Result<DummyState> { it.copy(transient = true) },
                         Result { it }
                 )
             }
         }
-
         val configuration = Configuration.builder<DummyState, DummyState>()
                 .store(MemoryStore(DummyState(true, 1)))
                 .stateToModel { it }

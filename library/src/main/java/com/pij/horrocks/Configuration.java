@@ -18,8 +18,6 @@ import com.google.auto.value.AutoValue;
 
 import java.util.Collection;
 
-import io.reactivex.functions.Function;
-
 /**
  * <p>Created on 14/12/2017.</p>
  *
@@ -40,9 +38,9 @@ public abstract class Configuration<S, M> {
 
     public abstract Collection<Feature<?, S>> features();
 
-    public abstract Function<S, M> stateToModel();
+    public abstract StateConverter<S, M> stateToModel();
 
-    public abstract Function<S, S> transientResetter();
+    public abstract TransientCleaner<S> transientResetter();
 
     public abstract Store<S> store();
 
@@ -53,9 +51,9 @@ public abstract class Configuration<S, M> {
 
         public abstract Builder<S, M> features(Collection<Feature<?, S>> features);
 
-        public abstract Builder<S, M> stateToModel(Function<S, M> stateToModel);
+        public abstract Builder<S, M> stateToModel(StateConverter<S, M> stateToModel);
 
-        public abstract Builder<S, M> transientResetter(Function<S, S> transientResetter);
+        public abstract Builder<S, M> transientResetter(TransientCleaner<S> transientResetter);
 
         public abstract Builder<S, M> store(Store<S> store);
 

@@ -61,7 +61,7 @@ public class DeleteTaskFeatureTest {
     public void emitsStartResult_beforeRepositorySucceeds() throws Exception {
         tasksRepositoryHelper.setDeleteTaskSuccess("1");
 
-        TestObserver<TaskDetailModel> observer = sut.apply("1").map(result -> result.applyTo(defaultState())).test();
+        TestObserver<TaskDetailModel> observer = sut.apply("1").map(result -> result.reduce(defaultState())).test();
 
         //noinspection Convert2MethodRef
         observer.assertValueAt(0, state -> state.loadingIndicator());
@@ -71,7 +71,7 @@ public class DeleteTaskFeatureTest {
     public void emitsStartAndSuccessResults_whenRepositorySucceeds() throws Exception {
         tasksRepositoryHelper.setDeleteTaskSuccess("1");
 
-        TestObserver<TaskDetailModel> observer = sut.apply("1").map(result -> result.applyTo(defaultState())).test();
+        TestObserver<TaskDetailModel> observer = sut.apply("1").map(result -> result.reduce(defaultState())).test();
 
         observer.assertValueAt(1, state -> !state.loadingIndicator()
                 && Objects.equals(state.close(), true));
@@ -81,7 +81,7 @@ public class DeleteTaskFeatureTest {
     public void completes_whenRepositorySucceeds() throws Exception {
         tasksRepositoryHelper.setDeleteTaskSuccess("1");
 
-        TestObserver<TaskDetailModel> observer = sut.apply("1").map(result -> result.applyTo(defaultState())).test();
+        TestObserver<TaskDetailModel> observer = sut.apply("1").map(result -> result.reduce(defaultState())).test();
 
         observer.assertComplete();
     }
@@ -90,7 +90,7 @@ public class DeleteTaskFeatureTest {
     public void emitsStartAndFailureResults_whenRepositoryFails() throws Exception {
         tasksRepositoryHelper.setDeleteTaskFailure("1");
 
-        TestObserver<TaskDetailModel> observer = sut.apply("1").map(result -> result.applyTo(defaultState())).test();
+        TestObserver<TaskDetailModel> observer = sut.apply("1").map(result -> result.reduce(defaultState())).test();
 
         observer.assertValueAt(1, state -> !state.loadingIndicator() && !state.close());
     }
@@ -99,7 +99,7 @@ public class DeleteTaskFeatureTest {
     public void completes_whenRepositoryFails() throws Exception {
         tasksRepositoryHelper.setDeleteTaskSuccess("1");
 
-        TestObserver<TaskDetailModel> observer = sut.apply("1").map(result -> result.applyTo(defaultState())).test();
+        TestObserver<TaskDetailModel> observer = sut.apply("1").map(result -> result.reduce(defaultState())).test();
 
         observer.assertComplete();
     }

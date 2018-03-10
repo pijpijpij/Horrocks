@@ -34,7 +34,7 @@ class SingleResultFeatureTest {
     @Test
     fun `result() emits no Result if there's no event`() {
         val sut = SingleResultFeature<String, Int>(Function { Result { 0 } }, SysoutLogger())
-        val observer = sut.result().test()
+        val observer = sut.reductors().test()
 
         observer.assertNoValues()
         observer.assertNotComplete()
@@ -43,7 +43,7 @@ class SingleResultFeatureTest {
     @Test
     fun `result() emits 1 Result if 1 event is triggered`() {
         val sut = SingleResultFeature<String, Int>(Function { Result { 0 } }, SysoutLogger())
-        val observer = sut.result().test()
+        val observer = sut.reductors().test()
 
         sut.trigger("some event")
 
@@ -54,7 +54,7 @@ class SingleResultFeatureTest {
     @Test
     fun `result() emits 2 Results if 2 events are triggered`() {
         val sut = SingleResultFeature<String, Int>(Function { Result { 0 } }, SysoutLogger())
-        val observer = sut.result().test()
+        val observer = sut.reductors().test()
 
         sut.trigger("some event")
         sut.trigger("some other event")
@@ -66,19 +66,19 @@ class SingleResultFeatureTest {
     @Test
     fun `result() provides the function passed at construction`() {
         val sut = SingleResultFeature<String, Int>(Function { Result { state -> state + it.length } }, SysoutLogger())
-        val observer: TestObserver<out Result<Int>> = sut.result().test()
+        val observer: TestObserver<out Result<Int>> = sut.reductors().test()
 
         sut.trigger("12345678")
 
         val result = observer.values()[0]
-        assertThat(result.applyTo(1), equalTo(9))
+        assertThat(result.reduce(1), equalTo(9))
     }
 
     @Test
     fun `Logs event`() {
         val loggerMock = Mockito.mock(Logger::class.java)
         val sut = SingleResultFeature<String, Int>(Function { Result { 0 } }, loggerMock)
-        sut.result().test()
+        sut.reductors().test()
 
         sut.trigger("something")
 
@@ -89,11 +89,11 @@ class SingleResultFeatureTest {
     fun `Logs results`() {
         val loggerMock = Mockito.mock(Logger::class.java)
         val sut = SingleResultFeature<String, Int>(Function { Result { 0 } }, loggerMock)
-        sut.result().test()
+        sut.reductors().test()
 
         sut.trigger("something")
 
-        Mockito.verify(loggerMock).print(any(), argThat { it.contains("Emitting result") })
+        Mockito.verify(loggerMock).print(any(), argThat { it.contains("Emitting reductors") })
     }
 }
 

@@ -35,7 +35,7 @@ class MultipleResultFeatureTest {
     @Test
     fun `result() emits no Result if there's no event`() {
         val sut = MultipleResultFeature<String, Int>(Function { Observable.just(Result { 0 }, Result { 0 }) }, SysoutLogger())
-        val observer = sut.result().test()
+        val observer = sut.reductors().test()
 
         observer.assertNoValues()
                 .assertNotComplete()
@@ -44,7 +44,7 @@ class MultipleResultFeatureTest {
     @Test
     fun `result() emits 2 Results if 1 event is triggered and the 'state modifier' emits 2 times`() {
         val sut = MultipleResultFeature<String, Int>(Function { Observable.just(Result { 0 }, Result { 0 }) }, SysoutLogger())
-        val observer = sut.result().test()
+        val observer = sut.reductors().test()
 
         sut.trigger("some event")
 
@@ -55,7 +55,7 @@ class MultipleResultFeatureTest {
     @Test
     fun `result() emits 4 Results if 2 events are triggered and the 'state modifier' emits 2 times`() {
         val sut = MultipleResultFeature<String, Int>(Function { Observable.just(Result { 0 }, Result { 0 }) }, SysoutLogger())
-        val observer = sut.result().test()
+        val observer = sut.reductors().test()
 
         sut.trigger("some event")
         sut.trigger("some other event")
@@ -72,21 +72,21 @@ class MultipleResultFeatureTest {
                     Result { state -> state + it.length }
             )
         }, SysoutLogger())
-        val observer: TestObserver<out Result<Int>> = sut.result().test()
+        val observer: TestObserver<out Result<Int>> = sut.reductors().test()
 
         sut.trigger("12345678")
 
         val result1 = observer.values()[0]
-        assertThat(result1.applyTo(1), equalTo(0))
+        assertThat(result1.reduce(1), equalTo(0))
         val result2 = observer.values()[1]
-        assertThat(result2.applyTo(1), equalTo(9))
+        assertThat(result2.reduce(1), equalTo(9))
     }
 
     @Test
     fun `Logs event`() {
         val loggerMock = mock(Logger::class.java)
         val sut = MultipleResultFeature<String, Int>(Function { Observable.just(Result { 0 }, Result { 0 }) }, loggerMock)
-        sut.result().test()
+        sut.reductors().test()
 
         sut.trigger("something")
 
@@ -97,11 +97,11 @@ class MultipleResultFeatureTest {
     fun `Logs results`() {
         val loggerMock = mock(Logger::class.java)
         val sut = MultipleResultFeature<String, Int>(Function { Observable.just(Result { 0 }, Result { 0 }) }, loggerMock)
-        sut.result().test()
+        sut.reductors().test()
 
         sut.trigger("something")
 
-        verify(loggerMock, times(2)).print(ArgumentMatchers.any(), Mockito.argThat { it.contains("Emitting result") })
+        verify(loggerMock, times(2)).print(ArgumentMatchers.any(), Mockito.argThat { it.contains("Emitting reductors") })
     }
 }
 
