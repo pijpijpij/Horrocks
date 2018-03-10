@@ -14,23 +14,29 @@
 
 buildscript {
     dependencies {
-        classpath "net.ltgt.gradle:gradle-apt-plugin:0.12"
+//        classpath "net.ltgt.gradle:gradle-apt-plugin:0.12"
     }
 }
 
 apply plugin: 'java-library'
-apply plugin: 'net.ltgt.apt-idea'
+//apply plugin: 'net.ltgt.apt-idea'
 apply plugin: 'kotlin'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'maven'
 
+sourceSets {
+    main.java.srcDirs += 'src/main/kotlin'
+}
+
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     // Basic utilities
     compile "com.android.support:support-annotations:$supportLibraryVersion"
-    compile "io.reactivex.rxjava2:rxkotlin:$rxjava2Version"
+    compile "io.reactivex.rxjava2:rxjava:$rxjava2Version"
+//    compile "io.reactivex.rxjava2:rxkotlin:$rxjava2Version"
     compileOnly "com.google.auto.value:auto-value:$autoValueVersion"
-    apt "com.google.auto.value:auto-value:$autoValueVersion"
+    kapt "com.google.auto.value:auto-value:$autoValueVersion"
 
     testCompile "junit:junit:$junitVersion"
     testCompile "org.mockito:mockito-core:$mockitoVersion"
