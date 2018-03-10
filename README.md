@@ -94,7 +94,7 @@ Releases are tagged with their version number (e.g. release 5.3.2 is build from 
     `> ./gradlew build`
 
 1. Release (assuming authentication with SSH keys is already setup). If not, Bitbucket explained it well 
-[here](https://confluence.atlassian.com/x/YwV9E)):
+[here](https://confluence.atlassian.com/x/YwV9E):
 
     `> ./gradlew release`
 
