@@ -87,8 +87,7 @@ class LoadTaskFeature implements Function<String, Observable<Result<TaskDetailMo
                                 .onErrorReturnItem(LoadTaskFeature::updateFailureState)
                                 .toObservable()
                                 .startWith(LoadTaskFeature::updateStartState)
-                )
-                ;
+                );
     }
 
 }

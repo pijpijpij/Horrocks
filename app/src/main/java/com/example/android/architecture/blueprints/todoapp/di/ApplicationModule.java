@@ -49,6 +49,16 @@ abstract class ApplicationModule {
                 Log.d(javaClass.getSimpleName(), message, e);
 
             }
+
+            @Override
+            public void print(@NonNull Class<?> javaClass, @NonNull String messageTemplate, @NonNull Object... args) {
+                print(javaClass, String.format(messageTemplate, args));
+            }
+
+            @Override
+            public void print(@NonNull Class<?> javaClass, @NonNull Throwable e, @NonNull String messageTemplate, @NonNull Object... args) {
+                print(javaClass, String.format(messageTemplate, args), e);
+            }
         };
     }
 

@@ -72,9 +72,9 @@ class ActivateTaskFeature implements Function<Task, Observable<Result<ViewState>
     @Override
     public Observable<Result<ViewState>> apply(Task event) throws Exception {
         return Completable.fromAction(() -> dataSource.activateTask(event))
-                .doOnError(e -> logger.print(getClass(), "Could not activate task " + event, e))
+                .doOnError(e -> logger.print(getClass(), e, "Could not activate task %s", event))
                 .andThen(Util.loadTasksAsSingle(dataSource)
-                        .doOnError(e -> logger.print(getClass(), "Could not load tasks " + event, e))
+                        .doOnError(e -> logger.print(getClass(), e, "Could not load tasks %s", event))
                         .map(list -> (Result<ViewState>) current -> updateSuccessState(current, list))
                 )
                 .onErrorReturn(e -> current -> updateFailureState(current, e))

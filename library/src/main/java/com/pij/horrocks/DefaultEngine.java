@@ -44,7 +44,7 @@ public final class DefaultEngine<S, M> implements Engine<S, M> {
         Callable<S> initialValue = () -> transientCleaner.apply(store.load());
         return Observable.fromIterable(features)
                 .flatMap(feature -> feature.result()
-                        .doOnTerminate(() -> logger.print(getClass(), "Feature " + feature.hashCode() + " Unexpected completion!!!"))
+                        .doOnTerminate(() -> logger.print(getClass(), "Feature %s Unexpected completion!!!", feature.hashCode()))
                 )
                 .scanWith(initialValue, (current, result) -> updateState(current, result, transientCleaner))
                 .doOnNext(this::logState)
@@ -63,23 +63,23 @@ public final class DefaultEngine<S, M> implements Engine<S, M> {
     }
 
     private void logDispose() {
-        logger.print(getClass(), "Engine " + hashCode() + " End of this run");
+        logger.print(getClass(), "Engine %d End of this run", hashCode());
     }
 
     private void logUnexpectedCompletion() {
-        logger.print(getClass(), "Engine " + hashCode() + " Unexpected completion!!!");
+        logger.print(getClass(), "Engine %d Unexpected completion!!!", hashCode());
     }
 
     private void logTerminalFailure(Throwable e) {
-        logger.print(getClass(), "Engine " + hashCode() + " Terminal failure!!! ", e);
+        logger.print(getClass(), e, "Engine %s Terminal failure!!! ", hashCode());
     }
 
     private void logModel(M it) {
-        logger.print(getClass(), "Emitting " + it);
+        logger.print(getClass(), "Emitting %s", it);
     }
 
     private void logState(S it) {
-        logger.print(getClass(), "Calculating " + it);
+        logger.print(getClass(), "Calculating %s", it);
     }
 
     private S updateState(S current, Result<S> result, Function<S, S> transientCleaner) throws Exception {

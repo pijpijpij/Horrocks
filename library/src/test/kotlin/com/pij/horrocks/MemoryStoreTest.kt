@@ -16,7 +16,7 @@ package com.pij.horrocks
 
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
-import org.junit.Test
+import kotlin.test.Test
 
 /**
  *

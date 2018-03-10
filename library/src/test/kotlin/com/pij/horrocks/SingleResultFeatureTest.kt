@@ -18,10 +18,10 @@ import io.reactivex.functions.Function
 import io.reactivex.observers.TestObserver
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
-import org.junit.Test
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.argThat
 import org.mockito.Mockito
+import kotlin.test.Test
 
 /**
  *

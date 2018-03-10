@@ -15,6 +15,13 @@
 package com.pij.horrocks
 
 class SysoutLogger : Logger {
+    override fun print(javaClass: Class<*>, messageTemplate: String, vararg args: Any?) {
+        print(javaClass, messageTemplate.format(*args))
+    }
+
+    override fun print(javaClass: Class<*>, e: Throwable, messageTemplate: String, vararg args: Any?) {
+        print(javaClass, messageTemplate.format(*args), e)
+    }
 
     override fun print(javaClass: Class<*>, message: String, e: Throwable) {
         print(javaClass, message)
@@ -22,6 +29,6 @@ class SysoutLogger : Logger {
     }
 
     override fun print(javaClass: Class<*>, message: String) {
-        System.out.println(javaClass.toString() + " " + message)
+        println(javaClass.toString() + " " + message)
     }
 }

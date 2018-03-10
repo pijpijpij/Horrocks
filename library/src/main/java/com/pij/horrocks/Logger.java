@@ -33,10 +33,24 @@ public interface Logger {
         public void print(@NonNull Class<?> javaClass, @NonNull String message, @NonNull Throwable e) {
 
         }
+
+        @Override
+        public void print(@NonNull Class<?> javaClass, @NonNull String messageTemplate, @NonNull Object... args) {
+
+        }
+
+        @Override
+        public void print(@NonNull Class<?> javaClass, @NonNull Throwable e, @NonNull String messageTemplate, @NonNull Object... args) {
+
+        }
     };
 
     void print(@NonNull Class<?> javaClass, @NonNull String message);
 
     void print(@NonNull Class<?> javaClass, @NonNull String message, @NonNull Throwable e);
+
+    void print(@NonNull Class<?> javaClass, @NonNull String messageTemplate, @NonNull Object... args);
+
+    void print(@NonNull Class<?> javaClass, @NonNull Throwable e, @NonNull String messageTemplate, @NonNull Object... args);
 
 }

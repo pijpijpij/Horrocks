@@ -17,11 +17,10 @@ package com.pij.horrocks
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
-import org.junit.Before
-import org.junit.Test
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 
 /**
- *
  * Created on 17/11/2017.
  *
  * @author PierreJean
@@ -32,7 +31,7 @@ class DefaultEngineTest {
 
     private lateinit var sut: DefaultEngine<DummyState, DummyState>
 
-    @Before
+    @BeforeTest
     fun setUp() {
         sut = DefaultEngine(SysoutLogger())
     }
