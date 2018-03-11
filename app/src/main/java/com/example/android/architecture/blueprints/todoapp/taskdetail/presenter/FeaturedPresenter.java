@@ -23,13 +23,13 @@ import com.example.android.architecture.blueprints.todoapp.taskdetail.TaskDetail
 import com.example.android.architecture.blueprints.todoapp.taskdetail.TaskDetailModule;
 import com.example.android.architecture.blueprints.todoapp.taskdetail.ui.TaskDetailFragment;
 import com.google.common.base.Strings;
+import com.pij.horrocks.ActionCreator;
 import com.pij.horrocks.Configuration;
 import com.pij.horrocks.Engine;
-import com.pij.horrocks.Feature;
 import com.pij.horrocks.Logger;
-import com.pij.horrocks.MemoryStore;
-import com.pij.horrocks.MultipleResultFeature;
-import com.pij.horrocks.SingleResultFeature;
+import com.pij.horrocks.MemoryStorage;
+import com.pij.horrocks.MultipleActionCreator;
+import com.pij.horrocks.SingleActionCreator;
 import com.pij.horrocks.View;
 
 import javax.inject.Inject;
@@ -56,11 +56,11 @@ public final class FeaturedPresenter implements Presenter {
     private final CompositeDisposable subscription = new CompositeDisposable();
     private final Engine<TaskDetailModel, TaskDetailModel> engine;
     private final Configuration<TaskDetailModel, TaskDetailModel> engineConfiguration;
-    private final Feature<String, TaskDetailModel> loadTask;
-    private final Feature<String, TaskDetailModel> editTask;
-    private final Feature<String, TaskDetailModel> deleteTask;
-    private final Feature<String, TaskDetailModel> completeTask;
-    private final Feature<String, TaskDetailModel> activateTask;
+    private final ActionCreator<String, TaskDetailModel> loadTask;
+    private final ActionCreator<String, TaskDetailModel> editTask;
+    private final ActionCreator<String, TaskDetailModel> deleteTask;
+    private final ActionCreator<String, TaskDetailModel> completeTask;
+    private final ActionCreator<String, TaskDetailModel> activateTask;
     @NonNull
     private String mTaskId;
 
@@ -75,17 +75,17 @@ public final class FeaturedPresenter implements Presenter {
                              Engine<TaskDetailModel, TaskDetailModel> engine) {
         this.logger = logger;
         mTaskId = Strings.nullToEmpty(taskId);
-        loadTask = new MultipleResultFeature<>(new LoadTaskFeature(logger, tasksRepository));
-        editTask = new SingleResultFeature<>(new EditTaskFeature());
-        deleteTask = new MultipleResultFeature<>(new DeleteTaskFeature(logger, tasksRepository));
-        completeTask = new MultipleResultFeature<>(new CompleteTaskFeature(logger, tasksRepository));
-        activateTask = new MultipleResultFeature<>(new ActivateTaskFeature(logger, tasksRepository));
+        loadTask = new MultipleActionCreator<>(new LoadTaskFeature(logger, tasksRepository));
+        editTask = new SingleActionCreator<>(new EditTaskFeature());
+        deleteTask = new MultipleActionCreator<>(new DeleteTaskFeature(logger, tasksRepository));
+        completeTask = new MultipleActionCreator<>(new CompleteTaskFeature(logger, tasksRepository));
+        activateTask = new MultipleActionCreator<>(new ActivateTaskFeature(logger, tasksRepository));
         this.engine = engine;
         engineConfiguration = Configuration.<TaskDetailModel, TaskDetailModel>builder()
-                .store(new MemoryStore<>(initialState()))
+                .store(new MemoryStorage<>(initialState()))
                 .transientResetter(this::resetTransientState)
                 .stateToModel(state -> state)
-                .features(asList(loadTask, editTask, deleteTask, completeTask, activateTask))
+                .creators(asList(loadTask, editTask, deleteTask, completeTask, activateTask))
                 .build();
     }
 

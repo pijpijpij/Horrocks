@@ -17,15 +17,12 @@ package com.pij.horrocks;
 import android.support.annotation.NonNull;
 
 /**
- * <p>Created on 18/01/2018.</p>
+ * <p>Created on 01/01/2018.</p>
  *
  * @author PierreJean
  */
 
-public interface Store<S> {
-
+public interface Interaction<E, S> {
     @NonNull
-    S load();
-
-    void save(@NonNull S state);
+    Reducer<S> process(@NonNull E event);
 }

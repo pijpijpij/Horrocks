@@ -24,13 +24,13 @@ import com.example.android.architecture.blueprints.todoapp.tasks.Presenter;
 import com.example.android.architecture.blueprints.todoapp.tasks.TasksModel;
 import com.example.android.architecture.blueprints.todoapp.tasks.TasksModule;
 import com.example.android.architecture.blueprints.todoapp.tasks.ui.TasksFragment;
+import com.pij.horrocks.ActionCreator;
 import com.pij.horrocks.Configuration;
 import com.pij.horrocks.Engine;
-import com.pij.horrocks.Feature;
 import com.pij.horrocks.Logger;
-import com.pij.horrocks.MemoryStore;
-import com.pij.horrocks.MultipleResultFeature;
-import com.pij.horrocks.SingleResultFeature;
+import com.pij.horrocks.MemoryStorage;
+import com.pij.horrocks.MultipleActionCreator;
+import com.pij.horrocks.SingleActionCreator;
 import com.pij.horrocks.View;
 
 import io.reactivex.disposables.CompositeDisposable;
@@ -57,13 +57,13 @@ public final class FeaturedPresenter implements Presenter {
     private final Logger logger;
     private final CompositeDisposable subscription = new CompositeDisposable();
     private final Engine<ViewState, TasksModel> engine;
-    private final Feature<Object, ViewState> indicateTaskSaved;
-    private final Feature<Object, ViewState> showAddTask;
-    private final Feature<Task, ViewState> openTaskDetails;
-    private final Feature<Object, ViewState> clearCompletedTasks;
-    private final Feature<Task, ViewState> activateTask;
-    private final Feature<Task, ViewState> completeTask;
-    private final Feature<FilterType, ViewState> loadTasks;
+    private final ActionCreator<Object, ViewState> indicateTaskSaved;
+    private final ActionCreator<Object, ViewState> showAddTask;
+    private final ActionCreator<Task, ViewState> openTaskDetails;
+    private final ActionCreator<Object, ViewState> clearCompletedTasks;
+    private final ActionCreator<Task, ViewState> activateTask;
+    private final ActionCreator<Task, ViewState> completeTask;
+    private final ActionCreator<FilterType, ViewState> loadTasks;
     private final Configuration<ViewState, TasksModel> engineConfiguration;
 
     /**
@@ -73,19 +73,19 @@ public final class FeaturedPresenter implements Presenter {
     public FeaturedPresenter(TasksDataSource tasksRepository, Logger logger, Engine<ViewState, TasksModel> engine) {
         this.logger = logger;
 
-        indicateTaskSaved = new SingleResultFeature<>(new IndicateTaskSavedFeature(), logger);
-        showAddTask = new SingleResultFeature<>(new ShowAddTaskFeature(), logger);
-        openTaskDetails = new SingleResultFeature<>(new OpenTaskDetailsFeature(), logger);
-        clearCompletedTasks = new MultipleResultFeature<>(new ClearCompletedTasksFeature(logger, tasksRepository), logger);
-        activateTask = new MultipleResultFeature<>(new ActivateTaskFeature(logger, tasksRepository), logger);
-        completeTask = new MultipleResultFeature<>(new CompleteTaskFeature(logger, tasksRepository), logger);
-        loadTasks = new MultipleResultFeature<>(new LoadTasksFeature(logger, tasksRepository), logger);
+        indicateTaskSaved = new SingleActionCreator<>(new IndicateTaskSavedFeature(), logger);
+        showAddTask = new SingleActionCreator<>(new ShowAddTaskFeature(), logger);
+        openTaskDetails = new SingleActionCreator<>(new OpenTaskDetailsFeature(), logger);
+        clearCompletedTasks = new MultipleActionCreator<>(new ClearCompletedTasksFeature(logger, tasksRepository), logger);
+        activateTask = new MultipleActionCreator<>(new ActivateTaskFeature(logger, tasksRepository), logger);
+        completeTask = new MultipleActionCreator<>(new CompleteTaskFeature(logger, tasksRepository), logger);
+        loadTasks = new MultipleActionCreator<>(new LoadTasksFeature(logger, tasksRepository), logger);
         this.engine = engine;
         engineConfiguration = Configuration.<ViewState, TasksModel>builder()
-                .store(new MemoryStore<>(initialState()))
+                .store(new MemoryStorage<>(initialState()))
                 .transientResetter(this::resetTransientState)
                 .stateToModel(this::convert)
-                .features(asList(
+                .creators(asList(
                         indicateTaskSaved,
                         showAddTask,
                         openTaskDetails,

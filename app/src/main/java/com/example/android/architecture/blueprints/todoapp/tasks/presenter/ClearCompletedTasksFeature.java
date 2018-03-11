@@ -19,21 +19,21 @@ import android.support.annotation.NonNull;
 import com.example.android.architecture.blueprints.todoapp.data.Task;
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource;
 import com.example.android.architecture.blueprints.todoapp.data.source.Util;
+import com.pij.horrocks.AsyncInteraction;
 import com.pij.horrocks.Logger;
-import com.pij.horrocks.Result;
+import com.pij.horrocks.Reducer;
 
 import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
-import io.reactivex.functions.Function;
 
 /**
  * <p>Created on 04/01/2018.</p>
  *
  * @author PierreJean
  */
-class ClearCompletedTasksFeature implements Function<Object, Observable<Result<ViewState>>> {
+class ClearCompletedTasksFeature implements AsyncInteraction<Object, ViewState> {
 
     private final Logger logger;
     private final TasksDataSource dataSource;
@@ -72,10 +72,10 @@ class ClearCompletedTasksFeature implements Function<Object, Observable<Result<V
      */
     @NonNull
     @Override
-    public Observable<Result<ViewState>> apply(Object event) {
+    public Observable<Reducer<ViewState>> process(@NonNull Object event) {
         return Completable.fromAction(dataSource::clearCompletedTasks)
                 .andThen(Util.loadTasksAsSingle(dataSource))
-                .map(list -> (Result<ViewState>) current -> updateSuccessState(current, list))
+                .map(list -> (Reducer<ViewState>) current -> updateSuccessState(current, list))
                 .doOnError(e -> logger.print(getClass(), "Could not clear completed tasks", e))
                 .onErrorReturn(e -> current -> updateFailureState(current, e))
                 .toObservable()

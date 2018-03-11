@@ -61,7 +61,7 @@ public class ActivateTaskFeatureTest {
     public void emitsStartResult_beforeRepositorySucceeds() throws Exception {
         tasksRepositoryHelper.setupGetTasks();
 
-        TestObserver<ViewState> observer = sut.apply(zipzapTask).map(result -> result.reduce(defaultState())).test();
+        TestObserver<ViewState> observer = sut.process(zipzapTask).map(result -> result.reduce(defaultState())).test();
 
         observer.assertValue(state -> state.activateTaskInProgress() && !state.showTaskMarkedActive());
     }
@@ -70,7 +70,7 @@ public class ActivateTaskFeatureTest {
     public void emitsStartAndSuccessResults_whenRepositorySucceeds() throws Exception {
         tasksRepositoryHelper.setupGetTasks();
 
-        TestObserver<ViewState> observer = sut.apply(zipzapTask).map(result -> result.reduce(defaultState())).test();
+        TestObserver<ViewState> observer = sut.process(zipzapTask).map(result -> result.reduce(defaultState())).test();
         tasksRepositoryHelper.completeGetTasks(singletonList(zipzapTask));
 
         observer.assertValueAt(1, state -> !state.activateTaskInProgress() && state.showTaskMarkedActive());
@@ -80,7 +80,7 @@ public class ActivateTaskFeatureTest {
     public void completes_whenRepositorySucceeds() throws Exception {
         tasksRepositoryHelper.setupGetTasks();
 
-        TestObserver<ViewState> observer = sut.apply(zipzapTask).map(result -> result.reduce(defaultState())).test();
+        TestObserver<ViewState> observer = sut.process(zipzapTask).map(result -> result.reduce(defaultState())).test();
         tasksRepositoryHelper.completeGetTasks(singletonList(zipzapTask));
 
         observer.assertComplete();
@@ -90,7 +90,7 @@ public class ActivateTaskFeatureTest {
     public void emitsStartAndFailureResults_whenRepositoryFails() throws Exception {
         tasksRepositoryHelper.setupGetTasks();
 
-        TestObserver<ViewState> observer = sut.apply(zipzapTask).map(result -> result.reduce(defaultState())).test();
+        TestObserver<ViewState> observer = sut.process(zipzapTask).map(result -> result.reduce(defaultState())).test();
         tasksRepositoryHelper.failGetTasks();
 
         observer.assertValueAt(1, state -> !state.activateTaskInProgress() && !state.showTaskMarkedActive()
@@ -101,7 +101,7 @@ public class ActivateTaskFeatureTest {
     public void completes_whenRepositoryFails() throws Exception {
         tasksRepositoryHelper.setupGetTasks();
 
-        TestObserver<ViewState> observer = sut.apply(zipzapTask).map(result -> result.reduce(defaultState())).test();
+        TestObserver<ViewState> observer = sut.process(zipzapTask).map(result -> result.reduce(defaultState())).test();
         tasksRepositoryHelper.failGetTasks();
 
         observer.assertComplete();

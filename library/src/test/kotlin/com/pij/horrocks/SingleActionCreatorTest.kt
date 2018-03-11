@@ -14,7 +14,6 @@
 
 package com.pij.horrocks
 
-import io.reactivex.functions.Function
 import io.reactivex.observers.TestObserver
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
@@ -29,12 +28,12 @@ import kotlin.test.Test
  *
  * @author PierreJean
  */
-class SingleResultFeatureTest {
+class SingleActionCreatorTest {
 
     @Test
     fun `result() emits no Result if there's no event`() {
-        val sut = SingleResultFeature<String, Int>(Function { Result { 0 } }, SysoutLogger())
-        val observer = sut.reductors().test()
+        val sut = SingleActionCreator<String, Int>(Interaction { Reducer { 0 } }, SysoutLogger())
+        val observer = sut.reducers().test()
 
         observer.assertNoValues()
         observer.assertNotComplete()
@@ -42,8 +41,8 @@ class SingleResultFeatureTest {
 
     @Test
     fun `result() emits 1 Result if 1 event is triggered`() {
-        val sut = SingleResultFeature<String, Int>(Function { Result { 0 } }, SysoutLogger())
-        val observer = sut.reductors().test()
+        val sut = SingleActionCreator<String, Int>(Interaction { Reducer { 0 } }, SysoutLogger())
+        val observer = sut.reducers().test()
 
         sut.trigger("some event")
 
@@ -53,8 +52,8 @@ class SingleResultFeatureTest {
 
     @Test
     fun `result() emits 2 Results if 2 events are triggered`() {
-        val sut = SingleResultFeature<String, Int>(Function { Result { 0 } }, SysoutLogger())
-        val observer = sut.reductors().test()
+        val sut = SingleActionCreator<String, Int>(Interaction { Reducer { 0 } }, SysoutLogger())
+        val observer = sut.reducers().test()
 
         sut.trigger("some event")
         sut.trigger("some other event")
@@ -65,8 +64,8 @@ class SingleResultFeatureTest {
 
     @Test
     fun `result() provides the function passed at construction`() {
-        val sut = SingleResultFeature<String, Int>(Function { Result { state -> state + it.length } }, SysoutLogger())
-        val observer: TestObserver<out Result<Int>> = sut.reductors().test()
+        val sut = SingleActionCreator<String, Int>(Interaction { Reducer { state -> state + it.length } }, SysoutLogger())
+        val observer: TestObserver<out Reducer<Int>> = sut.reducers().test()
 
         sut.trigger("12345678")
 
@@ -77,8 +76,8 @@ class SingleResultFeatureTest {
     @Test
     fun `Logs event`() {
         val loggerMock = Mockito.mock(Logger::class.java)
-        val sut = SingleResultFeature<String, Int>(Function { Result { 0 } }, loggerMock)
-        sut.reductors().test()
+        val sut = SingleActionCreator<String, Int>(Interaction { Reducer { 0 } }, loggerMock)
+        sut.reducers().test()
 
         sut.trigger("something")
 
@@ -88,12 +87,12 @@ class SingleResultFeatureTest {
     @Test
     fun `Logs results`() {
         val loggerMock = Mockito.mock(Logger::class.java)
-        val sut = SingleResultFeature<String, Int>(Function { Result { 0 } }, loggerMock)
-        sut.reductors().test()
+        val sut = SingleActionCreator<String, Int>(Interaction { Reducer { 0 } }, loggerMock)
+        sut.reducers().test()
 
         sut.trigger("something")
 
-        Mockito.verify(loggerMock).print(any(), argThat { it.contains("Emitting reductors") })
+        Mockito.verify(loggerMock).print(any(), argThat { it.contains("Emitting reducers") })
     }
 }
 

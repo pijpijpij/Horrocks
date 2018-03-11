@@ -34,7 +34,7 @@ public class OpenTaskDetailsFeatureTest {
         OpenTaskDetailsFeature sut = new OpenTaskDetailsFeature();
         Task aTask = new Task("zip", "zap", "the id");
 
-        ViewState newState = sut.apply(aTask).reduce(defaultState());
+        ViewState newState = sut.process(aTask).reduce(defaultState());
 
         assertThat(newState.showTaskDetails(), equalTo("the id"));
     }

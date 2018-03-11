@@ -15,7 +15,6 @@
 package com.pij.horrocks
 
 import io.reactivex.Observable
-import io.reactivex.functions.Function
 import io.reactivex.observers.TestObserver
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
@@ -30,12 +29,12 @@ import kotlin.test.Test
  *
  * @author PierreJean
  */
-class MultipleResultFeatureTest {
+class MultipleActionCreatorTest {
 
     @Test
     fun `result() emits no Result if there's no event`() {
-        val sut = MultipleResultFeature<String, Int>(Function { Observable.just(Result { 0 }, Result { 0 }) }, SysoutLogger())
-        val observer = sut.reductors().test()
+        val sut = MultipleActionCreator<String, Int>(AsyncInteraction { Observable.just(Reducer { 0 }, Reducer { 0 }) }, SysoutLogger())
+        val observer = sut.reducers().test()
 
         observer.assertNoValues()
                 .assertNotComplete()
@@ -43,8 +42,8 @@ class MultipleResultFeatureTest {
 
     @Test
     fun `result() emits 2 Results if 1 event is triggered and the 'state modifier' emits 2 times`() {
-        val sut = MultipleResultFeature<String, Int>(Function { Observable.just(Result { 0 }, Result { 0 }) }, SysoutLogger())
-        val observer = sut.reductors().test()
+        val sut = MultipleActionCreator<String, Int>(AsyncInteraction { Observable.just(Reducer { 0 }, Reducer { 0 }) }, SysoutLogger())
+        val observer = sut.reducers().test()
 
         sut.trigger("some event")
 
@@ -54,8 +53,8 @@ class MultipleResultFeatureTest {
 
     @Test
     fun `result() emits 4 Results if 2 events are triggered and the 'state modifier' emits 2 times`() {
-        val sut = MultipleResultFeature<String, Int>(Function { Observable.just(Result { 0 }, Result { 0 }) }, SysoutLogger())
-        val observer = sut.reductors().test()
+        val sut = MultipleActionCreator<String, Int>(AsyncInteraction { Observable.just(Reducer { 0 }, Reducer { 0 }) }, SysoutLogger())
+        val observer = sut.reducers().test()
 
         sut.trigger("some event")
         sut.trigger("some other event")
@@ -66,13 +65,13 @@ class MultipleResultFeatureTest {
 
     @Test
     fun `results emitted produce state as defined by the 'state modifier'`() {
-        val sut = MultipleResultFeature<String, Int>(Function {
+        val sut = MultipleActionCreator<String, Int>(AsyncInteraction {
             Observable.just(
-                    Result { 0 },
-                    Result { state -> state + it.length }
+                    Reducer { 0 },
+                    Reducer { state -> state + it.length }
             )
         }, SysoutLogger())
-        val observer: TestObserver<out Result<Int>> = sut.reductors().test()
+        val observer: TestObserver<out Reducer<Int>> = sut.reducers().test()
 
         sut.trigger("12345678")
 
@@ -85,8 +84,8 @@ class MultipleResultFeatureTest {
     @Test
     fun `Logs event`() {
         val loggerMock = mock(Logger::class.java)
-        val sut = MultipleResultFeature<String, Int>(Function { Observable.just(Result { 0 }, Result { 0 }) }, loggerMock)
-        sut.reductors().test()
+        val sut = MultipleActionCreator<String, Int>(AsyncInteraction { Observable.just(Reducer { 0 }, Reducer { 0 }) }, loggerMock)
+        sut.reducers().test()
 
         sut.trigger("something")
 
@@ -96,12 +95,12 @@ class MultipleResultFeatureTest {
     @Test
     fun `Logs results`() {
         val loggerMock = mock(Logger::class.java)
-        val sut = MultipleResultFeature<String, Int>(Function { Observable.just(Result { 0 }, Result { 0 }) }, loggerMock)
-        sut.reductors().test()
+        val sut = MultipleActionCreator<String, Int>(AsyncInteraction { Observable.just(Reducer { 0 }, Reducer { 0 }) }, loggerMock)
+        sut.reducers().test()
 
         sut.trigger("something")
 
-        verify(loggerMock, times(2)).print(ArgumentMatchers.any(), Mockito.argThat { it.contains("Emitting reductors") })
+        verify(loggerMock, times(2)).print(ArgumentMatchers.any(), Mockito.argThat { it.contains("Emitting reducers") })
     }
 }
 

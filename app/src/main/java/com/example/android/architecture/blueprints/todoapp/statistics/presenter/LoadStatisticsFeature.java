@@ -20,19 +20,19 @@ import com.example.android.architecture.blueprints.todoapp.data.Task;
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource;
 import com.example.android.architecture.blueprints.todoapp.data.source.Util;
 import com.example.android.architecture.blueprints.todoapp.statistics.StatisticsModel;
+import com.pij.horrocks.AsyncInteraction;
 import com.pij.horrocks.Logger;
-import com.pij.horrocks.Result;
+import com.pij.horrocks.Reducer;
 
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.functions.Function;
 
 /**
  * <p>Created on 01/01/2018.</p>
  *
  * @author PierreJean
  */
-class LoadStatisticsFeature implements Function<Object, Observable<Result<StatisticsModel>>> {
+class LoadStatisticsFeature implements AsyncInteraction<Object, StatisticsModel> {
 
     private final Logger logger;
     private final TasksDataSource dataSource;
@@ -65,8 +65,9 @@ class LoadStatisticsFeature implements Function<Object, Observable<Result<Statis
                 .build();
     }
 
+    @NonNull
     @Override
-    public Observable<Result<StatisticsModel>> apply(Object event) {
+    public Observable<Reducer<StatisticsModel>> process(@NonNull Object event) {
         return Util.loadTasksAsSingle(dataSource)
                 .doOnError(e -> logger.print(getClass(), "Could not load data", e))
                 .flatMapObservable(Observable::fromIterable)
@@ -76,7 +77,7 @@ class LoadStatisticsFeature implements Function<Object, Observable<Result<Statis
                         StatisticsModel.Numbers::create
                 ).toObservable())
                 .first(StatisticsModel.Numbers.create(0, 0))
-                .map(numbers -> (Result<StatisticsModel>) current -> updateSuccessState(current, numbers))
+                .map(numbers -> (Reducer<StatisticsModel>) current -> updateSuccessState(current, numbers))
                 .onErrorReturn(e -> current -> updateFailureState(current, e))
                 .toObservable()
                 .startWith(LoadStatisticsFeature::updateStartState);

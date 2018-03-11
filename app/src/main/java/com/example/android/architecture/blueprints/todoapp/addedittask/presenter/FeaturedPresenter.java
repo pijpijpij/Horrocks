@@ -24,12 +24,12 @@ import com.example.android.architecture.blueprints.todoapp.addedittask.Presenter
 import com.example.android.architecture.blueprints.todoapp.data.Task;
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource;
 import com.google.common.base.Strings;
+import com.pij.horrocks.ActionCreator;
 import com.pij.horrocks.Configuration;
 import com.pij.horrocks.Engine;
-import com.pij.horrocks.Feature;
 import com.pij.horrocks.Logger;
-import com.pij.horrocks.MemoryStore;
-import com.pij.horrocks.MultipleResultFeature;
+import com.pij.horrocks.MemoryStorage;
+import com.pij.horrocks.MultipleActionCreator;
 import com.pij.horrocks.View;
 
 import javax.inject.Inject;
@@ -58,8 +58,8 @@ public final class FeaturedPresenter implements Presenter {
     private final CompositeDisposable subscription = new CompositeDisposable();
     private final Engine<AddEditTaskModel, AddEditTaskModel> engine;
     private final Configuration<AddEditTaskModel, AddEditTaskModel> engineConfiguration;
-    private final Feature<Task, AddEditTaskModel> saveTask;
-    private final Feature<String, AddEditTaskModel> loadTask;
+    private final ActionCreator<Task, AddEditTaskModel> saveTask;
+    private final ActionCreator<String, AddEditTaskModel> loadTask;
 
     private String taskId;
 
@@ -89,14 +89,14 @@ public final class FeaturedPresenter implements Presenter {
         this.logger = logger;
         this.taskId = Strings.nullToEmpty(taskId);
         isDataMissingLazy = shouldLoadDataFromRepo;
-        saveTask = new MultipleResultFeature<>(new SaveTaskFeature(logger, tasksRepository));
-        loadTask = new MultipleResultFeature<>(new LoadTaskFeature(logger, tasksRepository));
+        saveTask = new MultipleActionCreator<>(new SaveTaskFeature(logger, tasksRepository));
+        loadTask = new MultipleActionCreator<>(new LoadTaskFeature(logger, tasksRepository));
         this.engine = engine;
         engineConfiguration = Configuration.<AddEditTaskModel, AddEditTaskModel>builder()
-                .store(new MemoryStore<>(initialState()))
+                .store(new MemoryStorage<>(initialState()))
                 .transientResetter(this::resetTransientState)
                 .stateToModel(state -> state)
-                .features(asList(saveTask, loadTask))
+                .creators(asList(saveTask, loadTask))
                 .build();
     }
 

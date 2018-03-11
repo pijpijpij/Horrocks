@@ -21,7 +21,7 @@ package com.pij.horrocks
  * @author PierreJean
  */
 
-class MemoryStore<S>(private var state: S) : Store<S> {
+class MemoryStorage<S>(private var state: S) : Storage<S> {
 
     override fun load(): S {
         return state

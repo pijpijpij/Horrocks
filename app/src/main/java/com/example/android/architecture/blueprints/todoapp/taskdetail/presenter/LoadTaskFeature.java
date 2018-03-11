@@ -21,18 +21,18 @@ import com.example.android.architecture.blueprints.todoapp.data.source.TasksData
 import com.example.android.architecture.blueprints.todoapp.data.source.Util;
 import com.example.android.architecture.blueprints.todoapp.taskdetail.TaskDetailModel;
 import com.google.common.base.Strings;
+import com.pij.horrocks.AsyncInteraction;
 import com.pij.horrocks.Logger;
-import com.pij.horrocks.Result;
+import com.pij.horrocks.Reducer;
 
 import io.reactivex.Observable;
-import io.reactivex.functions.Function;
 
 /**
  * <p>Created on 01/01/2018.</p>
  *
  * @author PierreJean
  */
-class LoadTaskFeature implements Function<String, Observable<Result<TaskDetailModel>>> {
+class LoadTaskFeature implements AsyncInteraction<String, TaskDetailModel> {
 
     private final Logger logger;
     private final TasksDataSource dataSource;
@@ -75,15 +75,16 @@ class LoadTaskFeature implements Function<String, Observable<Result<TaskDetailMo
                 .build();
     }
 
+    @NonNull
     @Override
-    public Observable<Result<TaskDetailModel>> apply(String taskId) {
+    public Observable<Reducer<TaskDetailModel>> process(@NonNull String taskId) {
         return Observable.just(taskId)
                 .filter(Strings::isNullOrEmpty)
-                .map(id -> (Result<TaskDetailModel>) LoadTaskFeature::updateInvalidState)
+                .map(id -> (Reducer<TaskDetailModel>) LoadTaskFeature::updateInvalidState)
                 .switchIfEmpty(
                         Util.loadTaskAsSingle(taskId, dataSource)
                                 .doOnError(e -> logger.print(getClass(), "Could not load data", e))
-                                .map(task -> (Result<TaskDetailModel>) current -> updateSuccessState(current, task))
+                                .map(task -> (Reducer<TaskDetailModel>) current -> updateSuccessState(current, task))
                                 .onErrorReturnItem(LoadTaskFeature::updateFailureState)
                                 .toObservable()
                                 .startWith(LoadTaskFeature::updateStartState)

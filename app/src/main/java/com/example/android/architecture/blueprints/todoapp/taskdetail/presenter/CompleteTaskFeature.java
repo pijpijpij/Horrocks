@@ -19,19 +19,19 @@ import android.support.annotation.NonNull;
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource;
 import com.example.android.architecture.blueprints.todoapp.taskdetail.TaskDetailModel;
 import com.google.common.base.Strings;
+import com.pij.horrocks.AsyncInteraction;
 import com.pij.horrocks.Logger;
-import com.pij.horrocks.Result;
+import com.pij.horrocks.Reducer;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
-import io.reactivex.functions.Function;
 
 /**
  * <p>Created on 01/01/2018.</p>
  *
  * @author PierreJean
  */
-class CompleteTaskFeature implements Function<String, Observable<Result<TaskDetailModel>>> {
+class CompleteTaskFeature implements AsyncInteraction<String, TaskDetailModel> {
 
     private final Logger logger;
     private final TasksDataSource dataSource;
@@ -72,15 +72,16 @@ class CompleteTaskFeature implements Function<String, Observable<Result<TaskDeta
                 .build();
     }
 
+    @NonNull
     @Override
-    public Observable<Result<TaskDetailModel>> apply(String taskId) {
+    public Observable<Reducer<TaskDetailModel>> process(@NonNull String taskId) {
         return Observable.just(taskId)
                 .filter(Strings::isNullOrEmpty)
-                .map(id -> (Result<TaskDetailModel>) CompleteTaskFeature::updateInvalidState)
+                .map(id -> (Reducer<TaskDetailModel>) CompleteTaskFeature::updateInvalidState)
                 .switchIfEmpty(
                         Completable.fromAction(() -> dataSource.completeTask(taskId))
                                 .doOnError(e -> logger.print(getClass(), "Could not update data", e))
-                                .andThen(Observable.just((Result<TaskDetailModel>) CompleteTaskFeature::updateSuccessState))
+                                .andThen(Observable.just((Reducer<TaskDetailModel>) CompleteTaskFeature::updateSuccessState))
                                 .onErrorReturnItem(CompleteTaskFeature::updateFailureState)
                                 .startWith(CompleteTaskFeature::updateStartState)
                 );

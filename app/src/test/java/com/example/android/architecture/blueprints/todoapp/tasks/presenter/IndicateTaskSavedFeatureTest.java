@@ -31,7 +31,7 @@ public class IndicateTaskSavedFeatureTest {
     public void emitsShowSuccessfullySavedMessage_whenTriggered() throws Exception {
         IndicateTaskSavedFeature sut = new IndicateTaskSavedFeature();
 
-        ViewState newState = sut.apply(new Object()).reduce(defaultState());
+        ViewState newState = sut.process(new Object()).reduce(defaultState());
 
         assertThat(newState.showSuccessfullySavedMessage(), equalTo(true));
     }

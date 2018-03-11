@@ -20,16 +20,16 @@ import com.example.android.architecture.blueprints.todoapp.addedittask.AddEditTa
 import com.example.android.architecture.blueprints.todoapp.data.Task;
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource;
 import com.example.android.architecture.blueprints.todoapp.data.source.Util;
+import com.pij.horrocks.AsyncInteraction;
 import com.pij.horrocks.Logger;
-import com.pij.horrocks.Result;
+import com.pij.horrocks.Reducer;
 
 import io.reactivex.Observable;
-import io.reactivex.functions.Function;
 
 /**
  * @author PierreJean
  */
-class SaveTaskFeature implements Function<Task, Observable<Result<AddEditTaskModel>>> {
+class SaveTaskFeature implements AsyncInteraction<Task, AddEditTaskModel> {
 
     private final Logger logger;
     private final TasksDataSource dataSource;
@@ -70,14 +70,15 @@ class SaveTaskFeature implements Function<Task, Observable<Result<AddEditTaskMod
                 .build();
     }
 
+    @NonNull
     @Override
-    public Observable<Result<AddEditTaskModel>> apply(Task toSave) {
+    public Observable<Reducer<AddEditTaskModel>> process(@NonNull Task toSave) {
         return Observable.just(toSave)
                 .filter(Task::isEmpty)
-                .map(task -> (Result<AddEditTaskModel>) SaveTaskFeature::updateInvalidState)
+                .map(task -> (Reducer<AddEditTaskModel>) SaveTaskFeature::updateInvalidState)
                 .switchIfEmpty(Util.saveTaskAsCompletable(toSave, dataSource)
                         .doOnError(e -> logger.print(getClass(), "Could not save data", e))
-                        .andThen(Observable.just((Result<AddEditTaskModel>) SaveTaskFeature::updateSuccessState))
+                        .andThen(Observable.just((Reducer<AddEditTaskModel>) SaveTaskFeature::updateSuccessState))
                         .onErrorReturnItem(SaveTaskFeature::updateFailureState)
                         .startWith(SaveTaskFeature::updateStartState));
     }

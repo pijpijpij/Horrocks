@@ -31,7 +31,7 @@ public class ShowAddTaskFeatureTest {
     public void emitsShowAddTask_whenTriggered() throws Exception {
         ShowAddTaskFeature sut = new ShowAddTaskFeature();
 
-        ViewState newState = sut.apply(new Object()).reduce(defaultState());
+        ViewState newState = sut.process(new Object()).reduce(defaultState());
 
         assertThat(newState.showAddTask(), equalTo(true));
     }

@@ -19,14 +19,14 @@ import android.support.annotation.NonNull;
 import com.example.android.architecture.blueprints.todoapp.data.Task;
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource;
 import com.example.android.architecture.blueprints.todoapp.data.source.Util;
+import com.pij.horrocks.AsyncInteraction;
 import com.pij.horrocks.Logger;
-import com.pij.horrocks.Result;
+import com.pij.horrocks.Reducer;
 
 import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
-import io.reactivex.functions.Function;
 
 import static com.example.android.architecture.blueprints.todoapp.data.source.Util.errorMessage;
 
@@ -35,7 +35,7 @@ import static com.example.android.architecture.blueprints.todoapp.data.source.Ut
  *
  * @author PierreJean
  */
-class ActivateTaskFeature implements Function<Task, Observable<Result<ViewState>>> {
+class ActivateTaskFeature implements AsyncInteraction<Task, ViewState> {
 
     private final Logger logger;
     private final TasksDataSource dataSource;
@@ -69,13 +69,14 @@ class ActivateTaskFeature implements Function<Task, Observable<Result<ViewState>
                 .build();
     }
 
+    @NonNull
     @Override
-    public Observable<Result<ViewState>> apply(Task event) throws Exception {
+    public Observable<Reducer<ViewState>> process(@NonNull Task event) {
         return Completable.fromAction(() -> dataSource.activateTask(event))
                 .doOnError(e -> logger.print(getClass(), e, "Could not activate task %s", event))
                 .andThen(Util.loadTasksAsSingle(dataSource)
                         .doOnError(e -> logger.print(getClass(), e, "Could not load tasks %s", event))
-                        .map(list -> (Result<ViewState>) current -> updateSuccessState(current, list))
+                        .map(list -> (Reducer<ViewState>) current -> updateSuccessState(current, list))
                 )
                 .onErrorReturn(e -> current -> updateFailureState(current, e))
                 .toObservable()

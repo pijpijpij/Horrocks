@@ -20,13 +20,13 @@ import com.example.android.architecture.blueprints.todoapp.data.Task;
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource;
 import com.example.android.architecture.blueprints.todoapp.data.source.Util;
 import com.example.android.architecture.blueprints.todoapp.tasks.FilterType;
+import com.pij.horrocks.AsyncInteraction;
 import com.pij.horrocks.Logger;
-import com.pij.horrocks.Result;
+import com.pij.horrocks.Reducer;
 
 import java.util.List;
 
 import io.reactivex.Observable;
-import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 
 /**
@@ -34,7 +34,7 @@ import io.reactivex.functions.Predicate;
  *
  * @author PierreJean
  */
-class LoadTasksFeature implements Function<FilterType, Observable<Result<ViewState>>> {
+class LoadTasksFeature implements AsyncInteraction<FilterType, ViewState> {
 
     private final Logger logger;
     private final TasksDataSource dataSource;
@@ -67,13 +67,14 @@ class LoadTasksFeature implements Function<FilterType, Observable<Result<ViewSta
                 .build();
     }
 
+    @NonNull
     @Override
-    public Observable<Result<ViewState>> apply(FilterType filter) {
+    public Observable<Reducer<ViewState>> process(@NonNull FilterType filter) {
         return Util.loadTasksAsSingle(dataSource)
                 .doOnError(e -> logger.print(getClass(), "Could not load data", e))
                 .flatMap(list -> Observable.fromIterable(list).filter(filterFor(filter)).toList())
                 .doOnError(e -> logger.print(getClass(), "Could not filter data", e))
-                .map(list -> (Result<ViewState>) current -> updateSuccessState(current, list))
+                .map(list -> (Reducer<ViewState>) current -> updateSuccessState(current, list))
                 .onErrorReturn(e -> current -> updateFailureState(current, e))
                 .toObservable()
                 .startWith(LoadTasksFeature::updateStartState);

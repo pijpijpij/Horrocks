@@ -12,24 +12,19 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.example.android.architecture.blueprints.todoapp.tasks.presenter;
+package com.pij.horrocks;
 
 import android.support.annotation.NonNull;
 
-import com.example.android.architecture.blueprints.todoapp.data.Task;
-import com.pij.horrocks.Interaction;
-import com.pij.horrocks.Reducer;
+import io.reactivex.Observable;
 
 /**
- * <p>Created on 04/01/2018.</p>
+ * <p>Created on 01/01/2018.</p>
  *
  * @author PierreJean
  */
-class OpenTaskDetailsFeature implements Interaction<Task, ViewState> {
 
+public interface AsyncInteraction<E, S> {
     @NonNull
-    @Override
-    public Reducer<ViewState> process(@NonNull Task event) {
-        return current -> current.toBuilder().showTaskDetails(event.getId()).build();
-    }
+    Observable<Reducer<S>> process(@NonNull E event);
 }

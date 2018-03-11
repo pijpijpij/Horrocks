@@ -36,26 +36,26 @@ public abstract class Configuration<S, M> {
 
     public abstract Logger logger();
 
-    public abstract Collection<Feature<?, S>> features();
+    abstract Collection<ActionCreator<?, S>> creators();
 
-    public abstract StateConverter<S, M> stateToModel();
+    abstract StateConverter<S, M> stateToModel();
 
-    public abstract TransientCleaner<S> transientResetter();
+    abstract TransientCleaner<S> transientResetter();
 
-    public abstract Store<S> store();
+    abstract Storage<S> store();
 
     @AutoValue.Builder
     public abstract static class Builder<S, M> {
 
         public abstract Builder<S, M> logger(Logger logger);
 
-        public abstract Builder<S, M> features(Collection<Feature<?, S>> features);
+        public abstract Builder<S, M> creators(Collection<ActionCreator<?, S>> creators);
 
         public abstract Builder<S, M> stateToModel(StateConverter<S, M> stateToModel);
 
         public abstract Builder<S, M> transientResetter(TransientCleaner<S> transientResetter);
 
-        public abstract Builder<S, M> store(Store<S> store);
+        public abstract Builder<S, M> store(Storage<S> storage);
 
         public abstract Configuration<S, M> build();
     }

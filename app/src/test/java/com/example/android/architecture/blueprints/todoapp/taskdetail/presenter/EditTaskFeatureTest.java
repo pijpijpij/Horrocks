@@ -33,7 +33,7 @@ public class EditTaskFeatureTest {
     public void emitsEditTask_whenTriggeredWithValidId() throws Exception {
         EditTaskFeature sut = new EditTaskFeature();
 
-        TaskDetailModel newState = sut.apply("1").reduce(defaultState());
+        TaskDetailModel newState = sut.process("1").reduce(defaultState());
 
         assertThat(newState.showEditTask(), equalTo("1"));
     }
@@ -42,7 +42,8 @@ public class EditTaskFeatureTest {
     public void doesNotEmitsEditTask_whenTriggeredWithNullId() throws Exception {
         EditTaskFeature sut = new EditTaskFeature();
 
-        TaskDetailModel newState = sut.apply(null).reduce(defaultState());
+        //noinspection ConstantConditions
+        TaskDetailModel newState = sut.process(null).reduce(defaultState());
 
         assertThat(newState.showEditTask(), equalTo(null));
     }
@@ -51,7 +52,7 @@ public class EditTaskFeatureTest {
     public void doesNotEmitsEditTask_whenTriggeredWithEmptyId() throws Exception {
         EditTaskFeature sut = new EditTaskFeature();
 
-        TaskDetailModel newState = sut.apply("").reduce(defaultState());
+        TaskDetailModel newState = sut.process("").reduce(defaultState());
 
         assertThat(newState.showEditTask(), equalTo(null));
     }

@@ -36,18 +36,18 @@ public final class DefaultEngine<S, M> implements Engine<S, M> {
 
     @Override
     public Observable<M> runWith(Configuration<S, M> configuration) {
-        Store<S> store = configuration.store();
-        Collection<Feature<?, S>> features = configuration.features();
+        Storage<S> storage = configuration.store();
+        Collection<ActionCreator<?, S>> actionCreators = configuration.creators();
         TransientCleaner<S> transientCleaner = configuration.transientResetter();
         StateConverter<S, M> stateConverter = configuration.stateToModel();
-        Callable<S> initialValue = () -> transientCleaner.clean(store.load());
-        return Observable.fromIterable(features)
-                .flatMap(feature -> feature.reductors()
-                        .doOnTerminate(() -> logger.print(getClass(), "Feature %s Unexpected completion!!!", feature.hashCode()))
+        Callable<S> initialValue = () -> transientCleaner.clean(storage.load());
+        return Observable.fromIterable(actionCreators)
+                .flatMap(feature -> feature.reducers()
+                        .doOnTerminate(() -> logger.print(getClass(), "ActionCreator %s Unexpected completion!!!", feature.hashCode()))
                 )
                 .scanWith(initialValue, (current, reducer) -> updateState(current, reducer, transientCleaner))
                 .doOnNext(this::logState)
-                .doOnNext(store::save)
+                .doOnNext(storage::save)
                 .map(stateConverter::convert)
                 .doOnNext(this::logModel)
                 .doOnError(this::logTerminalFailure)
@@ -81,7 +81,7 @@ public final class DefaultEngine<S, M> implements Engine<S, M> {
         logger.print(getClass(), "Calculating %s", it);
     }
 
-    private S updateState(S current, Result<S> reducer, TransientCleaner<S> transientCleaner) throws Exception {
+    private S updateState(S current, Reducer<S> reducer, TransientCleaner<S> transientCleaner) throws Exception {
         S transientCleaned = transientCleaner.clean(current);
         return reducer.reduce(transientCleaned);
     }

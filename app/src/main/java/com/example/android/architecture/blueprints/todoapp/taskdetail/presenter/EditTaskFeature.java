@@ -14,21 +14,23 @@
 
 package com.example.android.architecture.blueprints.todoapp.taskdetail.presenter;
 
+import android.support.annotation.NonNull;
+
 import com.example.android.architecture.blueprints.todoapp.taskdetail.TaskDetailModel;
 import com.google.common.base.Strings;
-import com.pij.horrocks.Result;
-
-import io.reactivex.functions.Function;
+import com.pij.horrocks.Interaction;
+import com.pij.horrocks.Reducer;
 
 /**
  * <p>Created on 01/01/2018.</p>
  *
  * @author PierreJean
  */
-class EditTaskFeature implements Function<String, Result<TaskDetailModel>> {
+class EditTaskFeature implements Interaction<String, TaskDetailModel> {
 
+    @NonNull
     @Override
-    public Result<TaskDetailModel> apply(String taskId) {
+    public Reducer<TaskDetailModel> process(@NonNull String taskId) {
         String actualId = Strings.isNullOrEmpty(taskId) ? null : taskId;
         return current -> current.toBuilder().showEditTask(actualId).build();
     }
