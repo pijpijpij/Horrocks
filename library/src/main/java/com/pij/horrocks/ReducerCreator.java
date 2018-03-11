@@ -23,7 +23,7 @@ import io.reactivex.Observable;
  *
  * @author PierreJean
  */
-public interface ActionCreator<E, S> {
+public interface ReducerCreator<E, S> {
 
     void trigger(@NonNull E event);
 

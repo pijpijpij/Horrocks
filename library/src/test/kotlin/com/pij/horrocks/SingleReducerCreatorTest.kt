@@ -28,11 +28,11 @@ import kotlin.test.Test
  *
  * @author PierreJean
  */
-class SingleActionCreatorTest {
+class SingleReducerCreatorTest {
 
     @Test
-    fun `result() emits no Result if there's no event`() {
-        val sut = SingleActionCreator<String, Int>(Interaction { Reducer { 0 } }, SysoutLogger())
+    fun `reducer() emits no Reducer if there's no event`() {
+        val sut = SingleReducerCreator<String, Int>(Interaction { Reducer { 0 } }, SysoutLogger())
         val observer = sut.reducers().test()
 
         observer.assertNoValues()
@@ -40,8 +40,8 @@ class SingleActionCreatorTest {
     }
 
     @Test
-    fun `result() emits 1 Result if 1 event is triggered`() {
-        val sut = SingleActionCreator<String, Int>(Interaction { Reducer { 0 } }, SysoutLogger())
+    fun `reducer() emits 1 Reducer if 1 event is triggered`() {
+        val sut = SingleReducerCreator<String, Int>(Interaction { Reducer { 0 } }, SysoutLogger())
         val observer = sut.reducers().test()
 
         sut.trigger("some event")
@@ -51,8 +51,8 @@ class SingleActionCreatorTest {
     }
 
     @Test
-    fun `result() emits 2 Results if 2 events are triggered`() {
-        val sut = SingleActionCreator<String, Int>(Interaction { Reducer { 0 } }, SysoutLogger())
+    fun `reducer() emits 2 Reducers if 2 events are triggered`() {
+        val sut = SingleReducerCreator<String, Int>(Interaction { Reducer { 0 } }, SysoutLogger())
         val observer = sut.reducers().test()
 
         sut.trigger("some event")
@@ -63,8 +63,8 @@ class SingleActionCreatorTest {
     }
 
     @Test
-    fun `result() provides the function passed at construction`() {
-        val sut = SingleActionCreator<String, Int>(Interaction { Reducer { state -> state + it.length } }, SysoutLogger())
+    fun `reducer() provides the function passed at construction`() {
+        val sut = SingleReducerCreator<String, Int>(Interaction { Reducer { state -> state + it.length } }, SysoutLogger())
         val observer: TestObserver<out Reducer<Int>> = sut.reducers().test()
 
         sut.trigger("12345678")
@@ -76,7 +76,7 @@ class SingleActionCreatorTest {
     @Test
     fun `Logs event`() {
         val loggerMock = Mockito.mock(Logger::class.java)
-        val sut = SingleActionCreator<String, Int>(Interaction { Reducer { 0 } }, loggerMock)
+        val sut = SingleReducerCreator<String, Int>(Interaction { Reducer { 0 } }, loggerMock)
         sut.reducers().test()
 
         sut.trigger("something")
@@ -85,9 +85,9 @@ class SingleActionCreatorTest {
     }
 
     @Test
-    fun `Logs results`() {
+    fun `Logs reducers`() {
         val loggerMock = Mockito.mock(Logger::class.java)
-        val sut = SingleActionCreator<String, Int>(Interaction { Reducer { 0 } }, loggerMock)
+        val sut = SingleReducerCreator<String, Int>(Interaction { Reducer { 0 } }, loggerMock)
         sut.reducers().test()
 
         sut.trigger("something")

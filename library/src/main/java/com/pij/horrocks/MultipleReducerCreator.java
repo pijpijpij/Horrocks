@@ -26,16 +26,16 @@ import io.reactivex.subjects.Subject;
  * @author PierreJean
  */
 
-public final class SingleActionCreator<E, S> implements ActionCreator<E, S> {
+public final class MultipleReducerCreator<E, S> implements ReducerCreator<E, S> {
     private final Subject<E> event = PublishSubject.create();
-    private final Interaction<E, S> interaction;
+    private final AsyncInteraction<E, S> interaction;
     private final Logger logger;
 
-    public SingleActionCreator(@NonNull Interaction<E, S> interaction) {
+    public MultipleReducerCreator(@NonNull AsyncInteraction<E, S> interaction) {
         this(interaction, Logger.NOOP);
     }
 
-    public SingleActionCreator(@NonNull Interaction<E, S> interaction, @NonNull Logger logger) {
+    public MultipleReducerCreator(@NonNull AsyncInteraction<E, S> interaction, @NonNull Logger logger) {
         this.interaction = interaction;
         this.logger = logger;
     }
@@ -51,8 +51,8 @@ public final class SingleActionCreator<E, S> implements ActionCreator<E, S> {
     public Observable<? extends Reducer<S>> reducers() {
         return event
                 .doOnNext(event -> logProcessingEvent(event, logger))
-                .map(interaction::process)
-                .doOnNext(result -> logResult(result, logger))
+                .flatMap(interaction::process)
+                .doOnNext(reducer -> logReducer(reducer, logger))
                 ;
     }
 
@@ -64,7 +64,7 @@ public final class SingleActionCreator<E, S> implements ActionCreator<E, S> {
         logger.print(interaction.getClass(), "Processing event " + event);
     }
 
-    private void logResult(Reducer<S> reducer, Logger logger) {
+    private void logReducer(Reducer<S> reducer, Logger logger) {
         logger.print(interaction.getClass(), "Emitting reducers " + reducer);
     }
 

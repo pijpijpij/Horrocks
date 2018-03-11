@@ -37,13 +37,13 @@ public final class DefaultEngine<S, M> implements Engine<S, M> {
     @Override
     public Observable<M> runWith(Configuration<S, M> configuration) {
         Storage<S> storage = configuration.store();
-        Collection<ActionCreator<?, S>> actionCreators = configuration.creators();
+        Collection<ReducerCreator<?, S>> reducerCreators = configuration.creators();
         TransientCleaner<S> transientCleaner = configuration.transientResetter();
         StateConverter<S, M> stateConverter = configuration.stateToModel();
         Callable<S> initialValue = () -> transientCleaner.clean(storage.load());
-        return Observable.fromIterable(actionCreators)
+        return Observable.fromIterable(reducerCreators)
                 .flatMap(feature -> feature.reducers()
-                        .doOnTerminate(() -> logger.print(getClass(), "ActionCreator %s Unexpected completion!!!", feature.hashCode()))
+                        .doOnTerminate(() -> logger.print(getClass(), "ReducerCreator %s Unexpected completion!!!", feature.hashCode()))
                 )
                 .scanWith(initialValue, (current, reducer) -> updateState(current, reducer, transientCleaner))
                 .doOnNext(this::logState)

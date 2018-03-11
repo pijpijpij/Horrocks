@@ -21,12 +21,12 @@ import com.example.android.architecture.blueprints.todoapp.statistics.Presenter;
 import com.example.android.architecture.blueprints.todoapp.statistics.StatisticsModel;
 import com.example.android.architecture.blueprints.todoapp.statistics.StatisticsModule;
 import com.example.android.architecture.blueprints.todoapp.statistics.ui.StatisticsFragment;
-import com.pij.horrocks.ActionCreator;
 import com.pij.horrocks.Configuration;
 import com.pij.horrocks.Engine;
 import com.pij.horrocks.Logger;
 import com.pij.horrocks.MemoryStorage;
-import com.pij.horrocks.MultipleActionCreator;
+import com.pij.horrocks.MultipleReducerCreator;
+import com.pij.horrocks.ReducerCreator;
 import com.pij.horrocks.View;
 
 import javax.inject.Inject;
@@ -54,7 +54,7 @@ public final class FeaturedPresenter implements Presenter {
     private final Logger logger;
     private final CompositeDisposable subscription = new CompositeDisposable();
     private final Engine<StatisticsModel, StatisticsModel> engine;
-    private final ActionCreator<Object, StatisticsModel> loadStatistics;
+    private final ReducerCreator<Object, StatisticsModel> loadStatistics;
     private final Configuration<StatisticsModel, StatisticsModel> engineConfiguration;
 
     /**
@@ -65,7 +65,7 @@ public final class FeaturedPresenter implements Presenter {
     public FeaturedPresenter(TasksRepository tasksRepository, Logger logger, Engine<StatisticsModel, StatisticsModel> engine) {
         this.logger = logger;
 
-        loadStatistics = new MultipleActionCreator<>(new LoadStatisticsFeature(logger, tasksRepository));
+        loadStatistics = new MultipleReducerCreator<>(new LoadStatisticsFeature(logger, tasksRepository));
         this.engine = engine;
         engineConfiguration = Configuration.<StatisticsModel, StatisticsModel>builder()
                 .store(new MemoryStorage<>(initialState()))

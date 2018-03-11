@@ -24,13 +24,13 @@ import com.example.android.architecture.blueprints.todoapp.tasks.Presenter;
 import com.example.android.architecture.blueprints.todoapp.tasks.TasksModel;
 import com.example.android.architecture.blueprints.todoapp.tasks.TasksModule;
 import com.example.android.architecture.blueprints.todoapp.tasks.ui.TasksFragment;
-import com.pij.horrocks.ActionCreator;
 import com.pij.horrocks.Configuration;
 import com.pij.horrocks.Engine;
 import com.pij.horrocks.Logger;
 import com.pij.horrocks.MemoryStorage;
-import com.pij.horrocks.MultipleActionCreator;
-import com.pij.horrocks.SingleActionCreator;
+import com.pij.horrocks.MultipleReducerCreator;
+import com.pij.horrocks.ReducerCreator;
+import com.pij.horrocks.SingleReducerCreator;
 import com.pij.horrocks.View;
 
 import io.reactivex.disposables.CompositeDisposable;
@@ -57,13 +57,13 @@ public final class FeaturedPresenter implements Presenter {
     private final Logger logger;
     private final CompositeDisposable subscription = new CompositeDisposable();
     private final Engine<ViewState, TasksModel> engine;
-    private final ActionCreator<Object, ViewState> indicateTaskSaved;
-    private final ActionCreator<Object, ViewState> showAddTask;
-    private final ActionCreator<Task, ViewState> openTaskDetails;
-    private final ActionCreator<Object, ViewState> clearCompletedTasks;
-    private final ActionCreator<Task, ViewState> activateTask;
-    private final ActionCreator<Task, ViewState> completeTask;
-    private final ActionCreator<FilterType, ViewState> loadTasks;
+    private final ReducerCreator<Object, ViewState> indicateTaskSaved;
+    private final ReducerCreator<Object, ViewState> showAddTask;
+    private final ReducerCreator<Task, ViewState> openTaskDetails;
+    private final ReducerCreator<Object, ViewState> clearCompletedTasks;
+    private final ReducerCreator<Task, ViewState> activateTask;
+    private final ReducerCreator<Task, ViewState> completeTask;
+    private final ReducerCreator<FilterType, ViewState> loadTasks;
     private final Configuration<ViewState, TasksModel> engineConfiguration;
 
     /**
@@ -73,13 +73,13 @@ public final class FeaturedPresenter implements Presenter {
     public FeaturedPresenter(TasksDataSource tasksRepository, Logger logger, Engine<ViewState, TasksModel> engine) {
         this.logger = logger;
 
-        indicateTaskSaved = new SingleActionCreator<>(new IndicateTaskSavedFeature(), logger);
-        showAddTask = new SingleActionCreator<>(new ShowAddTaskFeature(), logger);
-        openTaskDetails = new SingleActionCreator<>(new OpenTaskDetailsFeature(), logger);
-        clearCompletedTasks = new MultipleActionCreator<>(new ClearCompletedTasksFeature(logger, tasksRepository), logger);
-        activateTask = new MultipleActionCreator<>(new ActivateTaskFeature(logger, tasksRepository), logger);
-        completeTask = new MultipleActionCreator<>(new CompleteTaskFeature(logger, tasksRepository), logger);
-        loadTasks = new MultipleActionCreator<>(new LoadTasksFeature(logger, tasksRepository), logger);
+        indicateTaskSaved = new SingleReducerCreator<>(new IndicateTaskSavedFeature(), logger);
+        showAddTask = new SingleReducerCreator<>(new ShowAddTaskFeature(), logger);
+        openTaskDetails = new SingleReducerCreator<>(new OpenTaskDetailsFeature(), logger);
+        clearCompletedTasks = new MultipleReducerCreator<>(new ClearCompletedTasksFeature(logger, tasksRepository), logger);
+        activateTask = new MultipleReducerCreator<>(new ActivateTaskFeature(logger, tasksRepository), logger);
+        completeTask = new MultipleReducerCreator<>(new CompleteTaskFeature(logger, tasksRepository), logger);
+        loadTasks = new MultipleReducerCreator<>(new LoadTasksFeature(logger, tasksRepository), logger);
         this.engine = engine;
         engineConfiguration = Configuration.<ViewState, TasksModel>builder()
                 .store(new MemoryStorage<>(initialState()))

@@ -29,11 +29,11 @@ import kotlin.test.Test
  *
  * @author PierreJean
  */
-class MultipleActionCreatorTest {
+class MultipleReducerCreatorTest {
 
     @Test
-    fun `result() emits no Result if there's no event`() {
-        val sut = MultipleActionCreator<String, Int>(AsyncInteraction { Observable.just(Reducer { 0 }, Reducer { 0 }) }, SysoutLogger())
+    fun `reducer() emits no Reducer if there's no event`() {
+        val sut = MultipleReducerCreator<String, Int>(AsyncInteraction { Observable.just(Reducer { 0 }, Reducer { 0 }) }, SysoutLogger())
         val observer = sut.reducers().test()
 
         observer.assertNoValues()
@@ -41,8 +41,8 @@ class MultipleActionCreatorTest {
     }
 
     @Test
-    fun `result() emits 2 Results if 1 event is triggered and the 'state modifier' emits 2 times`() {
-        val sut = MultipleActionCreator<String, Int>(AsyncInteraction { Observable.just(Reducer { 0 }, Reducer { 0 }) }, SysoutLogger())
+    fun `reducer() emits 2 Reducers if 1 event is triggered and the 'state modifier' emits 2 times`() {
+        val sut = MultipleReducerCreator<String, Int>(AsyncInteraction { Observable.just(Reducer { 0 }, Reducer { 0 }) }, SysoutLogger())
         val observer = sut.reducers().test()
 
         sut.trigger("some event")
@@ -52,8 +52,8 @@ class MultipleActionCreatorTest {
     }
 
     @Test
-    fun `result() emits 4 Results if 2 events are triggered and the 'state modifier' emits 2 times`() {
-        val sut = MultipleActionCreator<String, Int>(AsyncInteraction { Observable.just(Reducer { 0 }, Reducer { 0 }) }, SysoutLogger())
+    fun `reducer() emits 4 Reducers if 2 events are triggered and the 'state modifier' emits 2 times`() {
+        val sut = MultipleReducerCreator<String, Int>(AsyncInteraction { Observable.just(Reducer { 0 }, Reducer { 0 }) }, SysoutLogger())
         val observer = sut.reducers().test()
 
         sut.trigger("some event")
@@ -64,8 +64,8 @@ class MultipleActionCreatorTest {
     }
 
     @Test
-    fun `results emitted produce state as defined by the 'state modifier'`() {
-        val sut = MultipleActionCreator<String, Int>(AsyncInteraction {
+    fun `reducers emitted produce state as defined by the 'state modifier'`() {
+        val sut = MultipleReducerCreator<String, Int>(AsyncInteraction {
             Observable.just(
                     Reducer { 0 },
                     Reducer { state -> state + it.length }
@@ -84,7 +84,7 @@ class MultipleActionCreatorTest {
     @Test
     fun `Logs event`() {
         val loggerMock = mock(Logger::class.java)
-        val sut = MultipleActionCreator<String, Int>(AsyncInteraction { Observable.just(Reducer { 0 }, Reducer { 0 }) }, loggerMock)
+        val sut = MultipleReducerCreator<String, Int>(AsyncInteraction { Observable.just(Reducer { 0 }, Reducer { 0 }) }, loggerMock)
         sut.reducers().test()
 
         sut.trigger("something")
@@ -93,9 +93,9 @@ class MultipleActionCreatorTest {
     }
 
     @Test
-    fun `Logs results`() {
+    fun `Logs reducers`() {
         val loggerMock = mock(Logger::class.java)
-        val sut = MultipleActionCreator<String, Int>(AsyncInteraction { Observable.just(Reducer { 0 }, Reducer { 0 }) }, loggerMock)
+        val sut = MultipleReducerCreator<String, Int>(AsyncInteraction { Observable.just(Reducer { 0 }, Reducer { 0 }) }, loggerMock)
         sut.reducers().test()
 
         sut.trigger("something")

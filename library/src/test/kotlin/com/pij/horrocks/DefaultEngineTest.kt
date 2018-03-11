@@ -51,7 +51,7 @@ class DefaultEngineTest {
 
     @Test
     fun `Emits the initial state when a simple Feature is registered `() {
-        val dummyActionCreator: ActionCreator<String, DummyState> = object : ActionCreator<String, DummyState> {
+        val dummyReducerCreator: ReducerCreator<String, DummyState> = object : ReducerCreator<String, DummyState> {
             private val events: Subject<String> = PublishSubject.create()
             override fun trigger(input: String) = events.onNext(input)
             override fun reducers(): Observable<out Reducer<DummyState>> = events.map { input ->
@@ -61,7 +61,7 @@ class DefaultEngineTest {
         val configuration = Configuration.builder<DummyState, DummyState>()
                 .store(MemoryStorage(DummyState(false, 23)))
                 .stateToModel { it }
-                .creators(setOf(dummyActionCreator))
+                .creators(setOf(dummyReducerCreator))
                 .build()
         val observer = sut.runWith(configuration).test()
 
@@ -70,7 +70,7 @@ class DefaultEngineTest {
 
     @Test
     fun `An event on a simple Feature emits a single model`() {
-        val addN: ActionCreator<Int, DummyState> = object : ActionCreator<Int, DummyState> {
+        val addN: ReducerCreator<Int, DummyState> = object : ReducerCreator<Int, DummyState> {
             private val events: Subject<Int> = PublishSubject.create()
             override fun trigger(input: Int) = events.onNext(input)
             override fun reducers(): Observable<out Reducer<DummyState>> = events.map { input ->
@@ -91,8 +91,8 @@ class DefaultEngineTest {
     }
 
     @Test
-    fun `Event on a Feature emitting 2 results per event emits 2 models`() {
-        val addAtStartAndStop: ActionCreator<Int, DummyState> = object : ActionCreator<Int, DummyState> {
+    fun `Event on a Feature emitting 2 reducers per event emits 2 models`() {
+        val addAtStartAndStop: ReducerCreator<Int, DummyState> = object : ReducerCreator<Int, DummyState> {
             private val events: Subject<Int> = PublishSubject.create()
             override fun trigger(input: Int) = events.onNext(input)
             override fun reducers(): Observable<out Reducer<DummyState>> = events.flatMap { input ->
@@ -116,8 +116,8 @@ class DefaultEngineTest {
     }
 
     @Test
-    fun `Fails when a feature fails to construct a Result`() {
-        val actionCreatorCannotConstructResult: ActionCreator<Any, DummyState> = object : ActionCreator<Any, DummyState> {
+    fun `Fails when a feature fails to construct a Reducer`() {
+        val reducerCreatorCannotConstructReducer: ReducerCreator<Any, DummyState> = object : ReducerCreator<Any, DummyState> {
             private val events: Subject<Any> = PublishSubject.create()
             override fun trigger(input: Any) = events.onNext(input)
             override fun reducers(): Observable<out Reducer<DummyState>> = events.map { throw IllegalStateException("zap") }
@@ -125,18 +125,18 @@ class DefaultEngineTest {
         val configuration = Configuration.builder<DummyState, DummyState>()
                 .store(MemoryStorage(DummyState(false, 23)))
                 .stateToModel { it }
-                .creators(setOf(actionCreatorCannotConstructResult))
+                .creators(setOf(reducerCreatorCannotConstructReducer))
                 .build()
         val observer = sut.runWith(configuration).test()
 
-        actionCreatorCannotConstructResult.trigger(1)
+        reducerCreatorCannotConstructReducer.trigger(1)
 
         observer.assertErrorMessage("zap")
     }
 
     @Test
-    fun `Fails when a feature's result throws`() {
-        val failingActionCreator: ActionCreator<Any, DummyState> = object : ActionCreator<Any, DummyState> {
+    fun `Fails when a feature's reducer throws`() {
+        val failingReducerCreator: ReducerCreator<Any, DummyState> = object : ReducerCreator<Any, DummyState> {
             private val events: Subject<Any> = PublishSubject.create()
             override fun trigger(input: Any) = events.onNext(input)
             override fun reducers(): Observable<out Reducer<DummyState>> = events.map { _ ->
@@ -147,11 +147,11 @@ class DefaultEngineTest {
         val configuration = Configuration.builder<DummyState, DummyState>()
                 .store(MemoryStorage(DummyState(false, 23)))
                 .stateToModel { it }
-                .creators(setOf(failingActionCreator))
+                .creators(setOf(failingReducerCreator))
                 .build()
         val observer = sut.runWith(configuration).test()
 
-        failingActionCreator.trigger(1)
+        failingReducerCreator.trigger(1)
 
         observer.assertErrorMessage("zip")
     }
@@ -171,8 +171,8 @@ class DefaultEngineTest {
     }
 
     @Test
-    fun `Engine resets transient property set in 1st result when emitting 2nd result`() {
-        val anActionCreator: ActionCreator<Any, DummyState> = object : ActionCreator<Any, DummyState> {
+    fun `Engine resets transient property set in 1st reducer when emitting 2nd reducer`() {
+        val aReducerCreator: ReducerCreator<Any, DummyState> = object : ReducerCreator<Any, DummyState> {
             private val events: Subject<Any> = PublishSubject.create()
             override fun trigger(input: Any) = events.onNext(input)
             override fun reducers(): Observable<out Reducer<DummyState>> = events.flatMap { _ ->
@@ -185,12 +185,12 @@ class DefaultEngineTest {
         val configuration = Configuration.builder<DummyState, DummyState>()
                 .store(MemoryStorage(DummyState(true, 1)))
                 .stateToModel { it }
-                .creators(setOf(anActionCreator))
+                .creators(setOf(aReducerCreator))
                 .transientResetter { it -> it.copy(transient = false) }
                 .build()
         val observer = sut.runWith(configuration).map(DummyState::transient).test()
 
-        anActionCreator.trigger(1)
+        aReducerCreator.trigger(1)
 
         observer.assertValues(false, true, false)
     }

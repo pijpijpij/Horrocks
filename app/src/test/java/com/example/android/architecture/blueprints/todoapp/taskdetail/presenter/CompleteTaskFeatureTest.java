@@ -55,20 +55,20 @@ public class CompleteTaskFeatureTest {
     }
 
     @Test
-    public void emitsStartResult_beforeRepositorySucceeds() throws Exception {
+    public void emitsStartReducer_beforeRepositorySucceeds() throws Exception {
         tasksRepositoryHelper.setCompleteTaskSuccess("1");
 
-        TestObserver<TaskDetailModel> observer = sut.process("1").map(result -> result.reduce(defaultState())).test();
+        TestObserver<TaskDetailModel> observer = sut.process("1").map(reducer -> reducer.reduce(defaultState())).test();
 
         //noinspection Convert2MethodRef
         observer.assertValueAt(0, state -> state.loadingIndicator());
     }
 
     @Test
-    public void emitsStartAndSuccessResults_whenRepositorySucceeds() throws Exception {
+    public void emitsStartAndSuccessReducers_whenRepositorySucceeds() throws Exception {
         tasksRepositoryHelper.setCompleteTaskSuccess("1");
 
-        TestObserver<TaskDetailModel> observer = sut.process("1").map(result -> result.reduce(defaultState())).test();
+        TestObserver<TaskDetailModel> observer = sut.process("1").map(reducer -> reducer.reduce(defaultState())).test();
 
         observer.assertValueAt(1, state -> !state.loadingIndicator()
                 && Objects.equals(state.showTaskMarkedComplete(), true));
@@ -78,16 +78,16 @@ public class CompleteTaskFeatureTest {
     public void completes_whenRepositorySucceeds() throws Exception {
         tasksRepositoryHelper.setCompleteTaskSuccess("1");
 
-        TestObserver<TaskDetailModel> observer = sut.process("1").map(result -> result.reduce(defaultState())).test();
+        TestObserver<TaskDetailModel> observer = sut.process("1").map(reducer -> reducer.reduce(defaultState())).test();
 
         observer.assertComplete();
     }
 
     @Test
-    public void emitsStartAndFailureResults_whenRepositoryFails() throws Exception {
+    public void emitsStartAndFailureReducers_whenRepositoryFails() throws Exception {
         tasksRepositoryHelper.setCompleteTaskFailure("1");
 
-        TestObserver<TaskDetailModel> observer = sut.process("1").map(result -> result.reduce(defaultState())).test();
+        TestObserver<TaskDetailModel> observer = sut.process("1").map(reducer -> reducer.reduce(defaultState())).test();
 
         observer.assertValueAt(1, state -> !state.loadingIndicator() && !state.showTaskMarkedComplete());
     }
@@ -96,7 +96,7 @@ public class CompleteTaskFeatureTest {
     public void completes_whenRepositoryFails() throws Exception {
         tasksRepositoryHelper.setCompleteTaskSuccess("1");
 
-        TestObserver<TaskDetailModel> observer = sut.process("1").map(result -> result.reduce(defaultState())).test();
+        TestObserver<TaskDetailModel> observer = sut.process("1").map(reducer -> reducer.reduce(defaultState())).test();
 
         observer.assertComplete();
     }

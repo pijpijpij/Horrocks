@@ -58,20 +58,20 @@ public class LoadTaskFeatureTest {
     }
 
     @Test
-    public void emitsStartResult_beforeRepositorySucceeds() throws Exception {
+    public void emitsStartReducer_beforeRepositorySucceeds() throws Exception {
         tasksRepositoryHelper.setupGetTask();
 
-        TestObserver<TaskDetailModel> observer = sut.process("1").map(result -> result.reduce(defaultState())).test();
+        TestObserver<TaskDetailModel> observer = sut.process("1").map(reducer -> reducer.reduce(defaultState())).test();
 
         //noinspection Convert2MethodRef
         observer.assertValue(state -> state.loadingIndicator());
     }
 
     @Test
-    public void emitsStartAndSuccessResults_whenRepositorySucceeds() throws Exception {
+    public void emitsStartAndSuccessReducers_whenRepositorySucceeds() throws Exception {
         tasksRepositoryHelper.setupGetTask();
 
-        TestObserver<TaskDetailModel> observer = sut.process("1").map(result -> result.reduce(defaultState())).test();
+        TestObserver<TaskDetailModel> observer = sut.process("1").map(reducer -> reducer.reduce(defaultState())).test();
         tasksRepositoryHelper.completeGetTask(zipzapTask);
 
         observer.assertValueAt(1, state -> !state.loadingIndicator()
@@ -83,17 +83,17 @@ public class LoadTaskFeatureTest {
     public void completes_whenRepositorySucceeds() throws Exception {
         tasksRepositoryHelper.setupGetTask();
 
-        TestObserver<TaskDetailModel> observer = sut.process("1").map(result -> result.reduce(defaultState())).test();
+        TestObserver<TaskDetailModel> observer = sut.process("1").map(reducer -> reducer.reduce(defaultState())).test();
         tasksRepositoryHelper.completeGetTask(zipzapTask);
 
         observer.assertComplete();
     }
 
     @Test
-    public void emitsStartAndFailureResults_whenRepositoryFails() throws Exception {
+    public void emitsStartAndFailureReducers_whenRepositoryFails() throws Exception {
         tasksRepositoryHelper.setupGetTask();
 
-        TestObserver<TaskDetailModel> observer = sut.process("1").map(result -> result.reduce(defaultState())).test();
+        TestObserver<TaskDetailModel> observer = sut.process("1").map(reducer -> reducer.reduce(defaultState())).test();
         tasksRepositoryHelper.failGetTask();
 
         observer.assertValueAt(1, state -> !state.loadingIndicator() && state.showMissingTask());
@@ -103,7 +103,7 @@ public class LoadTaskFeatureTest {
     public void completes_whenRepositoryFails() throws Exception {
         tasksRepositoryHelper.setupGetTask();
 
-        TestObserver<TaskDetailModel> observer = sut.process("1").map(result -> result.reduce(defaultState())).test();
+        TestObserver<TaskDetailModel> observer = sut.process("1").map(reducer -> reducer.reduce(defaultState())).test();
         tasksRepositoryHelper.failGetTask();
 
         observer.assertComplete();

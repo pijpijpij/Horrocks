@@ -15,30 +15,43 @@ The benefits and drawbacks of these concepts are well documented elsewhere, for 
 
 ## Basic concepts
 They are:
-- View. The code that is to display data and generally to interact with the user.
-- Event. A piece of data emitted by the UI (View) to the system.
-- ViewModel. A set of data the view is to display.
-- State. A set of data that represents the state of the view. Most of the time, ViewModel can be used as state of the view.
-- Feature. A piece of code that processes a specific type of UI event and contributes to the state of the view. It is triggered when the 
-View emits an event. 
-- Result: pieces of code emitted by Features that can contribute to advancing the state of the view.
-- Engine. The code that listens for Results and applies then to the state. It also calculate the ViewModel from it and emits it..
+- `View`. The code that is to display data and generally interacts with the user.
+- `Event`. A piece of data sent by the UI (`View`) to the system.
+- `Model`. A set of data the view is to display.
+- `State`. A set of data that represents the state of the view. In a lot of screens, `Model` can be used as `State`.
+- `Reducer`. A piece of code that contains both data (equivalent to a Redux action) and process (Redux's reducer). When applied to a 
+`State` this applies its data on to the state and produces a new `State`
+- `ReducerCreator`. A piece of code that processes a specific type of UI events and creates `Reducer`s for these events.
+- `Engine`: the code that collects the `Reducer`s emitted by `ReducerCreator`s and applies then to the current `State`.
+It also calculate the `Model` from the `state` and emits it.
 
 ### Event
-This is the equivalent of an `Action` in Redux. A difference is that an event can be a complex data structure designed for he purpose of 
-being an `Action` but it can also be a simple basic data type, i.e. `String`.
+A piece of data sent by the UI (`View`) to the system. An event can be a complex dedicated data structure but it can also be a simple basic 
+data type, i.e. `String`.
 
-### ViewModel
-Views show data. This data takes the form of properties of the ViewModel. All the data shown on the view comes from the ViewModel. 
-But the view also needs to pop up dialog box, navigate to other screens... These are also represented as properties of the 
-ViewModel. The difference is that these properties are transient, i.e. each time the State is about to be modified (by a new Result), 
-they are reset.
+### Model
+Views show data. This data takes the form of properties of the `Model`. All data shown on the view comes from the unique `Model`. 
+The view also needs to pop up dialog box, navigate to other screens... These are also represented as properties of the 
+same `Model`. The difference is that these properties are transient, i.e. each time the `State` is about to be modified (by a new 
+`Reducer`), they are reset.
 
-### Feature
-A Feature can be triggered by and event and emit a series of Results.
+### State
+It is a set of data that represents the state of the view. In a lot of screens, `Model` can be used as `State`.
+
+### ReducerCreator
+An `ReducerCreator` can be triggered by an `Event` and emits a series of `Reducer`s. It is named `ReducerCreator` because its semantics 
+are close to Redux's ActionCreator. It emits more than Actions however: Horrocks' `Reducer`s.
+ 
+### Reducer
+A `Reducer` is close semantically to Redux's Reducer. The major difference is that the main (only) method of a Redux reducer is a pure 
+function that take 2 parameters: the action data and a state to produce a new state. Horrocks' `Reducer` already contains the data to 
+apply to the `State`, so:
+ - its main method has only one parameter,
+ - it is not a pure function. 
 
 ### Engine
-It's probably the closest to a `Store` in Redux.
+It's probably the closest to a `Store` in Redux, but it's different enough that we kept its name different.
+There should be one instance of an engine (noted above as the system) per screen in an app.
 
 # Adding to Gradle
 Add the JitPack repository to your build file:

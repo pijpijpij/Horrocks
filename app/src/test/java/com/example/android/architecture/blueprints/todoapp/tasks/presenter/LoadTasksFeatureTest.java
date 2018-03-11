@@ -59,20 +59,20 @@ public class LoadTasksFeatureTest {
     }
 
     @Test
-    public void emitsStartResult_beforeRepositorySucceeds() throws Exception {
+    public void emitsStartReducer_beforeRepositorySucceeds() throws Exception {
         tasksRepositoryHelper.setupGetTasks();
 
-        TestObserver<ViewState> observer = sut.process(FilterType.ALL_TASKS).map(result -> result.reduce(defaultState())).test();
+        TestObserver<ViewState> observer = sut.process(FilterType.ALL_TASKS).map(reducer -> reducer.reduce(defaultState())).test();
 
         //noinspection Convert2MethodRef
         observer.assertValue(state -> state.loadingIndicator());
     }
 
     @Test
-    public void emitsStartAndSuccessResults_whenRepositorySucceeds() throws Exception {
+    public void emitsStartAndSuccessReducers_whenRepositorySucceeds() throws Exception {
         tasksRepositoryHelper.setupGetTasks();
 
-        TestObserver<ViewState> observer = sut.process(FilterType.ALL_TASKS).map(result -> result.reduce(defaultState())).test();
+        TestObserver<ViewState> observer = sut.process(FilterType.ALL_TASKS).map(reducer -> reducer.reduce(defaultState())).test();
         tasksRepositoryHelper.completeGetTasks(singletonList(zipzapTask));
 
         observer.assertValueAt(1, state -> !state.loadingIndicator());
@@ -83,17 +83,17 @@ public class LoadTasksFeatureTest {
     public void completes_whenRepositorySucceeds() throws Exception {
         tasksRepositoryHelper.setupGetTasks();
 
-        TestObserver<ViewState> observer = sut.process(FilterType.ALL_TASKS).map(result -> result.reduce(defaultState())).test();
+        TestObserver<ViewState> observer = sut.process(FilterType.ALL_TASKS).map(reducer -> reducer.reduce(defaultState())).test();
         tasksRepositoryHelper.completeGetTasks(singletonList(zipzapTask));
 
         observer.assertComplete();
     }
 
     @Test
-    public void emitsStartAndFailureResults_whenRepositoryFails() throws Exception {
+    public void emitsStartAndFailureReducers_whenRepositoryFails() throws Exception {
         tasksRepositoryHelper.setupGetTasks();
 
-        TestObserver<ViewState> observer = sut.process(FilterType.ALL_TASKS).map(result -> result.reduce(defaultState())).test();
+        TestObserver<ViewState> observer = sut.process(FilterType.ALL_TASKS).map(reducer -> reducer.reduce(defaultState())).test();
         tasksRepositoryHelper.failGetTasks();
 
         observer.assertValueAt(1, state -> !state.loadingIndicator() && state.showLoadingTasksError());
@@ -103,7 +103,7 @@ public class LoadTasksFeatureTest {
     public void completes_whenRepositoryFails() throws Exception {
         tasksRepositoryHelper.setupGetTasks();
 
-        TestObserver<ViewState> observer = sut.process(FilterType.ALL_TASKS).map(result -> result.reduce(defaultState())).test();
+        TestObserver<ViewState> observer = sut.process(FilterType.ALL_TASKS).map(reducer -> reducer.reduce(defaultState())).test();
         tasksRepositoryHelper.failGetTasks();
 
         observer.assertComplete();
