@@ -53,6 +53,19 @@ apply to the `State`, so:
 It's probably the closest to a `Store` in Redux, but it's different enough that we kept its name different.
 There should be one instance of an engine (noted above as the system) per screen in an app.
 
+## Other Abstractions
+`ReducerCreator` have some boiler-plate code. 4 classes are designed to remove as much as possible:
+- `SingleReducerCreator` and `Interaction`
+- `SingleReducerCreator` and `AsyncInteraction`
+
+### Validation
+In certain cases, `ReducerCreator` need to validate `Event`s against the current `State` of the app and then emit the relevant `Reducer`.
+`StateProvider` is designed to be used in this scenario. Pass one in the constructor of the `ActionCreator` and Bob's your uncle. The 
+only implementation of `StateProvider` That makes sense delegates to the `Storage` use in the screen. 
+The `ReducerCreator` uses this state to decide what `Reducer`(s) to emit. Note that the state used then may not be the same as the one 
+handed to the `Reducer`(s), as some other `Reducer` of a different origin may have be executed in the meantime.
+  
+
 # Adding to Gradle
 Add the JitPack repository to your build file:
 ```groovy
