@@ -55,7 +55,7 @@ public class CompleteTaskFeatureTest {
     }
 
     @Test
-    public void emitsStartReducer_beforeRepositorySucceeds() throws Exception {
+    public void emitsStartReducer_beforeRepositorySucceeds() {
         tasksRepositoryHelper.setCompleteTaskSuccess("1");
 
         TestObserver<TaskDetailModel> observer = sut.process("1").map(reducer -> reducer.reduce(defaultState())).test();
@@ -65,7 +65,7 @@ public class CompleteTaskFeatureTest {
     }
 
     @Test
-    public void emitsStartAndSuccessReducers_whenRepositorySucceeds() throws Exception {
+    public void emitsStartAndSuccessReducers_whenRepositorySucceeds() {
         tasksRepositoryHelper.setCompleteTaskSuccess("1");
 
         TestObserver<TaskDetailModel> observer = sut.process("1").map(reducer -> reducer.reduce(defaultState())).test();
@@ -75,7 +75,7 @@ public class CompleteTaskFeatureTest {
     }
 
     @Test
-    public void completes_whenRepositorySucceeds() throws Exception {
+    public void completes_whenRepositorySucceeds() {
         tasksRepositoryHelper.setCompleteTaskSuccess("1");
 
         TestObserver<TaskDetailModel> observer = sut.process("1").map(reducer -> reducer.reduce(defaultState())).test();
@@ -84,7 +84,7 @@ public class CompleteTaskFeatureTest {
     }
 
     @Test
-    public void emitsStartAndFailureReducers_whenRepositoryFails() throws Exception {
+    public void emitsStartAndFailureReducers_whenRepositoryFails() {
         tasksRepositoryHelper.setCompleteTaskFailure("1");
 
         TestObserver<TaskDetailModel> observer = sut.process("1").map(reducer -> reducer.reduce(defaultState())).test();
@@ -93,7 +93,7 @@ public class CompleteTaskFeatureTest {
     }
 
     @Test
-    public void completes_whenRepositoryFails() throws Exception {
+    public void completes_whenRepositoryFails() {
         tasksRepositoryHelper.setCompleteTaskSuccess("1");
 
         TestObserver<TaskDetailModel> observer = sut.process("1").map(reducer -> reducer.reduce(defaultState())).test();

@@ -61,7 +61,7 @@ public class LoadStatisticsFeatureTest {
     }
 
     @Test
-    public void emitsStartReducer_beforeRepositorySucceeds() throws Exception {
+    public void emitsStartReducer_beforeRepositorySucceeds() {
         tasksRepositoryHelper.setupGetTasks();
 
         TestObserver<StatisticsModel> observer = sut.process(new Object()).map(reducer -> reducer.reduce(defaultState())).test();
@@ -71,7 +71,7 @@ public class LoadStatisticsFeatureTest {
     }
 
     @Test
-    public void emitsStartAndSuccessReducers_whenRepositorySucceeds() throws Exception {
+    public void emitsStartAndSuccessReducers_whenRepositorySucceeds() {
         tasksRepositoryHelper.setupGetTasks();
 
         TestObserver<StatisticsModel> observer = sut.process(new Object()).map(reducer -> reducer.reduce(defaultState())).test();
@@ -82,7 +82,7 @@ public class LoadStatisticsFeatureTest {
     }
 
     @Test
-    public void completes_whenRepositorySucceeds() throws Exception {
+    public void completes_whenRepositorySucceeds() {
         tasksRepositoryHelper.setupGetTasks();
 
         TestObserver<StatisticsModel> observer = sut.process(new Object()).map(reducer -> reducer.reduce(defaultState())).test();
@@ -92,7 +92,7 @@ public class LoadStatisticsFeatureTest {
     }
 
     @Test
-    public void emitsStartAndFailureReducers_whenRepositoryFails() throws Exception {
+    public void emitsStartAndFailureReducers_whenRepositoryFails() {
         tasksRepositoryHelper.setupGetTasks();
 
         TestObserver<StatisticsModel> observer = sut.process(new Object()).map(reducer -> reducer.reduce(defaultState())).test();
@@ -102,7 +102,7 @@ public class LoadStatisticsFeatureTest {
     }
 
     @Test
-    public void completes_whenRepositoryFails() throws Exception {
+    public void completes_whenRepositoryFails() {
         tasksRepositoryHelper.setupGetTasks();
 
         TestObserver<StatisticsModel> observer = sut.process(new Object()).map(reducer -> reducer.reduce(defaultState())).test();

@@ -30,7 +30,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 public class EditTaskFeatureTest {
 
     @Test
-    public void emitsEditTask_whenTriggeredWithValidId() throws Exception {
+    public void emitsEditTask_whenTriggeredWithValidId() {
         EditTaskFeature sut = new EditTaskFeature();
 
         TaskDetailModel newState = sut.process("1").reduce(defaultState());
@@ -39,7 +39,7 @@ public class EditTaskFeatureTest {
     }
 
     @Test
-    public void doesNotEmitsEditTask_whenTriggeredWithNullId() throws Exception {
+    public void doesNotEmitsEditTask_whenTriggeredWithNullId() {
         EditTaskFeature sut = new EditTaskFeature();
 
         //noinspection ConstantConditions
@@ -49,7 +49,7 @@ public class EditTaskFeatureTest {
     }
 
     @Test
-    public void doesNotEmitsEditTask_whenTriggeredWithEmptyId() throws Exception {
+    public void doesNotEmitsEditTask_whenTriggeredWithEmptyId() {
         EditTaskFeature sut = new EditTaskFeature();
 
         TaskDetailModel newState = sut.process("").reduce(defaultState());

@@ -56,7 +56,7 @@ public class CompleteTaskFeatureTest {
     }
 
     @Test
-    public void emitsStartReducer_beforeRepositorySucceeds() throws Exception {
+    public void emitsStartReducer_beforeRepositorySucceeds() {
         tasksRepositoryHelper.setupGetTasks();
 
         TestObserver<ViewState> observer = sut.process(zipzapTask).map(reducer -> reducer.reduce(defaultState())).test();
@@ -65,7 +65,7 @@ public class CompleteTaskFeatureTest {
     }
 
     @Test
-    public void emitsStartAndSuccessReducers_whenRepositorySucceeds() throws Exception {
+    public void emitsStartAndSuccessReducers_whenRepositorySucceeds() {
         tasksRepositoryHelper.setupGetTasks();
 
         TestObserver<ViewState> observer = sut.process(zipzapTask).map(reducer -> reducer.reduce(defaultState())).test();
@@ -75,7 +75,7 @@ public class CompleteTaskFeatureTest {
     }
 
     @Test
-    public void completes_whenRepositorySucceeds() throws Exception {
+    public void completes_whenRepositorySucceeds() {
         tasksRepositoryHelper.setupGetTasks();
 
         TestObserver<ViewState> observer = sut.process(zipzapTask).map(reducer -> reducer.reduce(defaultState())).test();
@@ -85,7 +85,7 @@ public class CompleteTaskFeatureTest {
     }
 
     @Test
-    public void emitsStartAndFailureReducers_whenRepositoryFails() throws Exception {
+    public void emitsStartAndFailureReducers_whenRepositoryFails() {
         tasksRepositoryHelper.setupGetTasks();
 
         TestObserver<ViewState> observer = sut.process(zipzapTask).map(reducer -> reducer.reduce(defaultState())).test();
@@ -95,7 +95,7 @@ public class CompleteTaskFeatureTest {
     }
 
     @Test
-    public void completes_whenRepositoryFails() throws Exception {
+    public void completes_whenRepositoryFails() {
         tasksRepositoryHelper.setupGetTasks();
 
         TestObserver<ViewState> observer = sut.process(zipzapTask).map(reducer -> reducer.reduce(defaultState())).test();

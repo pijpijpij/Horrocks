@@ -30,7 +30,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 public class OpenTaskDetailsFeatureTest {
 
     @Test
-    public void emitsShowTaskDetailsWithId_whenTriggered() throws Exception {
+    public void emitsShowTaskDetailsWithId_whenTriggered() {
         OpenTaskDetailsFeature sut = new OpenTaskDetailsFeature();
         Task aTask = new Task("zip", "zap", "the id");
 

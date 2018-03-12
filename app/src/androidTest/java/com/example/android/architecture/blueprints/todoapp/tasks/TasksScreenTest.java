@@ -150,7 +150,7 @@ public class TasksScreenTest {
     }
 
     @Test
-    public void editTask() throws Exception {
+    public void editTask() {
         // First add a task
         createTask("A TITLE", "THE DESCRIPTION");
 
@@ -180,7 +180,7 @@ public class TasksScreenTest {
     }
 
     @Test
-    public void addTaskToTasksList() throws Exception {
+    public void addTaskToTasksList() {
         createTask("A TITLE", "THE DESCRIPTION");
 
         // Verify task is displayed on screen

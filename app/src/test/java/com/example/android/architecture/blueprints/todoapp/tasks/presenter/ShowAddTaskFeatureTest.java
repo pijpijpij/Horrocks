@@ -28,7 +28,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 public class ShowAddTaskFeatureTest {
 
     @Test
-    public void emitsShowAddTask_whenTriggered() throws Exception {
+    public void emitsShowAddTask_whenTriggered() {
         ShowAddTaskFeature sut = new ShowAddTaskFeature();
 
         ViewState newState = sut.process(new Object()).reduce(defaultState());

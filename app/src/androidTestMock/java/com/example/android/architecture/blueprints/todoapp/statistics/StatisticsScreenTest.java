@@ -1,24 +1,22 @@
 /*
- * Copyright 2016, The Android Open Source Project
+ * Copyright 2018, Chiswick Forest
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * See the License for the specific language governing permissions and limitations under the License.
  */
 
 package com.example.android.architecture.blueprints.todoapp.statistics;
 
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.Espresso;
+import android.support.test.espresso.IdlingRegistry;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -87,7 +85,7 @@ public class StatisticsScreenTest {
      */
     @After
     public void unregisterIdlingResource() {
-        Espresso.unregisterIdlingResources(EspressoIdlingResource.getIdlingResource());
+        IdlingRegistry.getInstance().unregister(EspressoIdlingResource.getIdlingResource());
     }
 
     /**
@@ -98,11 +96,11 @@ public class StatisticsScreenTest {
      */
     @Before
     public void registerIdlingResource() {
-        Espresso.registerIdlingResources(EspressoIdlingResource.getIdlingResource());
+        IdlingRegistry.getInstance().register(EspressoIdlingResource.getIdlingResource());
     }
 
     @Test
-    public void Tasks_ShowsNonEmptyMessage() throws Exception {
+    public void Tasks_ShowsNonEmptyMessage() {
         // Check that the active and completed tasks text is displayed
         String expectedActiveTaskText = InstrumentationRegistry.getTargetContext()
                 .getString(R.string.statistics_active_tasks);

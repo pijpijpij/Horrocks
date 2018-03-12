@@ -28,7 +28,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 public class IndicateTaskSavedFeatureTest {
 
     @Test
-    public void emitsShowSuccessfullySavedMessage_whenTriggered() throws Exception {
+    public void emitsShowSuccessfullySavedMessage_whenTriggered() {
         IndicateTaskSavedFeature sut = new IndicateTaskSavedFeature();
 
         ViewState newState = sut.process(new Object()).reduce(defaultState());
