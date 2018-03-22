@@ -20,8 +20,8 @@ import com.example.android.architecture.blueprints.todoapp.data.source.TasksData
 import com.example.android.architecture.blueprints.todoapp.taskdetail.TaskDetailModel;
 import com.google.common.base.Strings;
 import com.pij.horrocks.AsyncInteraction;
-import com.pij.horrocks.Logger;
 import com.pij.horrocks.Reducer;
+import com.pij.utils.Logger;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;

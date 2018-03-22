@@ -20,8 +20,8 @@ import com.example.android.architecture.blueprints.todoapp.data.source.TasksRepo
 import com.example.android.architecture.blueprints.todoapp.tasks.FilterType;
 import com.example.android.architecture.blueprints.todoapp.tasks.TasksModel;
 import com.pij.horrocks.DefaultEngine;
-import com.pij.horrocks.SysoutLogger;
 import com.pij.horrocks.View;
+import com.pij.utils.SysoutLogger;
 
 import org.junit.Before;
 import org.junit.Test;

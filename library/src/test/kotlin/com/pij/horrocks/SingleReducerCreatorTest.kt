@@ -14,6 +14,8 @@
 
 package com.pij.horrocks
 
+import com.pij.utils.Logger
+import com.pij.utils.SysoutLogger
 import io.reactivex.observers.TestObserver
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat

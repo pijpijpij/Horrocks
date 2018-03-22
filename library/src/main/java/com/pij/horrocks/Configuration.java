@@ -15,6 +15,8 @@
 package com.pij.horrocks;
 
 import com.google.auto.value.AutoValue;
+import com.pij.utils.Logger;
+import com.pij.utils.SysoutLogger;
 
 import java.util.Collection;
 

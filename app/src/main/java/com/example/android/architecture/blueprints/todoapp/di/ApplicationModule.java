@@ -16,14 +16,14 @@ package com.example.android.architecture.blueprints.todoapp.di;
 
 import android.app.Application;
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.util.Log;
 
-import com.pij.horrocks.Logger;
+import com.pij.android.utils.AndroidDebugLogger;
+import com.pij.utils.Logger;
 
 import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
+import dagger.Reusable;
 
 /**
  * This is a Dagger module. We use this to bind our Application class as a Context in the AppComponent
@@ -36,30 +36,11 @@ import dagger.Provides;
  */
 @Module
 abstract class ApplicationModule {
+
     @Provides
-    static Logger provideLogger() {
-        return new Logger() {
-            @Override
-            public void print(@NonNull Class<?> javaClass, @NonNull String message) {
-                Log.d(javaClass.getSimpleName(), message);
-            }
-
-            @Override
-            public void print(@NonNull Class<?> javaClass, @NonNull String message, @NonNull Throwable e) {
-                Log.d(javaClass.getSimpleName(), message, e);
-
-            }
-
-            @Override
-            public void print(@NonNull Class<?> javaClass, @NonNull String messageTemplate, @NonNull Object... args) {
-                print(javaClass, String.format(messageTemplate, args));
-            }
-
-            @Override
-            public void print(@NonNull Class<?> javaClass, @NonNull Throwable e, @NonNull String messageTemplate, @NonNull Object... args) {
-                print(javaClass, String.format(messageTemplate, args), e);
-            }
-        };
+    @Reusable
+    static Logger provideAndroidDebugLogger() {
+        return new AndroidDebugLogger();
     }
 
     //expose Application as an injectable context

@@ -23,7 +23,7 @@ import com.example.android.architecture.blueprints.todoapp.taskdetail.presenter.
 import com.example.android.architecture.blueprints.todoapp.taskdetail.ui.TaskDetailActivity;
 import com.example.android.architecture.blueprints.todoapp.taskdetail.ui.TaskDetailFragment;
 import com.pij.horrocks.DefaultEngine;
-import com.pij.horrocks.Logger;
+import com.pij.utils.Logger;
 
 import dagger.Module;
 import dagger.Provides;

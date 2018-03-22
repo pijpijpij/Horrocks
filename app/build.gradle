@@ -123,6 +123,7 @@ dependencies {
     implementation "com.android.support:support-v4:$rootProject.supportLibraryVersion"
     implementation "com.android.support.test.espresso:espresso-idling-resource:$rootProject.espressoVersion"
     implementation "com.google.guava:guava:$rootProject.guavaVersion"
+    implementation "org.bitbucket.pijpijpij.android-utils:android-utils:$utilsVersion"
     implementation "io.reactivex.rxjava2:rxjava:$rootProject.rxjava2Version"
     implementation "android.arch.persistence.room:runtime:$rootProject.roomVersion"
     annotationProcessor "android.arch.persistence.room:compiler:$rootProject.roomVersion"
@@ -132,6 +133,7 @@ dependencies {
     // ButterKnife
     implementation "com.jakewharton:butterknife:$butterknifeVersion"
     annotationProcessor "com.jakewharton:butterknife-compiler:$butterknifeVersion"
+
     // Dagger dependencies
     annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
     compileOnly 'org.glassfish:javax.annotation:10.0-b28'

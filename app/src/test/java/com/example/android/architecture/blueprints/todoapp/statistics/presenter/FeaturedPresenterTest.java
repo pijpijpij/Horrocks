@@ -21,8 +21,8 @@ import com.example.android.architecture.blueprints.todoapp.statistics.Statistics
 import com.example.android.architecture.blueprints.todoapp.statistics.StatisticsModel.Numbers;
 import com.google.common.collect.Lists;
 import com.pij.horrocks.DefaultEngine;
-import com.pij.horrocks.SysoutLogger;
 import com.pij.horrocks.View;
+import com.pij.utils.SysoutLogger;
 
 import org.junit.Before;
 import org.junit.Test;

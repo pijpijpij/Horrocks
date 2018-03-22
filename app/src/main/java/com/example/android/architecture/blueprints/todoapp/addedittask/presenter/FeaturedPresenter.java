@@ -26,11 +26,11 @@ import com.example.android.architecture.blueprints.todoapp.data.source.TasksData
 import com.google.common.base.Strings;
 import com.pij.horrocks.Configuration;
 import com.pij.horrocks.Engine;
-import com.pij.horrocks.Logger;
 import com.pij.horrocks.MemoryStorage;
 import com.pij.horrocks.MultipleReducerCreator;
 import com.pij.horrocks.ReducerCreator;
 import com.pij.horrocks.View;
+import com.pij.utils.Logger;
 
 import javax.inject.Inject;
 

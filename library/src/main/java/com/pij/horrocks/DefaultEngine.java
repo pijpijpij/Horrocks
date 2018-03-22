@@ -14,6 +14,8 @@
 
 package com.pij.horrocks;
 
+import com.pij.utils.Logger;
+
 import java.util.Collection;
 import java.util.concurrent.Callable;
 

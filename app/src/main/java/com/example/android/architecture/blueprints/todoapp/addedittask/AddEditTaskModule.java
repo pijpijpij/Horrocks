@@ -21,7 +21,7 @@ import com.example.android.architecture.blueprints.todoapp.data.source.TasksRepo
 import com.example.android.architecture.blueprints.todoapp.di.ActivityScoped;
 import com.example.android.architecture.blueprints.todoapp.di.FragmentScoped;
 import com.pij.horrocks.DefaultEngine;
-import com.pij.horrocks.Logger;
+import com.pij.utils.Logger;
 
 import dagger.Lazy;
 import dagger.Module;

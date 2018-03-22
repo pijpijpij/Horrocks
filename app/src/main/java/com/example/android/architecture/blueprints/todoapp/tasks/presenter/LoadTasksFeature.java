@@ -21,8 +21,8 @@ import com.example.android.architecture.blueprints.todoapp.data.source.TasksData
 import com.example.android.architecture.blueprints.todoapp.data.source.Util;
 import com.example.android.architecture.blueprints.todoapp.tasks.FilterType;
 import com.pij.horrocks.AsyncInteraction;
-import com.pij.horrocks.Logger;
 import com.pij.horrocks.Reducer;
+import com.pij.utils.Logger;
 
 import java.util.List;
 

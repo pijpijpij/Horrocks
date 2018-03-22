@@ -16,6 +16,8 @@ package com.pij.horrocks;
 
 import android.support.annotation.NonNull;
 
+import com.pij.utils.Logger;
+
 import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;

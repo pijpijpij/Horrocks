@@ -17,7 +17,7 @@ package com.example.android.architecture.blueprints.todoapp.taskdetail.presenter
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource;
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSourceHelper;
 import com.example.android.architecture.blueprints.todoapp.taskdetail.TaskDetailModel;
-import com.pij.horrocks.SysoutLogger;
+import com.pij.utils.SysoutLogger;
 
 import org.junit.Before;
 import org.junit.Rule;
