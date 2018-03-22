@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Version 0.2.1
+-------------
+
+ - Logger API removed and replaced by the one in AndroidUtils set of libraries.
+
 Version 0.2.0
 -------------
 
