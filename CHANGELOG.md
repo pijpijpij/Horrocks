@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Version 0.2.2
+-------------
+
+ - Fix: `MultipleReducerCreator` and `SingleReducerCreator` did not support logging event or Reducers whose `toString()` contains a `%`.
+
 Version 0.2.1
 -------------
 
