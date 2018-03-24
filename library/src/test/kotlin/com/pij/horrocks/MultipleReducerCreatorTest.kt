@@ -20,10 +20,9 @@ import io.reactivex.Observable
 import io.reactivex.observers.TestObserver
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito
 import org.mockito.Mockito.*
 import kotlin.test.Test
+
 
 /**
  *
@@ -91,7 +90,7 @@ class MultipleReducerCreatorTest {
 
         sut.trigger("something")
 
-        verify(loggerMock).print(ArgumentMatchers.any(), Mockito.argThat { it.contains("Received event") })
+        verify(loggerMock).print(any(), contains("Received event"), eq("something"))
     }
 
     @Test
@@ -102,7 +101,7 @@ class MultipleReducerCreatorTest {
 
         sut.trigger("something")
 
-        verify(loggerMock, times(2)).print(ArgumentMatchers.any(), Mockito.argThat { it.contains("Emitting reducers") })
+        verify(loggerMock, times(2)).print(any(), contains("Emitting reducer"), any())
     }
 }
 

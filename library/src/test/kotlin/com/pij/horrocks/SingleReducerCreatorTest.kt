@@ -19,8 +19,7 @@ import com.pij.utils.SysoutLogger
 import io.reactivex.observers.TestObserver
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
-import org.mockito.ArgumentMatchers.any
-import org.mockito.ArgumentMatchers.argThat
+import org.mockito.ArgumentMatchers.*
 import org.mockito.Mockito
 import kotlin.test.Test
 
@@ -83,18 +82,18 @@ class SingleReducerCreatorTest {
 
         sut.trigger("something")
 
-        Mockito.verify(loggerMock).print(any(), argThat { it.contains("Received event") })
+        Mockito.verify(loggerMock).print(any(), contains("Received event"), eq("something"))
     }
 
     @Test
-    fun `Logs reducers`() {
+    fun `Logs reducer`() {
         val loggerMock = Mockito.mock(Logger::class.java)
         val sut = SingleReducerCreator<String, Int>(Interaction { Reducer { 0 } }, loggerMock)
         sut.reducers().test()
 
         sut.trigger("something")
 
-        Mockito.verify(loggerMock).print(any(), argThat { it.contains("Emitting reducers") })
+        Mockito.verify(loggerMock).print(any(), contains("Emitting reducer"), any())
     }
 }
 

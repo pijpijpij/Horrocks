@@ -52,22 +52,22 @@ public final class SingleReducerCreator<E, S> implements ReducerCreator<E, S> {
     @Override
     public Observable<? extends Reducer<S>> reducers() {
         return event
-                .doOnNext(event -> logProcessingEvent(event, logger))
+                .doOnNext(this::logProcessingEvent)
                 .map(interaction::process)
-                .doOnNext(reducer -> logReducer(reducer, logger))
+                .doOnNext(this::logReducer)
                 ;
     }
 
     private void logReceivedEvent(@NonNull E event) {
-        logger.print(interaction.getClass(), "Received event " + event);
+        logger.print(interaction.getClass(), "Received event %s", event);
     }
 
-    private void logProcessingEvent(E event, Logger logger) {
-        logger.print(interaction.getClass(), "Processing event " + event);
+    private void logProcessingEvent(E event) {
+        logger.print(interaction.getClass(), "Processing event %s", event);
     }
 
-    private void logReducer(Reducer<S> reducer, Logger logger) {
-        logger.print(interaction.getClass(), "Emitting reducers " + reducer);
+    private void logReducer(Reducer<S> reducer) {
+        logger.print(interaction.getClass(), "Emitting reducer %s", reducer);
     }
 
 }
