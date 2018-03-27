@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Version 0.2.3
+-------------
+
+ - Tec: Updated to AS 3.1.0, Gradle 4.4 and Kotlin 1.2.31.
+
 Version 0.2.2
 -------------
 
