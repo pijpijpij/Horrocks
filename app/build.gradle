@@ -79,12 +79,17 @@ android {
         }
     }
 
-    // Always show the reductors of every unit test, even if it passes.
-    testOptions.unitTests.all {
-        testLogging {
-            events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
+    testOptions {
+        unitTests.all {
+            testLogging {
+                // Always show the reductors of every unit test, even if it passes.
+                events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
+            }
         }
+        execution 'ANDROID_TEST_ORCHESTRATOR'
     }
+
+
     compileOptions {
         targetCompatibility JavaVersion.VERSION_1_8
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -149,6 +154,7 @@ dependencies {
 
     // Android Testing Support Library's runner and rules
     androidTestImplementation "com.android.support.test:runner:$rootProject.ext.runnerVersion"
+    androidTestImplementation "com.android.support.test:orchestrator:$rootProject.ext.runnerVersion"
     androidTestImplementation "com.android.support.test:rules:$rootProject.ext.rulesVersion"
 
     androidTestImplementation "android.arch.persistence.room:testing:$rootProject.roomVersion"
