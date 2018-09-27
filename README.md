@@ -17,11 +17,11 @@ The benefits and drawbacks of these concepts are well documented elsewhere, for 
 They are:
 - `View`. The code that is to display data and generally interacts with the user.
 - `Event`. A piece of data sent by the UI (`View`) to the system.
-- `Model`. A set of data the view is to display.
-- `State`. A set of data that represents the state of the view. In a lot of screens, `Model` can be used as `State`.
+- `Model`. The set of data the view is to display.
+- `State`. The set of data that represents the state of the view.
 - `Reducer`. A piece of code that contains both data (equivalent to a Redux action) and process (Redux's reducer). When applied to a 
 `State` this applies its data on to the state and produces a new `State`
-- `ReducerCreator`. A piece of code that processes a specific type of UI events and creates `Reducer`s for these events.
+- `ReducerCreator`. A piece of code that processes a specific type of UI events and creates `Reducer`s for this type of event.
 - `Engine`: the code that collects the `Reducer`s emitted by `ReducerCreator`s and applies then to the current `State`.
 It also calculate the `Model` from the `state` and emits it.
 
@@ -32,11 +32,15 @@ data type, i.e. `String`.
 ### Model
 Views show data. This data takes the form of properties of the `Model`. All data shown on the view comes from the unique `Model`. 
 The view also needs to pop up dialog box, navigate to other screens... These are also represented as properties of the 
-same `Model`. The difference is that these properties are transient, i.e. each time the `State` is about to be modified (by a new 
+same `Model`. The difference is that these properties are transient, i.e. they are reset each time before the state of the screen is 
+re-calculated, and so `State` is about to be modified (by a new 
 `Reducer`), they are reset.
 
 ### State
-It is a set of data that represents the state of the view. In a lot of screens, `Model` can be used as `State`.
+It is a set of data that represents the state of the view. In a lot of screens, `Model` is the same as `State`. The difference 
+between the 2 notions is that what is in the state may not be shown as-is on the screen and contains some internal state
+of the screen.
+`State` is the only source of data in `Model`, so it supports transient properties as well.
 
 ### ReducerCreator
 An `ReducerCreator` can be triggered by an `Event` and emits a series of `Reducer`s. It is named `ReducerCreator` because its semantics 
@@ -54,12 +58,44 @@ It's probably the closest to a `Store` in Redux, but it's different enough that 
 There should be one instance of an engine (noted above as the system) per screen in an app.
 
 ## Other Abstractions
-`ReducerCreator` have some boiler-plate code. 4 classes are designed to remove as much as possible:
+### Help with Feature creation
+`ReducerCreator`s have some boiler-plate code. 4 classes are designed to remove as much as possible:
 - `SingleReducerCreator` and `Interaction`
-- `SingleReducerCreator` and `AsyncInteraction`
+- `MultipleReducerCreator` and `AsyncInteraction`
+
+#### Interaction
+An `Interaction` accepts an `Event` of a specific, formats its data (if needed) and creates the `Reducer` that will apply that 
+data to a `State`. The interaction is said completed when it `Reducer` is executed.
+It is mostly used to actions on the screen that have a immediate result on that screen. For example clicking on a button 
+changes the content of a text field.
+One `Event` produces one `Reducer`.
+
+#### AsyncInteraction
+An `AsyncInteraction` accepts an `Event` of a specific type, formats the data (if needed) and emits a series of `Reducer`s 
+that will apply data(s) to states. The interaction is completed when the _last_ of it `Reducers` are executed.
+An `AsyncInteraction` emits between 0 and an infinity of `Reducer`s.
+
+#### SingleReducerCreator
+A `SingleReducerCreator` accepts an `Interaction` and applies it to all the `Event`s it received. It emits a stream of `Reducer`s 
+that are produced by the interaction.
+Note that `SingleReducerCreator` emits exactly the same number of `Reducer`s as it received `Event`s.
+
+#### MultipleReducerCreator
+A `MultipleReducerCreator` accepts an `Interaction` and applies it to all the `Event`s it received. It emits a stream of `Reducer`s 
+that are produced by the interaction.
+Note that `MultipleReducerCreator`s emits between 0 and an infinity of `Reducer`s.
+
+### Transient Properties
+Another convenience notion is that of a transient property of `State`. Just before the engine applies a `Reducer` to its `State`, 
+the state's transient property is reset to its "un-set" value. So next time the state is emitted for a reason unrelated to that 
+property, the state includes that "un-set" value for that property. This was designed for cases where the property indicates the 
+view should perform a *one-off* action.
+To implement this notion, we do not annotate nor create a special type(s) for transient properties. Instead, the `Engine` applies 
+a `TransientCleaner` onto the state. The engine gets its cleaner from its `Configuration`.
+
 
 ### Validation
-In certain cases, `ReducerCreator` need to validate `Event`s against the current `State` of the app and then emit the relevant `Reducer`.
+In certain cases, a `ReducerCreator` need to validate `Event`s against the current `State` of the app and then emit the relevant `Reducer`.
 `StateProvider` is designed to be used in this scenario. Pass one in the constructor of the `ActionCreator` and Bob's your uncle. The 
 only implementation of `StateProvider` That makes sense delegates to the `Storage` use in the screen. 
 The `ReducerCreator` uses this state to decide what `Reducer`(s) to emit. Note that the state used then may not be the same as the one 
