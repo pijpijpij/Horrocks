@@ -38,7 +38,16 @@ android {
         versionCode calculateVersionCode(project.version)
         versionName project.version
 
-        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        // The following argument makes the Android Test Orchestrator run its
+        // "pm clear" command after each test invocation. This command ensures
+        // that the app's state is completely cleared between tests.
+        testInstrumentationRunnerArguments clearPackageData: 'true'
+    }
+
+    testOptions {
+        execution 'ANDROID_TEST_ORCHESTRATOR'
     }
 
     buildTypes {
@@ -154,7 +163,7 @@ dependencies {
 
     // Android Testing Support Library's runner and rules
     androidTestImplementation "com.android.support.test:runner:$rootProject.ext.runnerVersion"
-    androidTestImplementation "com.android.support.test:orchestrator:$rootProject.ext.runnerVersion"
+    androidTestUtil "com.android.support.test:orchestrator:$rootProject.ext.runnerVersion"
     androidTestImplementation "com.android.support.test:rules:$rootProject.ext.rulesVersion"
 
     androidTestImplementation "android.arch.persistence.room:testing:$rootProject.roomVersion"
