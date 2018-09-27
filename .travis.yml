@@ -19,6 +19,7 @@ android:
 
 # Emulator Management: Create, Start and Wait
 before_script:
+  - android list sdk
   - android list targets
   - echo no | android create avd --force -n test -t android-21 --abi armeabi-v7a
   - emulator -avd test -no-audio -no-window &
