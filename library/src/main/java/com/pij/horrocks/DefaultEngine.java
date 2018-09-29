@@ -14,6 +14,7 @@
 
 package com.pij.horrocks;
 
+import com.pij.horrocks.storage.Storage;
 import com.pij.utils.Logger;
 
 import java.util.Collection;
@@ -83,7 +84,7 @@ public final class DefaultEngine<S, M> implements Engine<S, M> {
         logger.print(getClass(), "Calculating %s", it);
     }
 
-    private S updateState(S current, Reducer<S> reducer, TransientCleaner<S> transientCleaner) throws Exception {
+    private S updateState(S current, Reducer<S> reducer, TransientCleaner<S> transientCleaner) {
         S transientCleaned = transientCleaner.clean(current);
         return reducer.reduce(transientCleaned);
     }

@@ -23,10 +23,10 @@ import com.example.android.architecture.blueprints.todoapp.statistics.Statistics
 import com.example.android.architecture.blueprints.todoapp.statistics.ui.StatisticsFragment;
 import com.pij.horrocks.Configuration;
 import com.pij.horrocks.Engine;
-import com.pij.horrocks.MemoryStorage;
 import com.pij.horrocks.MultipleReducerCreator;
 import com.pij.horrocks.ReducerCreator;
 import com.pij.horrocks.View;
+import com.pij.horrocks.storage.MemoryStorage;
 import com.pij.utils.Logger;
 
 import javax.inject.Inject;

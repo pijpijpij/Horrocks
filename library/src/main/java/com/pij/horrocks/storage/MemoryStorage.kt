@@ -12,11 +12,7 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.pij.horrocks
-
-import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.MatcherAssert.assertThat
-import kotlin.test.Test
+package com.pij.horrocks.storage
 
 /**
  *
@@ -24,21 +20,14 @@ import kotlin.test.Test
  *
  * @author PierreJean
  */
-class MemoryStorageTest {
 
-    @Test
-    fun `Load provides constructor data right after construction`() {
-        val sut = MemoryStorage("hello!")
+class MemoryStorage<S>(private var state: S) : Storage<S> {
 
-        assertThat(sut.load(), equalTo("hello!"))
+    override fun load(): S {
+        return state
     }
 
-    @Test
-    fun `Load provides saved data `() {
-        val sut = MemoryStorage("hello!")
-
-        sut.save("sip")
-
-        assertThat(sut.load(), equalTo("sip"))
+    override fun save(newValue: S) {
+        state = newValue
     }
 }

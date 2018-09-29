@@ -17,6 +17,8 @@ package com.pij.horrocks
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.pij.horrocks.storage.MemoryStorage
+import com.pij.horrocks.storage.Storage
 import com.pij.utils.SysoutLogger
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject

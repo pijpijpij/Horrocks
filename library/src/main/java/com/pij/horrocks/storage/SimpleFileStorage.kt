@@ -12,22 +12,22 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.pij.horrocks
+package com.pij.horrocks.storage
+
+import java.util.*
 
 /**
- *
- * Created on 18/01/2018.
- *
+ * <p>Created on 28/09/2018.</p>
  * @author PierreJean
  */
-
-class MemoryStorage<S>(private var state: S) : Storage<S> {
+class QueueStorage<S>(private val queue: Queue<S>) : Storage<S> {
 
     override fun load(): S {
-        return state
+        return queue.element()
     }
 
-    override fun save(newValue: S) {
-        state = newValue
+    override fun save(state: S) {
+        queue.add(state)
     }
+
 }
