@@ -8,6 +8,9 @@ jobs:
     docker:
       # specify the version you desire here
       - image: circleci/android:api-28-alpha
+        auth:
+          username: _json_key  # default username when using a JSON key file to authenticate
+          password: $GCLOUD_SERVICE_KEY  # JSON service account you created
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -52,10 +55,28 @@ jobs:
           path: library/build/test-results
 
       - run:
-          name: Run Mock Connected Tests
-          command: ./gradlew connectedMockDebugAndroidTest
-      - store_artifacts:
-          path: app/build/reports
-          destination: app/connected-tests
-      - store_test_results:
-          path: app/build/outputs/androidTest-results
+          name: Build Mock and test APKs
+          command: |
+            ./gradlew :app:assembleMockDebug
+            ./gradlew :app:assembleMockDebugAndroidTest
+
+      - run:
+          name: Store Service Account
+          command: echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json
+      - run: |
+          sudo gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
+          sudo gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+          sudo gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+
+      - run:
+          name: Test with Firebase Test Lab
+          command: >
+            sudo gcloud firebase test android run
+              --app app/build/outputs/apk/mock/debug/app-mock-debug.apk
+              --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk
+              --results-bucket cloud-test-${GOOGLE_PROJECT_ID}
+      - run:
+          name: Install gsutil dependency and copy test results data
+          command: |
+            sudo pip install -U crcmod
+            sudo gsutil -m cp -r -U `sudo gsutil ls gs://[BUCKET_NAME]/[OBJECT_NAME] | tail -1` ${CIRCLE_ARTIFACTS}/ | true
