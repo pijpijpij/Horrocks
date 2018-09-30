@@ -99,7 +99,7 @@ create that subscription. In the sample application, it is in the implementation
 # Building and Releasing the libraries
 
 ## Automated build status
-There is not CI quite yet :(.
+[![CircleCI](https://circleci.com/gh/pijpijpij/Horrocks.svg?style=svg)](https://circleci.com/gh/pijpijpij/Horrocks)
 
 The binaries of releases are also available thanks to [Jitpack](https://jitpack.io). The latest release there is 
 [![](https://jitpack.io/v/pijpijpij/horrocks.svg)](https://jitpack.io/#pijpijpij/horrocks).
