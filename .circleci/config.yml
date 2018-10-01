@@ -35,19 +35,19 @@ jobs:
             - ~/.gradle
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
 
-      - run:
-          name: Run Lint and Unit Tests
-          command: ./gradlew lint test
-      - store_artifacts:
-          path: app/build/reports
-          destination: app/unit-tests
-      - store_test_results:
-          path: app/build/test-results
-      - store_artifacts:
-          path: library/build/reports
-          destination: library/unit-tests
-      - store_test_results:
-          path: library/build/test-results
+#      - run:
+#          name: Run Lint and Unit Tests
+#          command: ./gradlew lint test
+#      - store_artifacts:
+#          path: app/build/reports
+#          destination: app/unit-tests
+#      - store_test_results:
+#          path: app/build/test-results
+#      - store_artifacts:
+#          path: library/build/reports
+#          destination: library/unit-tests
+#      - store_test_results:
+#          path: library/build/test-results
 
       - run:
           name: Build Mock and test APKs
@@ -55,24 +55,33 @@ jobs:
             ./gradlew :app:assembleMockDebug
             ./gradlew :app:assembleMockDebugAndroidTest
 
-      - run:
-          name: Store Service Account
-          command: echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json
-      - run: |
-          sudo gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
-          sudo gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
-          sudo gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+#      - run:
+#          name: Store Service Account
+#          command: echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json
+#      - run: |
+#          sudo gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+#          sudo gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+#          sudo gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
 
       - run:
           name: Test with Firebase Test Lab
           command: >
             sudo gcloud firebase test android run
             --app app/build/outputs/apk/mock/debug/app-mock-debug.apk
-            --type instrumentation
+#            --use-orchestrator
             --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk
-            --results-bucket cloud-test-${GOOGLE_PROJECT_ID}
+            --results-history-name 'Horrock Sample app UI tests'
+#            --results-bucket gs://horrocks-parent.appspot.com/
+#            --result-dir
+            >>gcloudlog.log 2>&1
       - run:
-          name: Install gsutil dependency and copy test results data
+          name: Install gsutil dependency
           command: |
             sudo pip install -U crcmod
-            sudo gsutil -m cp -r -U `sudo gsutil ls gs://[BUCKET_NAME]/[OBJECT_NAME] | tail -1` ${CIRCLE_ARTIFACTS}/ | true
+      - run:
+          name: Extract bucket name and result dir and copy test results data
+          command: |
+            BUCKET = $(grep -oP "(?<=browser\/).*(?<=\/)" ${CIRCLE_ARTIFACTS}/gcloudlog.log)
+            RESULT_DIR = $(grep -oP "(?<=browser\/${BUCKET}\/).*(?<=\/)" ${CIRCLE_ARTIFACTS}/gcloudlog.log)
+            sudo gsutil -m cp -r -U `sudo gsutil ls ${BUCKET}/${RESULT_DIR} | tail -1` ${CIRCLE_ARTIFACTS}/ | true
+#            del ${CIRCLE_ARTIFACTS}/gcloudlog.log
