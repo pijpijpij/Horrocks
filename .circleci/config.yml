@@ -70,7 +70,7 @@ jobs:
             --app app/build/outputs/apk/mock/debug/app-mock-debug.apk
             --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk
             --results-history-name "Horrock Sample app UI tests"
-            >>${CIRCLE_ARTIFACTS}/gcloudlog.log 2>&1
+            >>$CIRCLE_ARTIFACTS/gcloudlog.log 2>&1
 #            --use-orchestrator
 #            --results-bucket gs://horrocks-parent.appspot.com/
 #            --result-dir
