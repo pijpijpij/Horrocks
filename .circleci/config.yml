@@ -70,23 +70,24 @@ jobs:
             --app app/build/outputs/apk/mock/debug/app-mock-debug.apk
             --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk
             --results-history-name "Horrock Sample app UI tests"
-#            >>/tmp/gcloudlog.log 2>&1
+            >>/tmp/gcloudlog.log 2>&1
 #            --use-orchestrator
-#            --results-bucket gs://horrocks-parent.appspot.com/
-#            --result-dir
       - run:
-          name: Install gsutil dependency
+          name: Dump GCloud log on console
+          command:
+            cat /tmp/gcloudlog.log
+          when: always
+
+      - run:
+          name: Extract bucket name and result dir with gsutil and copy test results data
           command: |
             sudo pip install -U crcmod
-      - run:
-          name: Extract bucket name and result dir and copy test results data
-          command: |
             BUCKET = $(grep -oP "(?<=browser\/).*(?<=\/)" /tmp/gcloudlog.log)
             echo $BUCKET
             RESULT_DIR = $(grep -oP "(?<=browser\/${BUCKET}\/).*(?<=\/)" /tmp/gcloudlog.log)
             echo $RESULT_DIR
             sudo gsutil -m cp -r -U `sudo gsutil ls ${BUCKET}/${RESULT_DIR} | tail -1` /tmp/pjc/${RESULT_DIR}/ | true
-#            del /tmp/gcloudlog.log
+          when: always
       - store_artifacts:
           path: /tmp/pjc/${RESULT_DIR}
           destination: mock-ui-tests
