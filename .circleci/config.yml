@@ -68,12 +68,12 @@ jobs:
           command: >
             sudo gcloud firebase test android run
             --app app/build/outputs/apk/mock/debug/app-mock-debug.apk
-#            --use-orchestrator
             --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk
             --results-history-name 'Horrock Sample app UI tests'
+            >>gcloudlog.log 2>&1
+#            --use-orchestrator
 #            --results-bucket gs://horrocks-parent.appspot.com/
 #            --result-dir
-            >>gcloudlog.log 2>&1
       - run:
           name: Install gsutil dependency
           command: |
