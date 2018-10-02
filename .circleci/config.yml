@@ -85,7 +85,7 @@ jobs:
           name: Extract bucket name and result dir with gsutil and copy test results data
           command: |
             BUCKET_AND_DIR=$(grep -oP "(?<=browser\/)[^\/]*\/[^\/]*" /tmp/gcloudlog.log)
-            mkdir /tmp/pjc/${BUCKET_AND_DIR}
+            mkdir -p /tmp/pjc/${BUCKET_AND_DIR}
             ls -la /tmp/pjc/${BUCKET_AND_DIR}
             sudo pip install -U crcmod
             sudo gsutil ls gs://${BUCKET_AND_DIR}
