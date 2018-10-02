@@ -85,7 +85,7 @@ jobs:
           name: Extract bucket name and result dir with gsutil and copy test results data
           command: |
             BUCKET= $(grep -oP "(?<=browser\/).*(?<=\/)" /tmp/gcloudlog.log)
-            echo $BUCKET
+            echo "->"+ $BUCKET
 #            RESULT_DIR= $(grep -oP "(?<=browser\/${BUCKET}\/).*(?<=\/)" /tmp/gcloudlog.log)
 #            echo $RESULT_DIR
 #            sudo pip install -U crcmod
