@@ -60,11 +60,11 @@ jobs:
 
       - run:
           name: Store Service Account
-          command: echo $GCLOUD_SERVICE_KEY > ${$GCLOUD_SERVICE_KEYFILE}
+          command: echo $GCLOUD_SERVICE_KEY > ${GCLOUD_SERVICE_KEYFILE}
       - run:
           name: Authenticate with Firebase/Google Cloud
           command: |
-            sudo gcloud auth activate-service-account --key-file=${$GCLOUD_SERVICE_KEYFILE}
+            sudo gcloud auth activate-service-account --key-file=${GCLOUD_SERVICE_KEYFILE}
             sudo gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
             sudo gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
 
