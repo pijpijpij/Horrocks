@@ -90,7 +90,6 @@ jobs:
             BUCKET_AND_DIR=$(grep -oP "(?<=browser\/)[^\/]*\/[^\/]*" ${GCLOUD_LOG})
             mkdir -p ${TEMP_RESULT_FOLDER}
             sudo pip install -U crcmod
-            sudo gsutil ls gs://${BUCKET_AND_DIR}
             sudo gsutil -m cp -r -U gs://${BUCKET_AND_DIR} ${TEMP_RESULT_FOLDER}
           when: always
       - store_test_results:
