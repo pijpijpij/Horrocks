@@ -84,12 +84,12 @@ jobs:
       - run:
           name: Extract bucket name and result dir with gsutil and copy test results data
           command: |
-            sudo pip install -U crcmod
             BUCKET= $(grep -oP "(?<=browser\/).*(?<=\/)" /tmp/gcloudlog.log)
             echo $BUCKET
-            RESULT_DIR= $(grep -oP "(?<=browser\/${BUCKET}\/).*(?<=\/)" /tmp/gcloudlog.log)
-            echo $RESULT_DIR
-            sudo gsutil -m cp -r -U `sudo gsutil ls ${BUCKET}/${RESULT_DIR} | tail -1` /tmp/pjc/${RESULT_DIR}/ | true
+#            RESULT_DIR= $(grep -oP "(?<=browser\/${BUCKET}\/).*(?<=\/)" /tmp/gcloudlog.log)
+#            echo $RESULT_DIR
+#            sudo pip install -U crcmod
+#            sudo gsutil -m cp -r -U `sudo gsutil ls ${BUCKET}/${RESULT_DIR} | tail -1` /tmp/pjc/${RESULT_DIR}/ | true
           when: always
       - store_artifacts:
           path: /tmp/pjc/${RESULT_DIR}
