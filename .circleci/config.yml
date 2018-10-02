@@ -84,9 +84,13 @@ jobs:
       - run:
           name: Extract bucket name and result dir with gsutil and copy test results data
           command: |
-            echo $(grep -oP "(?<=browser\/)(.*?)\/" /tmp/gcloudlog.log)
-            BUCKET=$(grep -oP "(?<=browser\/)(.*?)\/" /tmp/gcloudlog.log)
+            echo $(grep -oP "(?<=browser\/).*(?<=\/)" /tmp/gcloudlog.log)
+            BUCKET=$(grep -oP "(?<=browser\/).*(?<=\/)" /tmp/gcloudlog.log)
             echo $BUCKET
+#            This one worked for BUCKET only
+#            echo $(grep -oP "(?<=browser\/)(.*?)\/" /tmp/gcloudlog.log)
+#            BUCKET=$(grep -oP "(?<=browser\/)(.*?)\/" /tmp/gcloudlog.log)
+#            oroginal
 #            BUCKET= $(grep -oP "(?<=browser\/).*(?<=\/)" /tmp/gcloudlog.log)
 #            RESULT_DIR= $(grep -oP "(?<=browser\/${BUCKET}\/).*(?<=\/)" /tmp/gcloudlog.log)
 #            echo $RESULT_DIR
