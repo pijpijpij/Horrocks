@@ -99,7 +99,14 @@ create that subscription. In the sample application, it is in the implementation
 # Building and Releasing the libraries
 
 ## Automated build status
-There is not CI quite yet :(.
+The full build, including running UI tests for the demo app is done via Circle CI. 
+[![CircleCI](https://circleci.com/gh/pijpijpij/Horrocks.svg?style=svg)](https://circleci.com/gh/pijpijpij/Horrocks)
+
+Previous builds were done with Travis CI.
+[![Build Status](https://travis-ci.org/pijpijpij/Zworkout.svg?branch=master)](https://travis-ci.org/pijpijpij/Zworkout)
+but the UI test did not complete before the build timeed out. Also results are very difficult to get hold off.
+We also tried Bitrise, but neither method of running UI tests completed before the build timeout.
+[![Build Status](https://app.bitrise.io/app/110b2b59839df29d/status.svg?token=JtkKm00hyRv3f895SyGMbw&branch=master)](https://app.bitrise.io/app/110b2b59839df29d)
 
 The binaries of releases are also available thanks to [Jitpack](https://jitpack.io). The latest release there is 
 [![](https://jitpack.io/v/pijpijpij/horrocks.svg)](https://jitpack.io/#pijpijpij/horrocks).

@@ -7,36 +7,87 @@ jobs:
   build:
     docker:
       # specify the version you desire here
-      - image: circleci/openjdk:8-jdk
+      - image: circleci/android:api-28-alpha
 
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
-
-    working_directory: ~/repo
+    working_directory: ~/code
 
     environment:
       # Customize the JVM maximum heap limit
       JVM_OPTS: -Xmx3200m
       TERM: dumb
+      GCLOUD_LOG: /tmp/gcloudlog.log
+      GCLOUD_SERVICE_KEYFILE: /tmp/gcloud-service-key.json
+      TEMP_RESULT_FOLDER: /tmp/pjc
 
     steps:
       - checkout
 
       # Download and cache dependencies
       - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "build.gradle" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-
-      - run: gradle dependencies
-
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+      - run:
+          name: Download dependencies
+          command: ./gradlew androidDependencies
       - save_cache:
           paths:
             - ~/.gradle
-          key: v1-dependencies-{{ checksum "build.gradle" }}
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
 
-      # run tests!
-      - run: gradle test
+      - run:
+          name: Run Lint and Unit Tests
+          command: ./gradlew lint test
+      - store_artifacts:
+          path: app/build/reports
+          destination: app/unit-tests
+      - store_test_results:
+          path: app/build/test-results
+      - store_artifacts:
+          path: library/build/reports
+          destination: library/unit-tests
+      - store_test_results:
+          path: library/build/test-results
+
+      - run:
+          name: Build Mock and test APKs
+          command: |
+            ./gradlew :app:assembleMockDebug
+            ./gradlew :app:assembleMockDebugAndroidTest
+
+      - run:
+          name: Store Service Account
+          command: echo $GCLOUD_SERVICE_KEY > ${GCLOUD_SERVICE_KEYFILE}
+      - run:
+          name: Authenticate with Firebase/Google Cloud
+          command: |
+            sudo gcloud auth activate-service-account --key-file=${GCLOUD_SERVICE_KEYFILE}
+            sudo gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+            sudo gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+
+      - run:
+          name: Test with Firebase Test Lab
+          command: >
+            sudo gcloud firebase test android run
+            --app app/build/outputs/apk/mock/debug/app-mock-debug.apk
+            --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk
+            --results-history-name "Horrock Sample app UI tests"
+            --use-orchestrator
+            >>${GCLOUD_LOG} 2>&1
+      - run:
+          name: Print Google Cloud log on console
+          command:
+            cat ${GCLOUD_LOG}
+          when: always
+
+      - run:
+          name: Extract bucket name and result dir with gsutil and copy test results in temp folder
+          command: |
+            BUCKET_AND_DIR=$(grep -oP "(?<=browser\/)[^\/]*\/[^\/]*" ${GCLOUD_LOG})
+            mkdir -p ${TEMP_RESULT_FOLDER}
+            sudo pip install -U crcmod
+            sudo gsutil -m cp -r -U gs://${BUCKET_AND_DIR} ${TEMP_RESULT_FOLDER}
+          when: always
+      - store_test_results:
+          path: ${TEMP_RESULT_FOLDER}
+      - store_artifacts:
+          path: ${TEMP_RESULT_FOLDER}
+          destination: ui-tests
