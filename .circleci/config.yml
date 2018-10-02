@@ -76,7 +76,7 @@ jobs:
             >>/tmp/gcloudlog.log 2>&1
 #            --use-orchestrator
       - run:
-          name: Dump GCloud log on console
+          name: Print Google Cloud log on console
           command:
             cat /tmp/gcloudlog.log
           when: always
@@ -84,13 +84,16 @@ jobs:
       - run:
           name: Extract bucket name and result dir with gsutil and copy test results data
           command: |
-            echo $(grep -oP "(?<=browser\/).*(?<=\/)" /tmp/gcloudlog.log)
-            BUCKET=$(grep -oP "(?<=browser\/).*(?<=\/)" /tmp/gcloudlog.log)
-            echo $BUCKET
+            BUCKET_AND_DIR=$(grep -oP "(?<=browser\/).*(?<=\/)" /tmp/gcloudlog.log)
+            sudo pip install -U crcmod
+            sudo gsutil ls ${BUCKET_AND_DIR}
+            sudo gsutil ls ${BUCKET_AND_DIR} | tail -1
+            sudo gsutil -m cp -r -U `sudo gsutil ls ${BUCKET_AND_DIR} | tail -1` /tmp/pjc/${BUCKET_AND_DIR} | true
 #            This one worked for BUCKET only
+#            echo $(grep -oP "(?<=browser\/).*(?<=\/)" /tmp/gcloudlog.log)
 #            echo $(grep -oP "(?<=browser\/)(.*?)\/" /tmp/gcloudlog.log)
 #            BUCKET=$(grep -oP "(?<=browser\/)(.*?)\/" /tmp/gcloudlog.log)
-#            oroginal
+#            original
 #            BUCKET= $(grep -oP "(?<=browser\/).*(?<=\/)" /tmp/gcloudlog.log)
 #            RESULT_DIR= $(grep -oP "(?<=browser\/${BUCKET}\/).*(?<=\/)" /tmp/gcloudlog.log)
 #            echo $RESULT_DIR
@@ -98,5 +101,5 @@ jobs:
 #            sudo gsutil -m cp -r -U `sudo gsutil ls ${BUCKET}/${RESULT_DIR} | tail -1` /tmp/pjc/${RESULT_DIR}/ | true
           when: always
       - store_artifacts:
-          path: /tmp/pjc/${RESULT_DIR}
+          path: /tmp/pjc/${BUCKET_AND_DIR}
           destination: mock-ui-tests
