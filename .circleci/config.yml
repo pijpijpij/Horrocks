@@ -88,13 +88,13 @@ jobs:
           name: Extract bucket name and result dir with gsutil and copy test results data
           command: |
             BUCKET_AND_DIR=$(grep -oP "(?<=browser\/)[^\/]*\/[^\/]*" ${GCLOUD_LOG})
-            mkdir -p ${$TEMP_RESULT_FOLDER}
+            mkdir -p ${TEMP_RESULT_FOLDER}
             sudo pip install -U crcmod
             sudo gsutil ls gs://${BUCKET_AND_DIR}
-            sudo gsutil -m cp -r -U gs://${BUCKET_AND_DIR} ${$TEMP_RESULT_FOLDER}
+            sudo gsutil -m cp -r -U gs://${BUCKET_AND_DIR} ${TEMP_RESULT_FOLDER}
           when: always
       - store_test_results:
-          path: ${$TEMP_RESULT_FOLDER}
+          path: ${TEMP_RESULT_FOLDER}
       - store_artifacts:
-          path: ${$TEMP_RESULT_FOLDER}
+          path: ${TEMP_RESULT_FOLDER}
           destination: ui-tests
