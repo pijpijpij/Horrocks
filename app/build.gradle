@@ -97,6 +97,7 @@ android {
             }
         }
         execution 'ANDROID_TEST_ORCHESTRATOR'
+        animationsDisabled = true
     }
 
 
