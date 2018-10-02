@@ -20,6 +20,9 @@ jobs:
       # Customize the JVM maximum heap limit
       JVM_OPTS: -Xmx3200m
       TERM: dumb
+      GCLOUD_LOG: /tmp/gcloudlog.log
+      GCLOUD_SERVICE_KEYFILE: ${HOME}/gcloud-service-key.json
+      TEMP_RESULT_FOLDER: /tmp/pjc
 
     steps:
       - checkout
@@ -57,11 +60,11 @@ jobs:
 
       - run:
           name: Store Service Account
-          command: echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json
+          command: echo $GCLOUD_SERVICE_KEY > ${$GCLOUD_SERVICE_KEYFILE}
       - run:
           name: Authenticate with Firebase/Google Cloud
           command: |
-            sudo gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+            sudo gcloud auth activate-service-account --key-file=${$GCLOUD_SERVICE_KEYFILE}
             sudo gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
             sudo gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
 
@@ -73,38 +76,25 @@ jobs:
             --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk
             --results-history-name "Horrock Sample app UI tests"
             --test-targets "class com.example.android.architecture.blueprints.todoapp.addedittask.AddEditTaskScreenTest#toolbarTitle_newTask_persistsRotation"
-            >>/tmp/gcloudlog.log 2>&1
-#            --use-orchestrator
+            --use-orchestrator
+            >>${GCLOUD_LOG} 2>&1
       - run:
           name: Print Google Cloud log on console
           command:
-            cat /tmp/gcloudlog.log
+            cat ${GCLOUD_LOG}
           when: always
 
       - run:
           name: Extract bucket name and result dir with gsutil and copy test results data
           command: |
-            BUCKET_AND_DIR=$(grep -oP "(?<=browser\/)[^\/]*\/[^\/]*" /tmp/gcloudlog.log)
-            mkdir -p /tmp/pjc
-            ls -laR /tmp/pjc
+            BUCKET_AND_DIR=$(grep -oP "(?<=browser\/)[^\/]*\/[^\/]*" ${GCLOUD_LOG})
+            mkdir -p ${$TEMP_RESULT_FOLDER}
             sudo pip install -U crcmod
             sudo gsutil ls gs://${BUCKET_AND_DIR}
-            sudo gsutil -m cp -r -U gs://${BUCKET_AND_DIR} /tmp/pjc
-            ls -laR /tmp/pjc
-#            echo $BUCKET_AND_DIR
-#            This one worked for BUCKET only
-#            echo $(grep -oP "(?<=browser\/).*(?<=\/)" /tmp/gcloudlog.log)
-#            echo $(grep -oP "(?<=browser\/)(.*?)\/" /tmp/gcloudlog.log)
-#            BUCKET=$(grep -oP "(?<=browser\/)(.*?)\/" /tmp/gcloudlog.log)
-#            original
-#            BUCKET= $(grep -oP "(?<=browser\/).*(?<=\/)" /tmp/gcloudlog.log)
-#            RESULT_DIR= $(grep -oP "(?<=browser\/${BUCKET}\/).*(?<=\/)" /tmp/gcloudlog.log)
-#            echo $RESULT_DIR
-#            sudo pip install -U crcmod
-#            sudo gsutil -m cp -r -U `sudo gsutil ls ${BUCKET}/${RESULT_DIR} | tail -1` /tmp/pjc/${RESULT_DIR}/ | true
+            sudo gsutil -m cp -r -U gs://${BUCKET_AND_DIR} ${$TEMP_RESULT_FOLDER}
           when: always
       - store_test_results:
-          path: /tmp/pjc
+          path: ${$TEMP_RESULT_FOLDER}
       - store_artifacts:
-          path: /tmp/pjc
-          destination: mock-ui-tests
+          path: ${$TEMP_RESULT_FOLDER}
+          destination: ui-tests
