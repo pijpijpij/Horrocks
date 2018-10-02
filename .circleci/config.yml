@@ -58,10 +58,12 @@ jobs:
       - run:
           name: Store Service Account
           command: echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json
-      - run: |
-          sudo gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
-          sudo gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
-          sudo gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+      - run:
+          name: Authenticate with Firebase/Google Cloud
+          command: |
+            sudo gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+            sudo gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+            sudo gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
 
       - run:
           name: Test with Firebase Test Lab
@@ -70,6 +72,7 @@ jobs:
             --app app/build/outputs/apk/mock/debug/app-mock-debug.apk
             --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk
             --results-history-name "Horrock Sample app UI tests"
+            --test-targets "class com.example.android.architecture.blueprints.todoapp.addedittask.AddEditTaskScreenTest#toolbarTitle_newTask_persistsRotation"
             >>/tmp/gcloudlog.log 2>&1
 #            --use-orchestrator
       - run:
@@ -82,7 +85,7 @@ jobs:
           name: Extract bucket name and result dir with gsutil and copy test results data
           command: |
             sudo pip install -U crcmod
-            BUCKET = $(grep -oP "(?<=browser\/).*(?<=\/)" /tmp/gcloudlog.log)
+            export BUCKET = $(grep -oP "(?<=browser\/).*(?<=\/)" /tmp/gcloudlog.log)
             echo $BUCKET
             RESULT_DIR = $(grep -oP "(?<=browser\/${BUCKET}\/).*(?<=\/)" /tmp/gcloudlog.log)
             echo $RESULT_DIR
