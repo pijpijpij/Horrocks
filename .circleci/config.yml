@@ -86,8 +86,8 @@ jobs:
           command: |
             BUCKET_AND_DIR=$(grep -oP "(?<=browser\/)[^\/]*\/[^\/]*" /tmp/gcloudlog.log)
             sudo pip install -U crcmod
-            sudo gsutil ls gs://${BUCKET_AND_DIR}
-            sudo gsutil -m cp -r -U `sudo gsutil ls gs://${BUCKET_AND_DIR} | tail -1` /tmp/pjc/${BUCKET_AND_DIR} | true
+            gsutil ls gs://${BUCKET_AND_DIR}
+            gsutil -m cp -r -U gs://${BUCKET_AND_DIR} /tmp/pjc/${BUCKET_AND_DIR}
             ls -la /tmp/pjc/${BUCKET_AND_DIR}
 #            echo $BUCKET_AND_DIR
 #            This one worked for BUCKET only
