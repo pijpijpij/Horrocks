@@ -102,7 +102,7 @@ The `ReducerCreator` uses this state to decide what `Reducer`(s) to emit. Note t
 handed to the `Reducer`(s), as some other `Reducer` of a different origin may have be executed in the meantime.
   
 
-# Adding to Gradle
+# Adding to Gradle project
 Add the JitPack repository to your build file:
 ```groovy
 allprojects {
@@ -138,7 +138,7 @@ create that subscription. In the sample application, it is in the implementation
 
 Status   | CI   | Description
 :---:    | :--- | :---
-[![](https://jitpack.io/v/pijpijpij/horrocks.svg)](https://jitpack.io/#pijpijpij/horrocks) | [Jitpack](https://jitpack.io) | The binaries of releases are also available there. Jitpack is not used to run extensive test, just build the releases.
+[![](https://jitpack.io/v/pijpijpij/horrocks.svg)](https://jitpack.io/#pijpijpij/horrocks) | [Jitpack](https://jitpack.io) | Released  binaries are available [there](https://jitpack.io/#pijpijpij/Horrocks). Jitpack is not used to run extensive tests, just build the releases.
 [![CircleCI](https://circleci.com/gh/pijpijpij/Horrocks.svg?style=svg)](https://circleci.com/gh/pijpijpij/Horrocks) | [CircleCI](https://circleci.com/) | The full build, including running UI tests for the demo app is done via Circle CI. Yes!
 [![Build Status](https://travis-ci.org/pijpijpij/Horrocks.svg?branch=master)](https://travis-ci.org/pijpijpij/Horrocks) | [Travis-CI](https://travis-ci.org/) | Previous builds were done with Travis CI but the UI tests did not complete before the build timed out. Also results are very difficult to get hold off.
 [![Build Status](https://app.bitrise.io/app/110b2b59839df29d/status.svg?token=JtkKm00hyRv3f895SyGMbw&branch=master)](https://app.bitrise.io/app/110b2b59839df29d) | [Bitrise](https://app.bitrise.io/) | We also tried Bitrise but neither method of running UI tests completed before the build timeout.
@@ -174,7 +174,7 @@ Releases are tagged with their version number (e.g. release 5.3.2 is build from 
 
     `> ./gradlew build install`
     
-    That is only needed if you do not want to wait for [Jitpack](https://jitpack.io/#org.github.pijpijpij/horrocks/) to finish its 
+    That is only needed if you do not want to wait for [Jitpack](https://jitpack.io/#pijpijpij/Horrocks) to finish its 
     build.
 
 
