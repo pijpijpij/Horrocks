@@ -36,8 +36,11 @@ class InitialValueStorageTest {
     @get:Rule
     val thrown: ExpectedException = ExpectedException.none()
 
+    private fun failedTestInitialValue() =
+            Callable<String> { fail("Should not be calling the default initial value") }
+
     @Test
-    fun `load() tries to use decorated value`() {
+    fun `1st call to load() tries to use decorated value`() {
         //given
         val mockDecorated = mock<Storage<String>>()
         whenever(mockDecorated.load()).thenReturn("ta da!")
@@ -51,10 +54,23 @@ class InitialValueStorageTest {
     }
 
     @Test
-    fun `load() uses initial value the 1st time decorated throws`() {
+    fun `1st call to load() does no use default value if decorated Storage works`() {
         //given
         val mockDecorated = mock<Storage<String>>()
-        whenever(mockDecorated.load()).thenThrow(IllegalArgumentException("ta da!"))
+        whenever(mockDecorated.load()).thenReturn("ta da!")
+        val sut = InitialValueStorage(mockDecorated, failedTestInitialValue())
+
+        // when
+        sut.load()
+
+        // then
+    }
+
+    @Test
+    fun `1st call to load() uses initial value when decorated Storage throws`() {
+        //given
+        val mockDecorated = mock<Storage<String>>()
+        whenever(mockDecorated.load()).thenThrow(IllegalArgumentException("rat!"))
         val sut = InitialValueStorage(mockDecorated, Callable { "hello" })
 
         // when
@@ -65,11 +81,26 @@ class InitialValueStorageTest {
     }
 
     @Test
-    fun `load() throws the 2nd time decorated throws`() {
+    fun `2nd call to load() returns decorated Storage's value`() {
         //given
         val mockDecorated = mock<Storage<String>>()
-        whenever(mockDecorated.load()).thenThrow(IllegalArgumentException("ta da!"))
-        val sut = InitialValueStorage(mockDecorated, Callable { "hello" })
+        whenever(mockDecorated.load()).thenReturn("ta da!")
+        val sut = InitialValueStorage(mockDecorated, failedTestInitialValue())
+
+        // when
+        val result = sut.load()
+
+        // then
+        assertThat(result, equalTo("ta da!"))
+    }
+
+    @Test
+    fun `2nd call to load() throws whatever decorated Storage throws`() {
+        //given
+        val mockDecorated = mock<Storage<String>>()
+        whenever(mockDecorated.load()).thenReturn("Should not see this")
+                .thenThrow(IllegalArgumentException("ta da!"))
+        val sut = InitialValueStorage(mockDecorated, failedTestInitialValue())
         sut.load()
 
         // when
@@ -80,10 +111,24 @@ class InitialValueStorageTest {
     }
 
     @Test
-    fun `save() passes through to the decorated`() {
+    fun `2nd call to load() does no use default value if decorated Storage works`() {
         //given
         val mockDecorated = mock<Storage<String>>()
-        val sut = InitialValueStorage(mockDecorated, Callable<String> { fail("this shouldn't be called") })
+        whenever(mockDecorated.load()).thenReturn("ta da!")
+        val sut = InitialValueStorage(mockDecorated, failedTestInitialValue())
+        sut.load()
+
+        // when
+        sut.load()
+
+        // then
+    }
+
+    @Test
+    fun `save() passes through to the decorated Storage`() {
+        //given
+        val mockDecorated = mock<Storage<String>>()
+        val sut = InitialValueStorage(mockDecorated, failedTestInitialValue())
         sut.load()
 
         // when
@@ -94,11 +139,11 @@ class InitialValueStorageTest {
     }
 
     @Test
-    fun `save() throws if decorated throws`() {
+    fun `save() throws if decorated Storage throws`() {
         //given
         val mockDecorated = mock<Storage<String>>()
         whenever(mockDecorated.save("some string")).thenThrow(IllegalArgumentException("ta da!"))
-        val sut = InitialValueStorage(mockDecorated, Callable<String> { fail("this shouldn't be called") })
+        val sut = InitialValueStorage(mockDecorated, failedTestInitialValue())
         sut.load()
 
         // when

@@ -20,7 +20,7 @@ import java.util.concurrent.Callable
  * <p>Created on 28/09/2018.</p>
  * @author PierreJean
  */
-class InitialValueStorage<S>(private val decorated: Storage<S>, private val initialValue: Callable<S>) : Storage<S> {
+class InitialValueStorage<S>(private val decorated: Storage<S>, private val defaultInitialValue: Callable<S>) : Storage<S> {
 
     private val passThrough = { decorated.load() }
 
@@ -31,7 +31,7 @@ class InitialValueStorage<S>(private val decorated: Storage<S>, private val init
             loadIt = passThrough
             passThrough()
         } catch (e: Exception) {
-            initialValue.call()
+            defaultInitialValue.call()
         }
     }
 
