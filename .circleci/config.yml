@@ -22,20 +22,19 @@ jobs:
     steps:
       - checkout
 
-      # Download and cache dependencies
+      # Restore cache
       - restore_cache:
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
-      - run:
-          name: Download dependencies
-          command: ./gradlew androidDependencies
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}-{{ checksum  "library/build.gradle" }}-{{ checksum  ".circleci/config.yml" }}
 
       - run:
           name: Run Lint and Unit Tests
           command: ./gradlew lint test
+
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}-{{ checksum  "library/build.gradle" }}-{{ checksum  ".circleci/config.yml" }}
+
       - store_artifacts:
           path: app/build/reports
           destination: app/unit-tests
