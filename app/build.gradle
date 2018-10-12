@@ -28,6 +28,8 @@ ext.calculateVersionCode = { String versionName ->
     result
 }
 
+task preCommit(dependsOn: ['lintMockDebug', 'testMockDebugUnitTest'])
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
