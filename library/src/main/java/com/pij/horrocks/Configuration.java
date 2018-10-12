@@ -15,6 +15,7 @@
 package com.pij.horrocks;
 
 import com.google.auto.value.AutoValue;
+import com.pij.horrocks.storage.Storage;
 import com.pij.utils.Logger;
 import com.pij.utils.SysoutLogger;
 
@@ -44,7 +45,7 @@ public abstract class Configuration<S, M> {
 
     abstract TransientCleaner<S> transientResetter();
 
-    abstract Storage<S> store();
+    abstract com.pij.horrocks.storage.Storage<S> store();
 
     @AutoValue.Builder
     public abstract static class Builder<S, M> {

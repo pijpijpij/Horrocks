@@ -12,22 +12,14 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.pij.horrocks
+package com.pij.horrocks.storage
 
-/**
- *
- * Created on 18/01/2018.
- *
- * @author PierreJean
- */
+import java.io.InputStream
+import java.io.OutputStream
 
-class MemoryStorage<S>(private var state: S) : Storage<S> {
-
-    override fun load(): S {
-        return state
-    }
-
-    override fun save(newValue: S) {
-        state = newValue
-    }
+interface StreamAccessor {
+    fun openForRead(): InputStream
+    fun openForAppend(): OutputStream
+    fun close(stream: InputStream)
+    fun close(stream: OutputStream)
 }

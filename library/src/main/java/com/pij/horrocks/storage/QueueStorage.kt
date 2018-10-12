@@ -12,33 +12,22 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.pij.horrocks
+package com.pij.horrocks.storage
 
-import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.MatcherAssert.assertThat
-import kotlin.test.Test
+import java.util.*
 
 /**
- *
- * Created on 18/01/2018.
- *
+ * <p>Created on 28/09/2018.</p>
  * @author PierreJean
  */
-class MemoryStorageTest {
+class QueueStorage<S>(private val queue: Queue<S>) : Storage<S> {
 
-    @Test
-    fun `Load provides constructor data right after construction`() {
-        val sut = MemoryStorage("hello!")
-
-        assertThat(sut.load(), equalTo("hello!"))
+    override fun load(): S {
+        return queue.element()
     }
 
-    @Test
-    fun `Load provides saved data `() {
-        val sut = MemoryStorage("hello!")
-
-        sut.save("sip")
-
-        assertThat(sut.load(), equalTo("sip"))
+    override fun save(state: S) {
+        queue.add(state)
     }
+
 }

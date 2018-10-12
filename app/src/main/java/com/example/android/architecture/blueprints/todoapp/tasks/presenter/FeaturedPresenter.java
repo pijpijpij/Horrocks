@@ -26,11 +26,11 @@ import com.example.android.architecture.blueprints.todoapp.tasks.TasksModule;
 import com.example.android.architecture.blueprints.todoapp.tasks.ui.TasksFragment;
 import com.pij.horrocks.Configuration;
 import com.pij.horrocks.Engine;
-import com.pij.horrocks.MemoryStorage;
 import com.pij.horrocks.MultipleReducerCreator;
 import com.pij.horrocks.ReducerCreator;
 import com.pij.horrocks.SingleReducerCreator;
 import com.pij.horrocks.View;
+import com.pij.horrocks.storage.MemoryStorage;
 import com.pij.utils.Logger;
 
 import io.reactivex.disposables.CompositeDisposable;

@@ -12,20 +12,22 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.pij.horrocks;
-
-import android.support.annotation.NonNull;
+package com.pij.horrocks.storage
 
 /**
- * <p>Created on 18/01/2018.</p>
+ *
+ * Created on 18/01/2018.
  *
  * @author PierreJean
  */
 
-public interface Storage<S> {
+class MemoryStorage<S>(private var state: S) : Storage<S> {
 
-    @NonNull
-    S load();
+    override fun load(): S {
+        return state
+    }
 
-    void save(@NonNull S state);
+    override fun save(newValue: S) {
+        state = newValue
+    }
 }
