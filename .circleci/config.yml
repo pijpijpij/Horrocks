@@ -17,7 +17,6 @@ jobs:
       TERM: dumb
       GCLOUD_LOG: /tmp/gcloudlog.log
       GCLOUD_SERVICE_KEYFILE: /tmp/gcloud-service-key.json
-      TEMP_RESULT_FOLDER: /tmp/pjc
 
     steps:
       - checkout
@@ -81,12 +80,12 @@ jobs:
           name: Extract bucket name and result dir with gsutil and copy test results in temp folder
           command: |
             BUCKET_AND_DIR=$(grep -oP "(?<=browser\/)[^\/]*\/[^\/]*" ${GCLOUD_LOG})
-            mkdir -p ${TEMP_RESULT_FOLDER}
+            mkdir -v -p /tmp/pjc
             sudo pip install -U crcmod
-            sudo gsutil -m cp -r -U gs://${BUCKET_AND_DIR} ${TEMP_RESULT_FOLDER}
+            sudo gsutil -m cp -r -U gs://${BUCKET_AND_DIR} /tmp/pjc
           when: always
       - store_test_results:
-          path: ${TEMP_RESULT_FOLDER}
+          path: /tmp/pjc
       - store_artifacts:
-          path: ${TEMP_RESULT_FOLDER}
+          path: /tmp/pjc
           destination: ui-tests
