@@ -49,6 +49,12 @@ android {
     }
 
     testOptions {
+        unitTests.all {
+            testLogging {
+                // Always show the results of every unit test, even if it passes.
+                events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
+            }
+        }
         execution 'ANDROID_TEST_ORCHESTRATOR'
         animationsDisabled = true
     }
@@ -90,18 +96,6 @@ android {
             variant.setIgnore(true)
         }
     }
-
-    testOptions {
-        unitTests.all {
-            testLogging {
-                // Always show the results of every unit test, even if it passes.
-                events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
-            }
-        }
-        execution 'ANDROID_TEST_ORCHESTRATOR'
-        animationsDisabled = true
-    }
-
 
     compileOptions {
         targetCompatibility JavaVersion.VERSION_1_8
