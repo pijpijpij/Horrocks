@@ -298,7 +298,7 @@ public class TasksScreenTest {
 
         // Verify it was deleted
         viewAllTasks();
-        onView(withText("A TITLE")).check(matches(not(isDisplayed())));
+        onView(withText("A TITLE")).check(doesNotExist());
     }
 
     @Test
@@ -454,7 +454,7 @@ public class TasksScreenTest {
 
     @Test
     @SdkSuppress(minSdkVersion = 21) // Blinking cursor after rotation breaks this in API 19
-    public void orientationChange_DuringEdit_ChangePersists() throws Throwable {
+    public void orientationChange_DuringEdit_ChangePersists() {
         // Add a completed task
         createTask("A TITLE", "THE DESCRIPTION");
 

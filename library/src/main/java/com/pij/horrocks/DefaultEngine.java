@@ -43,10 +43,13 @@ public final class DefaultEngine<S, M> implements Engine<S, M> {
         TransientCleaner<S> transientCleaner = configuration.transientResetter();
         StateEquality<S> stateFilter = configuration.stateFilter();
         StateConverter<S, M> stateConverter = configuration.stateToModel();
+        ErrorReducerFactory<S> errorReducerFactory = configuration.errorReducerFactory();
         Callable<S> initialValue = () -> transientCleaner.clean(storage.load());
         return Observable.fromIterable(reducerCreators)
                 .flatMap(feature -> feature.reducers()
                         .doOnTerminate(() -> logger.print(getClass(), "ReducerCreator %s Unexpected completion!!!", feature.hashCode()))
+                        .onErrorReturn(errorReducerFactory::create)
+                        .retry()
                 )
                 .scanWith(initialValue, (current, reducer) -> updateState(current, reducer, transientCleaner))
                 .distinctUntilChanged(stateFilter::equal)
