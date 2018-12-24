@@ -50,7 +50,7 @@ public final class MultipleReducerCreator<E, S> implements ReducerCreator<E, S> 
 
     @NonNull
     @Override
-    public Observable<? extends Reducer<S>> reducers() {
+    public Observable<Reducer<S>> reducers() {
         return event
                 .doOnNext(this::logProcessingEvent)
                 .flatMap(interaction::process)

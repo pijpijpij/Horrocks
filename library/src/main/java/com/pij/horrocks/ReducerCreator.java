@@ -28,6 +28,6 @@ public interface ReducerCreator<E, S> {
     void trigger(@NonNull E event);
 
     @NonNull
-    Observable<? extends Reducer<S>> reducers();
+    Observable<Reducer<S>> reducers();
 
 }

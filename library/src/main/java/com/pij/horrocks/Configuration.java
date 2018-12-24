@@ -34,6 +34,7 @@ public abstract class Configuration<S, M> {
                 .logger(new SysoutLogger())
                 .transientResetter(s -> s)
                 .stateFilter((left, right) -> false)
+                .errorReducerFactory(e -> current -> current)
                 ;
     }
 
@@ -66,7 +67,16 @@ public abstract class Configuration<S, M> {
      */
     abstract StateEquality<S> stateFilter();
 
+    /**
+     * Used to create a Reducer when a feature throws an exception unexpectedly.
+     * It is expected tha tin state that contain an error field, the reducer produced by this factory
+     * fills in the error property using the information present in the exception
+     * The default factory creates a Reducer that passes the same state it receives.
+     */
+    abstract ErrorReducerFactory<S> errorReducerFactory();
+
     abstract Storage<S> store();
+
 
     @AutoValue.Builder
     public abstract static class Builder<S, M> {
@@ -80,6 +90,8 @@ public abstract class Configuration<S, M> {
         public abstract Builder<S, M> transientResetter(TransientCleaner<S> transientResetter);
 
         public abstract Builder<S, M> stateFilter(StateEquality<S> stateFilter);
+
+        public abstract Builder<S, M> errorReducerFactory(ErrorReducerFactory<S> errorReducerFactory);
 
         public abstract Builder<S, M> store(Storage<S> storage);
 
