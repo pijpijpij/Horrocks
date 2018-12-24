@@ -117,6 +117,47 @@ class DefaultEngineTest {
     }
 
     @Test
+    fun `Same consecutive state is emitted 2ce with the default state filter`() {
+        val same: ReducerCreator<Any, DummyState> = sameStateCreator()
+        val configuration = Configuration.builder<DummyState, DummyState>()
+                .store(MemoryStorage(DummyState(false, 23)))
+                .stateToModel { it }
+                .creators(setOf(same))
+                .build()
+        val observer = sut.runWith(configuration).test()
+
+        same.trigger(Any())
+
+        observer.assertValueCount(2)
+    }
+
+    @Test
+    fun `Same consecutive state is emitted 1ce with 'same' state filter`() {
+        val same: ReducerCreator<Any, DummyState> = sameStateCreator()
+        val configuration = Configuration.builder<DummyState, DummyState>()
+                .store(MemoryStorage(DummyState(false, 23)))
+                .stateToModel { it }
+                .creators(setOf(same))
+                .stateFilter { left, right -> left == right }
+                .build()
+        val observer = sut.runWith(configuration).test()
+
+        same.trigger(Any())
+
+        observer.assertValueCount(1)
+    }
+
+    private fun sameStateCreator(): ReducerCreator<Any, DummyState> {
+        return object : ReducerCreator<Any, DummyState> {
+            private val events: Subject<Any> = PublishSubject.create()
+            override fun trigger(input: Any) = events.onNext(input)
+            override fun reducers(): Observable<out Reducer<DummyState>> = events.map {
+                Reducer<DummyState> { state -> state }
+            }
+        }
+    }
+
+    @Test
     fun `Fails when a feature fails to construct a Reducer`() {
         val reducerCreatorCannotConstructReducer: ReducerCreator<Any, DummyState> = object : ReducerCreator<Any, DummyState> {
             private val events: Subject<Any> = PublishSubject.create()
