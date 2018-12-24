@@ -41,6 +41,7 @@ public final class DefaultEngine<S, M> implements Engine<S, M> {
         Storage<S> storage = configuration.store();
         Collection<ReducerCreator<?, S>> reducerCreators = configuration.creators();
         TransientCleaner<S> transientCleaner = configuration.transientResetter();
+        StateEquality<S> stateFilter = configuration.stateFilter();
         StateConverter<S, M> stateConverter = configuration.stateToModel();
         Callable<S> initialValue = () -> transientCleaner.clean(storage.load());
         return Observable.fromIterable(reducerCreators)
@@ -48,6 +49,7 @@ public final class DefaultEngine<S, M> implements Engine<S, M> {
                         .doOnTerminate(() -> logger.print(getClass(), "ReducerCreator %s Unexpected completion!!!", feature.hashCode()))
                 )
                 .scanWith(initialValue, (current, reducer) -> updateState(current, reducer, transientCleaner))
+                .distinctUntilChanged(stateFilter::equal)
                 .doOnNext(this::logState)
                 .doOnNext(storage::save)
                 .map(stateConverter::convert)
@@ -83,7 +85,7 @@ public final class DefaultEngine<S, M> implements Engine<S, M> {
         logger.print(getClass(), "Calculating %s", it);
     }
 
-    private S updateState(S current, Reducer<S> reducer, TransientCleaner<S> transientCleaner) throws Exception {
+    private S updateState(S current, Reducer<S> reducer, TransientCleaner<S> transientCleaner) {
         S transientCleaned = transientCleaner.clean(current);
         return reducer.reduce(transientCleaned);
     }
