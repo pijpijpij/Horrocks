@@ -21,7 +21,8 @@ They are:
 - `State`. The set of data that represents the state of the view.
 - `Reducer`. A piece of code that contains both data (equivalent to a Redux action) and process (Redux's reducer). When applied to a 
 `State` this applies its data on to the state and produces a new `State`
-- `ReducerCreator`. A piece of code that processes a specific type of UI events and creates `Reducer`s for this type of event.
+- `TriggeredReducerCreator`. A piece of code that processes a specific type of UI events and creates `Reducer`s for this type of event.
+  A simpler version `ReducerCreator` is not specifically triggered by an event.
 - `Engine`: the code that collects the `Reducer`s emitted by `ReducerCreator`s and applies then to the current `State`.
 It also calculate the `Model` from the `state` and emits it.
 
@@ -43,9 +44,10 @@ of the screen.
 `State` is the only source of data in `Model`, so it supports transient properties as well.
 
 ### ReducerCreator
-An `ReducerCreator` can be triggered by an `Event` and emits a series of `Reducer`s. It is named `ReducerCreator` because its semantics 
+A `ReducerCreator` emits a series of `Reducer`s. It is named `ReducerCreator` because its semantics
 are close to Redux's ActionCreator. It emits more than Actions however: Horrocks' `Reducer`s.
- 
+A `TriggeredReducerCreator` is a `ReducerCreator` that can be triggered by an `Event`.
+
 ### Reducer
 A `Reducer` is close semantically to Redux's Reducer. The major difference is that the main (only) method of a Redux reducer is a pure 
 function that take 2 parameters: the action data and a state to produce a new state. Horrocks' `Reducer` already contains the data to 
@@ -59,7 +61,7 @@ There should be one instance of an engine (noted above as the system) per screen
 
 ## Other Abstractions
 ### Help with Feature creation
-`ReducerCreator`s have some boiler-plate code. 4 classes are designed to remove as much as possible:
+`TriggeredReducerCreator`s have some boiler-plate code. 4 classes are designed to remove of it as much as possible:
 - `SingleReducerCreator` and `Interaction`
 - `MultipleReducerCreator` and `AsyncInteraction`
 
@@ -95,10 +97,10 @@ a `TransientCleaner` onto the state. The engine gets its cleaner from its `Confi
 
 
 ### Validation
-In certain cases, a `ReducerCreator` need to validate `Event`s against the current `State` of the app and then emit the relevant `Reducer`.
+In certain cases, a `TriggeredReducerCreator` need to validate `Event`s against the current `State` of the app and then emit the relevant `Reducer`.
 `StateProvider` is designed to be used in this scenario. Pass one in the constructor of the `ActionCreator` and Bob's your uncle. The 
 only implementation of `StateProvider` That makes sense delegates to the `Storage` use in the screen. 
-The `ReducerCreator` uses this state to decide what `Reducer`(s) to emit. Note that the state used then may not be the same as the one 
+The `TriggeredReducerCreator` uses this state to decide what `Reducer`(s) to emit. Note that the state used then may not be the same as the one
 handed to the `Reducer`(s), as some other `Reducer` of a different origin may have be executed in the meantime.
   
 
@@ -112,7 +114,7 @@ allprojects {
   }
 }
 ```
-Add the dependency
+Add the dependency:
 ```groovy
 dependencies {
   compile 'com.github.pijpijpij.horrocks:horrocks:0.4.1'
@@ -132,7 +134,7 @@ In an MVP architecture, assuming that attaching the view to its presenter is don
 create that subscription. In the sample application, it is in the implementations of `BasePresenter.takeView()` that 
 `Engine.runWith(Configuration)` is subscribed to.
 
-# Building and Releasing the libraries
+# Building and Releasing the library
 
 ## Automated build status
 

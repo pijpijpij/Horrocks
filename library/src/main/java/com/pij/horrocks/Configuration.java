@@ -40,7 +40,7 @@ public abstract class Configuration<S, M> {
 
     public abstract Logger logger();
 
-    abstract Collection<ReducerCreator<?, S>> creators();
+    abstract Collection<ReducerCreator<S>> creators();
 
     abstract StateConverter<S, M> stateToModel();
 
@@ -83,7 +83,7 @@ public abstract class Configuration<S, M> {
 
         public abstract Builder<S, M> logger(Logger logger);
 
-        public abstract Builder<S, M> creators(Collection<ReducerCreator<?, S>> creators);
+        public abstract Builder<S, M> creators(Collection<ReducerCreator<S>> creators);
 
         public abstract Builder<S, M> stateToModel(StateConverter<S, M> stateToModel);
 

@@ -16,16 +16,13 @@ package com.pij.horrocks;
 
 import android.support.annotation.NonNull;
 
-import io.reactivex.Observable;
-
 /**
  * <p>Created on 16/11/2017.</p>
  *
  * @author PierreJean
  */
-public interface ReducerCreator<S> {
+public interface TriggeredReducerCreator<E, S> extends ReducerCreator<S> {
 
-    @NonNull
-    Observable<Reducer<S>> reducers();
+    void trigger(@NonNull E event);
 
 }
