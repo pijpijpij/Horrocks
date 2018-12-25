@@ -28,7 +28,7 @@ import io.reactivex.subjects.Subject;
  * @author PierreJean
  */
 
-public final class MultipleReducerCreator<E, S> implements ReducerCreator<E, S> {
+public final class MultipleReducerCreator<E, S> implements TriggeredReducerCreator<E, S> {
     private final Subject<E> event = PublishSubject.create();
     private final AsyncInteraction<E, S> interaction;
     private final Logger logger;

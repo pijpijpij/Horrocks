@@ -27,8 +27,8 @@ import com.pij.horrocks.Configuration;
 import com.pij.horrocks.Engine;
 import com.pij.horrocks.MemoryStorage;
 import com.pij.horrocks.MultipleReducerCreator;
-import com.pij.horrocks.ReducerCreator;
 import com.pij.horrocks.SingleReducerCreator;
+import com.pij.horrocks.TriggeredReducerCreator;
 import com.pij.horrocks.View;
 import com.pij.utils.Logger;
 
@@ -56,11 +56,11 @@ public final class FeaturedPresenter implements Presenter {
     private final CompositeDisposable subscription = new CompositeDisposable();
     private final Engine<TaskDetailModel, TaskDetailModel> engine;
     private final Configuration<TaskDetailModel, TaskDetailModel> engineConfiguration;
-    private final ReducerCreator<String, TaskDetailModel> loadTask;
-    private final ReducerCreator<String, TaskDetailModel> editTask;
-    private final ReducerCreator<String, TaskDetailModel> deleteTask;
-    private final ReducerCreator<String, TaskDetailModel> completeTask;
-    private final ReducerCreator<String, TaskDetailModel> activateTask;
+    private final TriggeredReducerCreator<String, TaskDetailModel> loadTask;
+    private final TriggeredReducerCreator<String, TaskDetailModel> editTask;
+    private final TriggeredReducerCreator<String, TaskDetailModel> deleteTask;
+    private final TriggeredReducerCreator<String, TaskDetailModel> completeTask;
+    private final TriggeredReducerCreator<String, TaskDetailModel> activateTask;
     @NonNull
     private String mTaskId;
 

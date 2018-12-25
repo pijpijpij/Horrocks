@@ -28,7 +28,7 @@ import com.pij.horrocks.Configuration;
 import com.pij.horrocks.Engine;
 import com.pij.horrocks.MemoryStorage;
 import com.pij.horrocks.MultipleReducerCreator;
-import com.pij.horrocks.ReducerCreator;
+import com.pij.horrocks.TriggeredReducerCreator;
 import com.pij.horrocks.View;
 import com.pij.utils.Logger;
 
@@ -58,8 +58,8 @@ public final class FeaturedPresenter implements Presenter {
     private final CompositeDisposable subscription = new CompositeDisposable();
     private final Engine<AddEditTaskModel, AddEditTaskModel> engine;
     private final Configuration<AddEditTaskModel, AddEditTaskModel> engineConfiguration;
-    private final ReducerCreator<Task, AddEditTaskModel> saveTask;
-    private final ReducerCreator<String, AddEditTaskModel> loadTask;
+    private final TriggeredReducerCreator<Task, AddEditTaskModel> saveTask;
+    private final TriggeredReducerCreator<String, AddEditTaskModel> loadTask;
 
     private String taskId;
 

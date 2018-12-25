@@ -39,7 +39,7 @@ public final class DefaultEngine<S, M> implements Engine<S, M> {
     @Override
     public Observable<M> runWith(Configuration<S, M> configuration) {
         Storage<S> storage = configuration.store();
-        Collection<ReducerCreator<?, S>> reducerCreators = configuration.creators();
+        Collection<ReducerCreator<S>> reducerCreators = configuration.creators();
         TransientCleaner<S> transientCleaner = configuration.transientResetter();
         StateEquality<S> stateFilter = configuration.stateFilter();
         StateConverter<S, M> stateConverter = configuration.stateToModel();

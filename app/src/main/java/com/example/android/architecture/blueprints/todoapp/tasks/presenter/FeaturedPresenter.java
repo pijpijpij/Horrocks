@@ -28,8 +28,8 @@ import com.pij.horrocks.Configuration;
 import com.pij.horrocks.Engine;
 import com.pij.horrocks.MemoryStorage;
 import com.pij.horrocks.MultipleReducerCreator;
-import com.pij.horrocks.ReducerCreator;
 import com.pij.horrocks.SingleReducerCreator;
+import com.pij.horrocks.TriggeredReducerCreator;
 import com.pij.horrocks.View;
 import com.pij.utils.Logger;
 
@@ -57,13 +57,13 @@ public final class FeaturedPresenter implements Presenter {
     private final Logger logger;
     private final CompositeDisposable subscription = new CompositeDisposable();
     private final Engine<ViewState, TasksModel> engine;
-    private final ReducerCreator<Object, ViewState> indicateTaskSaved;
-    private final ReducerCreator<Object, ViewState> showAddTask;
-    private final ReducerCreator<Task, ViewState> openTaskDetails;
-    private final ReducerCreator<Object, ViewState> clearCompletedTasks;
-    private final ReducerCreator<Task, ViewState> activateTask;
-    private final ReducerCreator<Task, ViewState> completeTask;
-    private final ReducerCreator<FilterType, ViewState> loadTasks;
+    private final TriggeredReducerCreator<Object, ViewState> indicateTaskSaved;
+    private final TriggeredReducerCreator<Object, ViewState> showAddTask;
+    private final TriggeredReducerCreator<Task, ViewState> openTaskDetails;
+    private final TriggeredReducerCreator<Object, ViewState> clearCompletedTasks;
+    private final TriggeredReducerCreator<Task, ViewState> activateTask;
+    private final TriggeredReducerCreator<Task, ViewState> completeTask;
+    private final TriggeredReducerCreator<FilterType, ViewState> loadTasks;
     private final Configuration<ViewState, TasksModel> engineConfiguration;
 
     /**
