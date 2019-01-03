@@ -59,6 +59,7 @@ public final class DefaultEngine<S, M> implements Engine<S, M> {
                 .doOnNext(this::logModel)
                 .doOnError(this::logTerminalFailure)
                 .doOnComplete(this::logUnexpectedCompletion)
+                .share()
                 .doOnDispose(this::logDispose)
                 .doOnSubscribe(this::logSubscribe)
                 ;
