@@ -301,7 +301,7 @@ class DefaultEngineTest {
     }
 
     @Test
-    fun `Does not re-emit the last emitted state for a new Subscriber`() {
+    fun `Re-emits the last emitted state for a new Subscriber`() {
         // given
         val dummyReducerCreator: TriggeredReducerCreator<String, DummyState> = object : TriggeredReducerCreator<String, DummyState> {
             private val events: Subject<String> = PublishSubject.create()
@@ -317,17 +317,17 @@ class DefaultEngineTest {
                 .build()
         val states = sut.runWith(configuration)
         states.test()
-        dummyReducerCreator.trigger("some text")
+        dummyReducerCreator.trigger("some text with a specific length")
 
         // when
         val observer = states.test()
 
         // then
-        observer.assertNoValues()
+        observer.assertValue(DummyState(transient = false, nonTransient = 32))
     }
 
     @Test
-    fun `Ooops, does NOT emits the initial state 2ce for 2 subscribers`() {
+    fun `Emits the initial state 2ce for 2 subscribers`() {
         // given
         val dummyReducerCreator: TriggeredReducerCreator<String, DummyState> = object : TriggeredReducerCreator<String, DummyState> {
             private val events: Subject<String> = PublishSubject.create()
@@ -349,8 +349,7 @@ class DefaultEngineTest {
 
         // then
         observer1.assertValue(DummyState(false, 23))
-        observer2.assertNoValues()
-//        observer2.assertValue(DummyState(false, 23))
+        observer2.assertValue(DummyState(false, 23))
     }
 
     @Test
@@ -369,8 +368,6 @@ class DefaultEngineTest {
                 .creators(setOf(dummyReducerCreator))
                 .build()
         val states = sut.runWith(configuration)
-        // Draws the initial state out
-        states.test()
 
         // when
         val observer1 = states.test()
@@ -378,8 +375,8 @@ class DefaultEngineTest {
         dummyReducerCreator.trigger("text of some specific length")
 
         // then
-        observer1.assertValue(DummyState(false, 28))
-        observer2.assertValue(DummyState(false, 28))
+        observer1.assertValues(DummyState(false, 23), DummyState(false, 28))
+        observer2.assertValues(DummyState(false, 23), DummyState(false, 28))
     }
 
     @Test
