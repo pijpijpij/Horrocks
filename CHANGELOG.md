@@ -1,6 +1,20 @@
 Change Log
 ==========
 
+Version 0.5.2
+-------------
+
+ - The default engine emits the last emitted state to new subscribers.
+ - Fix: multiple subscribers cause multiple executions of features.
+ - Tec: Updated to AS 3.2.0, Gradle 4.8.1 and Kotlin 1.3.x.
+ - Further separated the creation of Reducers from action triggers by introducing Triggerable.
+ - Relaxed requirement for the engine: it still needs ReducerCreator, but it is a different
+ one: it has been renamed ReducerCreator to TriggeredReducerCreator. The new ReducerCreator
+ does not include any notion of event.
+ - Fix ErrorReducerFactory should be public.
+ The Default Engine no longer stops when a feature throws. ErrorReducerFactory is added to
+ customize the engine's behaviour in that situation.
+
 Version 0.2.3
 -------------
 
