@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="horrocks-parent/app" />
       <module fileurl="file://$PROJECT_DIR$/horrocks-parent.iml" filepath="$PROJECT_DIR$/horrocks-parent.iml" group="horrocks-parent" />
       <module fileurl="file://$PROJECT_DIR$/library/library.iml" filepath="$PROJECT_DIR$/library/library.iml" group="horrocks-parent/library" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/library-kotlin/library-kotlin.iml" filepath="$PROJECT_DIR$/.idea/modules/library-kotlin/library-kotlin.iml" group="horrocks-parent/library-kotlin" />
     </modules>
   </component>
 </project>
