@@ -62,7 +62,7 @@ internal class EngineTest {
         @Test
         fun `subscribeSafely() does not fail if display fails`() {
             // given
-            val display = mock<(String) -> Unit>() { on { invoke(any()) } doThrow IllegalStateException("ta da") }
+            val display = mock<(String) -> Unit> { on { invoke(any()) } doThrow IllegalStateException("ta da") }
             val input = BehaviorSubject.createDefault("hello")
 
             // when
@@ -79,7 +79,7 @@ internal class EngineTest {
 
         // when
         assertThrows<IllegalArgumentException> {
-            Engine.createWithLogger("the initial", { this }, TestScheduler())
+            Engine.create("the initial", { this }, TestScheduler())
         }
 
         // then
@@ -98,7 +98,7 @@ internal class EngineTest {
         val feature = feature(reducers)
 
         // when
-        Engine.createWithLogger("the initial", { this }, TestScheduler(), feature)
+        Engine.create("the initial", { this }, TestScheduler(), feature)
 
         // then
     }
@@ -107,7 +107,7 @@ internal class EngineTest {
     fun `Engine emits the initial state if feature emits nothing`() {
         // given
         val reducers = PublishSubject.create<Reducer<String>>()
-        val sut = Engine.createWithLogger("the initial", { this }, Schedulers.trampoline(), feature(reducers))
+        val sut = Engine.create("the initial", { this }, Schedulers.trampoline(), feature(reducers))
 
         // when
         val result = sut.states.test()
@@ -121,7 +121,7 @@ internal class EngineTest {
     fun `Engine emits reducer's value provided by feature`() {
         // given
         val reducers = PublishSubject.create<Reducer<String>>()
-        val sut = Engine.createWithLogger("the initial", { this }, null, feature(reducers))
+        val sut = Engine.create("the initial", { this }, feature(reducers))
         val result = sut.states.test()
 
         // when
@@ -137,7 +137,7 @@ internal class EngineTest {
         // given
         val reducers = PublishSubject.create<Reducer<String>>()
         val logger = mock<Logger>()
-        val sut = Engine("the initial", { this }, Schedulers.trampoline(), logger, feature(reducers))
+        val sut = Engine.create("the initial", { this }, Schedulers.trampoline(), logger, feature(reducers))
         sut.states.test()
 
         // when
@@ -158,7 +158,7 @@ internal class EngineTest {
     fun `Engine fails if feature fails`() {
         // given
         val reducers = PublishSubject.create<Reducer<String>>()
-        val sut = Engine.createWithLogger("the initial", { this }, Schedulers.trampoline(), feature(reducers))
+        val sut = Engine.create("the initial", { this }, Schedulers.trampoline(), feature(reducers))
         val result = sut.states.test()
 
         // when
@@ -174,7 +174,7 @@ internal class EngineTest {
         // given
         val reducers = PublishSubject.create<Reducer<String>>()
         val logger = mock<Logger>()
-        val sut = Engine("the initial", { this }, Schedulers.trampoline(), logger, feature(reducers))
+        val sut = Engine.create("the initial", { this }, Schedulers.trampoline(), logger, feature(reducers))
         sut.states.test()
 
         // when
@@ -188,7 +188,7 @@ internal class EngineTest {
     fun `Engine fails if reducer fails`() {
         // given
         val reducers = PublishSubject.create<Reducer<String>>()
-        val sut = Engine.createWithLogger("the initial", { this }, Schedulers.trampoline(), feature(reducers))
+        val sut = Engine.create("the initial", { this }, Schedulers.trampoline(), feature(reducers))
         val result = sut.states.test()
 
         // when
@@ -204,7 +204,7 @@ internal class EngineTest {
         // given
         val reducers = PublishSubject.create<Reducer<String>>()
         val logger = mock<Logger>()
-        val sut = Engine("the initial", { this }, Schedulers.trampoline(), logger, feature(reducers))
+        val sut = Engine.create("the initial", { this }, Schedulers.trampoline(), logger, feature(reducers))
         sut.states.test()
 
         // when
@@ -218,7 +218,7 @@ internal class EngineTest {
     fun `Late subscriber to states receives initial state`() {
         // given
         val reducers = PublishSubject.create<Reducer<String>>()
-        val sut = Engine.createWithLogger("the initial", { this }, null, feature(reducers))
+        val sut = Engine.create("the initial", { this }, feature(reducers))
 
         // when
         val result = sut.states.test()
@@ -232,7 +232,7 @@ internal class EngineTest {
     fun `Late subscriber to states does not received non- initial state`() {
         // given
         val reducers = PublishSubject.create<Reducer<String>>()
-        val sut = Engine.createWithLogger("the initial", { this }, null, feature(reducers))
+        val sut = Engine.create("the initial", { this }, feature(reducers))
         reducers.onNext { "transformed" }
 
         // when
@@ -247,7 +247,7 @@ internal class EngineTest {
     fun `Late subscriber to states receives later state`() {
         // given
         val reducers = PublishSubject.create<Reducer<String>>()
-        val sut = Engine.createWithLogger("the initial", { this }, null, feature(reducers))
+        val sut = Engine.create("the initial", { this }, feature(reducers))
         reducers.onNext { "transformed" }
         val result = sut.states.test()
 
@@ -263,7 +263,7 @@ internal class EngineTest {
     fun `Late 2nd subscriber receives last state`() {
         // given
         val reducers = PublishSubject.create<Reducer<String>>()
-        val sut = Engine.createWithLogger("the initial", { this }, Schedulers.trampoline(), feature(reducers))
+        val sut = Engine.create("the initial", { this }, Schedulers.trampoline(), feature(reducers))
         sut.states.test()
         reducers.onNext { "transformed" }
 

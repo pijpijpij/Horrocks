@@ -11,18 +11,73 @@ class Engine<S : Any>(
         private val clearEventProperties: S.() -> S = { this },
         foreground: Scheduler? = null,
         private val logger: Logger? = Companion.logger,
-        private vararg val features: Feature<*, S>
+        private val features: Collection<Feature<*, S>>
 ) {
 
     companion object {
         private val logger: Logger by lazy { LoggerFactory.getLogger(Engine::class.java) }
 
-        fun <S : Any> createWithLogger(
+        fun <S : Any> create(
                 initialState: S,
                 clearEventProperties: S.() -> S,
-                foreground: Scheduler?,
+                foreground: Scheduler,
+                logger: Logger,
                 vararg features: Feature<*, S>
-        ) = Engine(initialState, clearEventProperties, foreground, features = features)
+        ) = Engine(
+                initialState = initialState,
+                clearEventProperties = clearEventProperties,
+                foreground = foreground,
+                logger = logger,
+                features = features.toList()
+        )
+
+        fun <S : Any> create(
+                initialState: S,
+                clearEventProperties: S.() -> S,
+                logger: Logger,
+                vararg features: Feature<*, S>
+        ) = Engine(
+                initialState = initialState,
+                clearEventProperties = clearEventProperties,
+                logger = logger,
+                features = features.toList()
+        )
+
+        fun <S : Any> create(
+                initialState: S,
+                clearEventProperties: S.() -> S,
+                vararg features: Feature<*, S>
+        ) = Engine(
+                initialState = initialState,
+                clearEventProperties = clearEventProperties,
+                features = features.toList()
+        )
+
+        fun <S : Any> create(
+                initialState: S,
+                clearEventProperties: S.() -> S,
+                foreground: Scheduler,
+                vararg features: Feature<*, S>
+        ) = Engine(
+                initialState = initialState,
+                clearEventProperties = clearEventProperties,
+                foreground = foreground,
+                features = features.toList()
+        )
+
+        fun <S : Any> create(
+                initialState: S,
+                clearEventProperties: S.() -> S,
+                logger: Logger,
+                foreground: Scheduler,
+                vararg features: Feature<*, S>
+        ) = Engine(
+                initialState = initialState,
+                clearEventProperties = clearEventProperties,
+                logger = logger,
+                foreground = foreground,
+                features = features.toList()
+        )
 
         fun <T> Observable<T>.subscribeSafely(display: (T) -> Unit, logger: Logger? = Companion.logger, stallingAction: (Throwable) -> Unit = {}): Disposable = this
                 .subscribe({
