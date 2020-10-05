@@ -3,13 +3,11 @@ package com.pij.horrocks.kotlin
 import com.nhaarman.mockitokotlin2.*
 import com.pij.horrocks.kotlin.Engine.Companion.subscribeSafely
 import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
 import io.reactivex.schedulers.TestScheduler
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -107,7 +105,7 @@ internal class EngineTest {
     fun `Engine emits the initial state if feature emits nothing`() {
         // given
         val reducers = PublishSubject.create<Reducer<String>>()
-        val sut = Engine.create("the initial", { this }, Schedulers.trampoline(), feature(reducers))
+        val sut = Engine.create("the initial", { this }, feature(reducers))
 
         // when
         val result = sut.states.test()
@@ -137,7 +135,7 @@ internal class EngineTest {
         // given
         val reducers = PublishSubject.create<Reducer<String>>()
         val logger = mock<Logger>()
-        val sut = Engine.create("the initial", { this }, Schedulers.trampoline(), logger, feature(reducers))
+        val sut = Engine.create("the initial", { this }, logger, feature(reducers))
         sut.states.test()
 
         // when
@@ -148,17 +146,59 @@ internal class EngineTest {
         verify(logger).debug(argThat { contains("transformed") })
     }
 
-    @Disabled("Not too sure how to do that yet")
     @Test
-    fun `Engine emits on the specified scheduler`() {
+    fun `Engine does not emit initialState if scheduler does not work`() {
+        // given
+        val reducers = PublishSubject.create<Reducer<String>>()
+        val foreground = TestScheduler()
+        val sut = Engine.create("the initial", { this }, foreground, feature(reducers))
 
+        // when
+        val result = sut.states.test()
+
+        // then
+        result.assertNoValues()
+                .assertNotTerminated()
+    }
+
+    @Test
+    fun `Engine emits initialState on the specified scheduler`() {
+        // given
+        val reducers = PublishSubject.create<Reducer<String>>()
+        val foreground = TestScheduler()
+        val sut = Engine.create("the initial", { this }, foreground, feature(reducers))
+        val result = sut.states.test()
+
+        // when
+        foreground.triggerActions()
+
+        // then
+        result.assertValue("the initial")
+                .assertNotTerminated()
+    }
+
+    @Test
+    fun `Engine emits subsequent state on the specified scheduler`() {
+        // given
+        val reducers = PublishSubject.create<Reducer<String>>()
+        val foreground = TestScheduler()
+        val sut = Engine.create("the initial", { this }, foreground, feature(reducers))
+        val result = sut.states.test()
+
+        // when
+        reducers.onNext { "transformed" }
+        foreground.triggerActions()
+
+        // then
+        result.assertValues("the initial", "transformed")
+                .assertNotTerminated()
     }
 
     @Test
     fun `Engine fails if feature fails`() {
         // given
         val reducers = PublishSubject.create<Reducer<String>>()
-        val sut = Engine.create("the initial", { this }, Schedulers.trampoline(), feature(reducers))
+        val sut = Engine.create("the initial", { this }, feature(reducers))
         val result = sut.states.test()
 
         // when
@@ -174,7 +214,7 @@ internal class EngineTest {
         // given
         val reducers = PublishSubject.create<Reducer<String>>()
         val logger = mock<Logger>()
-        val sut = Engine.create("the initial", { this }, Schedulers.trampoline(), logger, feature(reducers))
+        val sut = Engine.create("the initial", { this }, logger, feature(reducers))
         sut.states.test()
 
         // when
@@ -188,7 +228,7 @@ internal class EngineTest {
     fun `Engine fails if reducer fails`() {
         // given
         val reducers = PublishSubject.create<Reducer<String>>()
-        val sut = Engine.create("the initial", { this }, Schedulers.trampoline(), feature(reducers))
+        val sut = Engine.create("the initial", { this }, feature(reducers))
         val result = sut.states.test()
 
         // when
@@ -204,7 +244,7 @@ internal class EngineTest {
         // given
         val reducers = PublishSubject.create<Reducer<String>>()
         val logger = mock<Logger>()
-        val sut = Engine.create("the initial", { this }, Schedulers.trampoline(), logger, feature(reducers))
+        val sut = Engine.create("the initial", { this }, logger, feature(reducers))
         sut.states.test()
 
         // when
@@ -263,7 +303,7 @@ internal class EngineTest {
     fun `Late 2nd subscriber receives last state`() {
         // given
         val reducers = PublishSubject.create<Reducer<String>>()
-        val sut = Engine.create("the initial", { this }, Schedulers.trampoline(), feature(reducers))
+        val sut = Engine.create("the initial", { this }, feature(reducers))
         sut.states.test()
         reducers.onNext { "transformed" }
 
