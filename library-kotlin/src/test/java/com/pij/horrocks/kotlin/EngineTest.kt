@@ -85,8 +85,6 @@ internal class EngineTest {
         // then
     }
 
-    data class DummyState(val property1: String = "nothing", val event: Int? = null)
-
     private fun feature(reducers: Observable<Reducer<String>>) = mock<Feature<Boolean, String>> {
         on { context } doReturn PublishSubject.create()
         on { this.reducers } doReturn reducers
@@ -123,7 +121,7 @@ internal class EngineTest {
     fun `Engine emits reducer's value provided by feature`() {
         // given
         val reducers = PublishSubject.create<Reducer<String>>()
-        val sut = Engine.createWithLogger("the initial", { this }, Schedulers.trampoline(), feature(reducers))
+        val sut = Engine.createWithLogger("the initial", { this }, null, feature(reducers))
         val result = sut.states.test()
 
         // when
@@ -216,5 +214,65 @@ internal class EngineTest {
         verify(logger).warn(anyString(), any())
     }
 
+    @Test
+    fun `Late subscriber to states receives initial state`() {
+        // given
+        val reducers = PublishSubject.create<Reducer<String>>()
+        val sut = Engine.createWithLogger("the initial", { this }, null, feature(reducers))
+
+        // when
+        val result = sut.states.test()
+
+        // then
+        result.assertValue("the initial")
+                .assertNoErrors()
+    }
+
+    @Test
+    fun `Late subscriber to states does not received non- initial state`() {
+        // given
+        val reducers = PublishSubject.create<Reducer<String>>()
+        val sut = Engine.createWithLogger("the initial", { this }, null, feature(reducers))
+        reducers.onNext { "transformed" }
+
+        // when
+        val result = sut.states.test()
+
+        // then
+        result.assertNever("transformed")
+                .assertNoErrors()
+    }
+
+    @Test
+    fun `Late subscriber to states receives later state`() {
+        // given
+        val reducers = PublishSubject.create<Reducer<String>>()
+        val sut = Engine.createWithLogger("the initial", { this }, null, feature(reducers))
+        reducers.onNext { "transformed" }
+        val result = sut.states.test()
+
+        // when
+        reducers.onNext { "transformed2" }
+
+        // then
+        result.assertValues("the initial", "transformed2")
+                .assertNoErrors()
+    }
+
+    @Test
+    fun `Late 2nd subscriber receives last state`() {
+        // given
+        val reducers = PublishSubject.create<Reducer<String>>()
+        val sut = Engine.createWithLogger("the initial", { this }, Schedulers.trampoline(), feature(reducers))
+        sut.states.test()
+        reducers.onNext { "transformed" }
+
+        // when
+        val result = sut.states.test()
+
+        // then
+        result.assertValues("transformed")
+                .assertNoErrors()
+    }
 
 }

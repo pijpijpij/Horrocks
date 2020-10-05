@@ -20,7 +20,7 @@ class Engine<S : Any>(
         fun <S : Any> createWithLogger(
                 initialState: S,
                 clearEventProperties: S.() -> S,
-                foreground: Scheduler,
+                foreground: Scheduler?,
                 vararg features: Feature<*, S>
         ) = Engine(initialState, clearEventProperties, foreground, features = features)
 
@@ -41,12 +41,8 @@ class Engine<S : Any>(
                 })
     }
 
-    /**Only visible to offer some form of backward compatibility. */
-    @Deprecated("use states and subscribeSafely() instead")
-    @Suppress("unused")
-    val reducers = reducers()
     private fun reducers() = features.map {
-        it.reducers.doOnError { error -> logger?.warn("failed to emit a reducer", error) }
+        it.reducers.doOnError { error -> logger?.warn("$javaClass Failed to emit a reducer", error) }
     }
 
     val states: Observable<S>
@@ -59,6 +55,8 @@ class Engine<S : Any>(
                 .run { if (logger == null) this else doOnNext { logger.debug("$javaClass $it") } }
                 .doAfterNext { state -> features.forEach { it.context.onNext(state) } }
                 .run { if (foreground == null) this else observeOn(foreground) }
+                .replay(1)
+                .refCount()
     }
 
     private fun Reducer<S>.reduceSafely(state: S) = try {
