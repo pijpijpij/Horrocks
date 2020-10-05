@@ -5,12 +5,13 @@ import io.reactivex.Scheduler
 import io.reactivex.disposables.Disposable
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.slf4j.helpers.NOPLogger
 
 class Engine<S : Any>(
         initialState: S,
         private val clearEventProperties: S.() -> S = { this },
         foreground: Scheduler? = null,
-        private val logger: Logger? = Companion.logger,
+        log4J: Logger? = Companion.logger,
         private val features: Collection<Feature<*, S>>
 ) {
 
@@ -27,7 +28,7 @@ class Engine<S : Any>(
                 initialState = initialState,
                 clearEventProperties = clearEventProperties,
                 foreground = foreground,
-                logger = logger,
+                log4J = logger,
                 features = features.toList()
         )
 
@@ -39,7 +40,7 @@ class Engine<S : Any>(
         ) = Engine(
                 initialState = initialState,
                 clearEventProperties = clearEventProperties,
-                logger = logger,
+                log4J = logger,
                 features = features.toList()
         )
 
@@ -74,40 +75,44 @@ class Engine<S : Any>(
         ) = Engine(
                 initialState = initialState,
                 clearEventProperties = clearEventProperties,
-                logger = logger,
+                log4J = logger,
                 foreground = foreground,
                 features = features.toList()
         )
 
-        fun <T> Observable<T>.subscribeSafely(display: (T) -> Unit, logger: Logger? = Companion.logger, stallingAction: (Throwable) -> Unit = {}): Disposable = this
+        internal fun <T> Observable<T>.subscribeSafely(display: (T) -> Unit, logger: Logger = NOPLogger.NOP_LOGGER, stallingAction: (Throwable) -> Unit = {}): Disposable = this
                 .subscribe({
                     try {
                         display(it)
                     } catch (e: Throwable) {
-                        logger?.warn("Failure while displaying '$it'", e)
+                        logger.warn("${Engine::class.java} Failure while displaying '$it'", e)
                     }
                 }, {
-                    logger?.error("Engine failure", it)
+                    logger.error("${Engine::class.java} Engine failure", it)
                     try {
                         stallingAction(it)
                     } catch (ignored: Throwable) {
-                        logger?.error("Could not perform a last ditch action before stalling.", ignored)
+                        logger.error("${Engine::class.java} Could not perform a last ditch action before stalling.", ignored)
                     }
                 })
     }
 
+    private val logger: Logger = log4J ?: NOPLogger.NOP_LOGGER
+
     private fun reducers() = features.map {
-        it.reducers.doOnError { error -> logger?.warn("$javaClass Failed to emit a reducer", error) }
+        it.reducers.doOnError { error -> logger.warn("$javaClass Failed to emit a reducer", error) }
     }
 
-    val states: Observable<S>
+    fun subscribe(display: (S) -> Unit, stallingAction: (Throwable) -> Unit = {}): Disposable = states.subscribeSafely(display, logger, stallingAction)
+
+    internal val states: Observable<S>
 
     init {
         require(features.isNotEmpty()) { "Must provide a least one feature to spin" }
 
         states = Observable.merge(reducers())
                 .scan(initialState) { state, reducer: Reducer<S> -> reducer.reduceSafely(state) }
-                .run { if (logger == null) this else doOnNext { logger.debug("$javaClass $it") } }
+                .doOnNext { logger.debug("$javaClass $it") }
                 .doAfterNext { state -> features.forEach { it.context.onNext(state) } }
                 .run { if (foreground == null) this else observeOn(foreground) }
                 .replay(1)
@@ -117,7 +122,7 @@ class Engine<S : Any>(
     private fun Reducer<S>.reduceSafely(state: S) = try {
         invoke(state.clearEventProperties())
     } catch (e: Throwable) {
-        logger?.warn("$javaClass Failed reducer", e)
+        logger.warn("$javaClass Failed reducer", e)
         throw e
     }
 
