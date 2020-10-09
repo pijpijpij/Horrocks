@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Version 0.6.0
+-------------
+
+- Added initial version of a new Kotlin UDF library, 'library-kotlin'. It has a simple API and functionality than `library`.
+
 Version 0.5.2
 -------------
 
