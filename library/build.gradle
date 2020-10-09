@@ -17,7 +17,10 @@ apply plugin: 'kotlin'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'maven'
 
-task preCommit(dependsOn: ['test'])
+task preCommit(dependsOn: ['test']) {
+    group = "verification"
+    description = "Runs the tasks that must be passed before committing changes."
+}
 
 sourceSets {
     main.java.srcDirs += 'src/main/kotlin'

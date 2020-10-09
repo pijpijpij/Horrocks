@@ -28,7 +28,10 @@ ext.calculateVersionCode = { String versionName ->
     result
 }
 
-task preCommit(dependsOn: ['lintMockDebug', 'testMockDebugUnitTest'])
+task preCommit(dependsOn: ['lintMockDebug', 'testMockDebugUnitTest']) {
+    group = "verification"
+    description = "Runs the tasks that must be passed before committing changes."
+}
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
