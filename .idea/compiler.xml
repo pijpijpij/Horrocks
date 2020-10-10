@@ -16,6 +16,7 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="library" target="1.8" />
+      <module name="library-kotlin" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
