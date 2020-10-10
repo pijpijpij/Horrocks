@@ -210,7 +210,7 @@ allprojects {
 Add the dependency:
 ```groovy
 dependencies {
-  compile 'com.github.pijpijpij.horrocks:horrocks:0.5.2'
+  compile 'com.github.pijpijpij.horrocks:horrocks:0.6.0'
 }
 ```
 
